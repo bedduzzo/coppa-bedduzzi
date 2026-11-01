@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- COPPA BEDDUZZI – app – index.html – versione 2.0 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
+<!-- COPPA BEDDUZZI – app – index.html – versione 2.1 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -103,6 +103,12 @@
   @keyframes fadein { from { opacity: 0; transform: translateY(10px); } }
   .tabs button { font-size: 11px; }
 
+  /* listino e richieste */
+  .lis { padding: 12px 0; border-top: 1px solid var(--bordo); }
+  .lis:first-of-type { border-top: 0; }
+  .chk { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 14px; font-weight: 700; }
+  .chk input { width: 20px; height: 20px; }
+
   /* tappe */
   .lvbar { position: relative; height: 16px; border-radius: 8px; background: #e2e8f0; margin: 26px 0 34px; }
   .lvbar .fill { height: 100%; border-radius: 8px; background: linear-gradient(90deg, #38bdf8, #0284c7); transition: width 1s; }
@@ -185,7 +191,7 @@
 
 <script>
 var BOOT = { token: '', tv: /[?&]tv=1/.test(location.search) };
-var VERSIONE_PAGINA = '2.0';
+var VERSIONE_PAGINA = '2.1';
 var IMG = {};
 var S = { d: null, tab: 'casa', busy: false, tvIdx: 0, preview: null, filtro: '' };
 
@@ -511,16 +517,50 @@ function viewDona(d) {
 function dona(id, n) { call('dona', { persona: id, punti: n, motivo: val('mot_' + id) }, n > 0 ? 'Punti regalati 💛' : 'Fatto, punti tolti', n > 0); }
 
 /* ---- Bimbe: salvadanaio ---- */
+var STATI_RIC = { nuova: ['⏳', 'In attesa', 'warn'], approvata: ['✅', 'Approvata', 'pos'], rifiutata: ['🙅', 'Non adesso', 'neg'], comprata: ['🎉', 'Arrivata!', 'pos'] };
+function rigaListino(l, saldo, extra) {
+  var manca = Math.max(0, l.gettoni - saldo), pc = Math.max(0, Math.min(100, saldo / l.gettoni * 100));
+  return '<div class="lis"><div class="row"><span class="ico c-x" style="width:44px;height:44px;font-size:24px;border-radius:13px;background:#fff7ed">' + e(l.emoji) + '</span>' +
+    '<div class="grow"><b>' + e(l.articolo) + '</b>' + (l.per !== 'tutte' ? ' <span class="pill">solo per te</span>' : '') +
+    '<div class="muted">' + (manca ? 'mancano <b>' + fmt(manca) + '</b> gettoni' : '<b style="color:var(--verde)">Ce l\'hai fatta! Dillo a mamma e papà 🎉</b>') + '</div></div>' +
+    '<span class="pill warn">🪙 ' + fmt(l.gettoni) + '</span></div>' +
+    '<div class="bar" style="height:10px;margin-top:8px"><div style="width:' + pc + '%"></div></div>' + (extra || '') + '</div>';
+}
 function viewSalvadanaio(d) {
-  var g = d.gettoni;
-  var h = '<div class="card" style="text-align:center"><div style="font-size:64px">🐷</div><div class="big" style="font-size:56px;color:var(--corallo)">' + fmt(g.saldo) + '</div><div class="muted">gettoni nel tuo salvadanaio</div></div>' +
-    '<div class="card"><h2>Come si guadagnano</h2><div class="muted">Con i lavori extra, oltre a quelli di tutti i giorni: lavare la macchina, sistemare l\'armadio, un voto molto alto… Chiedi a mamma o papà! Con i gettoni puoi chiedere un vestito o qualcosa che desideri.</div></div>';
+  var g = d.gettoni, lis = d.listino || [], ric = d.richieste || [];
+  var h = '<div class="card" style="text-align:center"><div style="font-size:64px">🐷</div><div class="big" style="font-size:56px;color:var(--corallo)">' + fmt(g.saldo) + '</div><div class="muted">gettoni nel tuo salvadanaio</div></div>';
+  // listino
+  h += '<div class="card"><h2>🛍️ Il listino</h2><div class="muted" style="margin-bottom:6px">Cosa puoi avere con i tuoi gettoni.</div>';
+  if (!lis.length) h += '<div class="muted">Per ora è vuoto: fai una richiesta qui sotto!</div>';
+  lis.forEach(function (l) { h += rigaListino(l, g.saldo); });
+  h += '</div>';
+  // richieste
+  h += '<div class="card"><h2>💌 Vorrei…</h2><div class="muted">Scrivi cosa desideri: mamma e papà decidono se si può e quanti gettoni costa.</div>' +
+    '<div class="row" style="margin-top:10px"><input id="ric_testo" class="grow" maxlength="120" placeholder="Es. Vorrei un paio di scarpe nuove" onkeydown="if(event.keyCode===13)chiedi()">' +
+    '<button onclick="chiedi()">Invia</button></div>';
+  if (ric.length) {
+    h += '<div class="sez">Le mie richieste</div>';
+    ric.forEach(function (r) {
+      var st = STATI_RIC[r.stato] || ['•', r.stato, ''];
+      h += '<div class="mov"><span style="font-size:24px">' + st[0] + '</span><div class="grow">' + e(r.testo) +
+        '<div class="muted"><span class="pill ' + st[2] + '">' + st[1] + '</span>' + (r.stato === 'approvata' ? ' · costa 🪙 ' + fmt(r.gettoni) + ', è nel tuo listino' : '') +
+        (r.nota ? ' · “' + e(r.nota) + '”' : '') + '</div></div>' +
+        (r.stato === 'nuova' ? '<button class="mini sec" onclick="ritira(\'' + r.id + '\')">Ritira</button>' : '') + '</div>';
+    });
+  }
+  h += '</div><div class="card"><h2>Come si guadagnano</h2><div class="muted">Con i lavori extra, oltre a quelli di tutti i giorni: lavare la macchina, sistemare l\'armadio, un voto molto alto… Chiedi a mamma o papà!</div></div>';
   if (g.storia.length) {
     h += '<div class="card"><h2>Ultimi movimenti</h2>';
     for (var i = 0; i < g.storia.length; i++) h += '<div class="mov"><div class="p" style="color:' + (g.storia[i].gettoni > 0 ? 'var(--verde)' : 'var(--rosso)') + '">' + sgn(g.storia[i].gettoni) + '</div><div class="grow">' + e(g.storia[i].motivo) + '<div class="muted">' + fdate(g.storia[i].data) + '</div></div></div>';
     h += '</div>';
   }
   return h;
+}
+function chiedi() { call('richiesta_add', { testo: val('ric_testo') }, 'Richiesta inviata 💌'); }
+function ritira(id) {
+  if (ritira._p !== id) { ritira._p = id; toast('Tocca di nuovo per ritirare la richiesta'); setTimeout(function () { ritira._p = null; }, 3000); return; }
+  ritira._p = null;
+  call('richiesta_ritira', { id: id }, 'Richiesta ritirata');
 }
 
 /* ---- Genitori: punti ---- */
@@ -592,7 +632,7 @@ function movRow(m) {
 }
 /* ---- icone delle regole ---- */
 var CAT_ICO = { casa: '🏠', scuola: '📚', sport: '🏐', famiglia: '💞', comportamento: '🙂' };
-var SPEC_ICO = { COSTO: '⏳', BIMBE: '💛', LAVAGNA: '📋' };
+var SPEC_ICO = { COSTO: '⏳', BIMBE: '💛', LAVAGNA: '📋', EXTRA: '🪙' };
 function regolaById(id) {
   var rr = (S.d && S.d.regole) || [];
   for (var i = 0; i < rr.length; i++) if (rr[i].id === id) return rr[i];
@@ -819,22 +859,58 @@ function annullaMov(id) {
 
 /* ---- Genitori: gettoni ---- */
 function viewGettoni(d) {
-  var h = '';
+  var h = '', ppg = d.puntiPerGettone || 1;
+  var nuove = (d.richieste || []).filter(function (r) { return r.stato === 'nuova'; });
+  if (nuove.length) {
+    h += '<div class="card" style="border:2px solid var(--corallo)"><h2>💌 Richieste da decidere (' + nuove.length + ')</h2>';
+    nuove.forEach(function (r) {
+      h += '<div class="lis"><div class="row">' + av(r.persona, 40) + '<div class="grow"><b>' + e(r.testo) + '</b><div class="muted">' + e(chi(r.persona).soprannome) + ' · ' + fdate(r.data, true) + '</div></div></div>' +
+        '<div class="row" style="margin-top:8px"><input id="rp_' + r.id + '" type="number" min="1" placeholder="Gettoni" style="width:120px">' +
+        '<input id="rn_' + r.id + '" class="grow" maxlength="120" placeholder="Nota per lei (facoltativa)"></div>' +
+        '<div class="row" style="margin-top:8px"><button class="ok" onclick="decidi(\'' + r.id + '\',\'approva\')">Approva</button>' +
+        '<button class="neg" onclick="decidi(\'' + r.id + '\',\'rifiuta\')">Non adesso</button></div></div>';
+    });
+    h += '</div>';
+  }
   d.gettoniBimbe.forEach(function (g) {
     var p = chi(g.id);
+    var suoi = (d.listino || []).filter(function (l) { return l.per === 'tutte' || l.per === g.id; });
     h += '<div class="card"><div class="row">' + av(g.id, 60) + '<h2 class="grow">' + e(p.soprannome) + '</h2>' +
       '<div class="big" style="font-size:34px;color:var(--corallo)">🪙 ' + fmt(g.saldo) + '</div></div>' +
       '<div class="row" style="margin-top:10px"><input id="g_n_' + g.id + '" type="number" min="1" placeholder="Gettoni" style="width:110px">' +
-      '<input id="g_m_' + g.id + '" class="grow" maxlength="120" placeholder="Motivo (es. lavato la macchina / felpa)"></div>' +
+      '<input id="g_m_' + g.id + '" class="grow" maxlength="120" placeholder="Motivo (es. lavato la macchina)"></div>' +
+      '<label class="chk"><input type="checkbox" id="g_p_' + g.id + '" checked> Dai anche i punti di famiglia (' + (ppg === 1 ? '1 punto per gettone' : ppg + ' punti per gettone') + ')</label>' +
+      '<select id="g_c_' + g.id + '" style="margin-top:6px"><option value="">Categoria dei punti (facoltativa)</option>' + (d.categorie || []).map(function (c) { return '<option value="' + c + '">' + c.charAt(0).toUpperCase() + c.slice(1) + '</option>'; }).join('') + '</select>' +
       '<div class="row" style="margin-top:8px"><button class="ok" onclick="gettoni(\'' + g.id + '\',1)">Aggiungi</button><button class="neg" onclick="gettoni(\'' + g.id + '\',-1)">Spendi</button></div>';
+    if (suoi.length) {
+      h += '<div class="sez">Listino di ' + e(p.soprannome) + '</div>';
+      suoi.forEach(function (l) {
+        var basta = g.saldo >= l.gettoni;
+        h += rigaListino(l, g.saldo, '<div style="margin-top:8px"><button class="mini ' + (basta ? 'ok' : 'sec') + '" ' + (basta ? '' : 'disabled ') +
+          'onclick="compra(\'' + l.id + '\',\'' + g.id + '\')">' + (basta ? 'Comprato! Scala ' + fmt(l.gettoni) + ' gettoni' : 'Gettoni non ancora sufficienti') + '</button></div>')
+          .replace('mancano <b>', 'le mancano <b>').replace("Ce l'hai fatta! Dillo a mamma e papà 🎉", 'Ha abbastanza gettoni');
+      });
+    }
+    if (g.storia.length) h += '<div class="sez">Ultimi movimenti</div>';
     g.storia.forEach(function (x) { h += '<div class="mov"><div class="p" style="color:' + (x.gettoni > 0 ? 'var(--verde)' : 'var(--rosso)') + '">' + sgn(x.gettoni) + '</div><div class="grow">' + e(x.motivo) + '<div class="muted">' + fdate(x.data) + '</div></div></div>'; });
     h += '</div>';
   });
-  return h;
+  return h + '<div class="muted" style="text-align:center">Il listino si modifica anche dalla scheda <b>Listino</b> del foglio.</div>';
 }
 function gettoni(id, segno) {
   var n = Math.abs(parseInt(val('g_n_' + id), 10) || 0) * segno;
-  call('gettoni', { persona: id, gettoni: n, motivo: val('g_m_' + id) }, segno > 0 ? 'Gettoni aggiunti 🪙' : 'Gettoni spesi');
+  var el = document.getElementById('g_p_' + id), conPunti = segno > 0 && el && el.checked;
+  call('gettoni', { persona: id, gettoni: n, motivo: val('g_m_' + id), conPunti: conPunti, categoria: val('g_c_' + id) },
+    segno > 0 ? (conPunti ? 'Gettoni e punti aggiunti 🪙⭐' : 'Gettoni aggiunti 🪙') : 'Gettoni spesi', segno > 0 && conPunti);
+}
+function decidi(id, esito) {
+  call('richiesta_decidi', { id: id, esito: esito, gettoni: val('rp_' + id), nota: val('rn_' + id) }, esito === 'approva' ? 'Approvata: ora è nel suo listino' : 'Risposta inviata');
+}
+function compra(lid, pid) {
+  var k = lid + pid;
+  if (compra._p !== k) { compra._p = k; toast('Tocca di nuovo per scalare i gettoni'); setTimeout(function () { compra._p = null; }, 3000); return; }
+  compra._p = null;
+  call('compra', { id: lid, persona: pid }, 'Fatto! Gettoni scalati 🛍️', true);
 }
 
 /* ============================ MODALITÀ TV ============================ */
