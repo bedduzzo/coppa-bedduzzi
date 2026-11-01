@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<!-- COPPA BEDDUZZI – app – index.html – versione 2.0 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Coppa Bedduzzi</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0ea5e9">
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bedduzzi">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="robots" content="noindex, nofollow">
+<script src="config.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mare: #0ea5e9; --mare-scuro: #0369a1; --sabbia: #fde68a; --sabbia-chiara: #fef9e7;
+    --corallo: #f97316; --verde: #16a34a; --rosso: #dc2626; --testo: #1e293b; --grigio: #64748b;
+    --card: #ffffff; --bordo: #e2e8f0;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: 'Nunito', system-ui, sans-serif; color: var(--testo); background: var(--sabbia-chiara); font-size: 16px; }
+  h1, h2, h3, .big { font-family: 'Baloo 2', 'Nunito', sans-serif; margin: 0; }
+  button { font-family: inherit; font-size: 15px; font-weight: 800; border: 0; border-radius: 12px; padding: 10px 14px; cursor: pointer; background: var(--mare); color: #fff; }
+  button.sec { background: #e0f2fe; color: var(--mare-scuro); }
+  button.neg { background: #fee2e2; color: var(--rosso); }
+  button.ok { background: var(--verde); color: #fff; }
+  button.mini { padding: 6px 10px; font-size: 13px; border-radius: 10px; }
+  button:disabled { opacity: .4; cursor: default; }
+  input, select { font-family: inherit; font-size: 16px; padding: 10px 12px; border: 2px solid var(--bordo); border-radius: 12px; background: #fff; color: var(--testo); width: 100%; }
+  input:focus, select:focus { outline: none; border-color: var(--mare); }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 16px 110px; }
+
+  /* testata */
+  .top { background: linear-gradient(180deg, #38bdf8 0%, #0ea5e9 60%, #0284c7 100%); color: #fff; padding: calc(18px + env(safe-area-inset-top)) 16px 34px; position: relative; overflow: hidden; }
+  .top::after { content: ''; position: absolute; left: -5%; right: -5%; bottom: -18px; height: 40px; background: var(--sabbia-chiara); border-radius: 50% 50% 0 0; }
+  .top .inner { max-width: 760px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
+  .top .avatar { font-size: 34px; width: 64px; height: 64px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; border: 3px solid rgba(255,255,255,.85); overflow: hidden; flex: 0 0 auto; }
+  .av { border-radius: 50%; object-fit: cover; vertical-align: middle; background: #fff; box-shadow: 0 0 0 2px #fff, 0 1px 4px rgba(15,23,42,.18); flex: 0 0 auto; }
+  .top .avatar .av { box-shadow: none; }
+  .av-e { vertical-align: middle; }
+  .card.vg { overflow: hidden; padding-top: 0; }
+  .card.vg h2 { margin-top: 16px; }
+  .hero { margin: 0 -18px; height: 210px; background-size: cover; background-position: center 28%; }
+  body.tv .tvfoto { border-radius: 2vw; background-size: cover; background-position: center 30%; min-height: 62vh; }
+  .top h1 { font-size: 24px; line-height: 1.1; }
+  .top .sub { opacity: .9; font-size: 14px; }
+  .top .sun { margin-left: auto; font-size: 36px; animation: spin 18s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .card { background: var(--card); border-radius: 20px; padding: 18px; margin: 14px 0; box-shadow: 0 2px 0 rgba(15,23,42,.05), 0 8px 24px rgba(15,23,42,.06); }
+  .card h2 { font-size: 21px; margin-bottom: 8px; }
+  .muted { color: var(--grigio); font-size: 14px; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .grow { flex: 1; min-width: 0; }
+  .stack > * + * { margin-top: 10px; }
+  .pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 800; background: #e0f2fe; color: var(--mare-scuro); }
+  .pill.pos { background: #dcfce7; color: var(--verde); }
+  .pill.neg { background: #fee2e2; color: var(--rosso); }
+  .pill.warn { background: #fef3c7; color: #b45309; }
+
+  /* Viareggio */
+  .vg-num { font-size: 52px; line-height: 1; color: var(--mare-scuro); }
+  .gauge { position: relative; height: 34px; border-radius: 17px; background: linear-gradient(90deg, #fecaca 0%, #fde68a 45%, #bbf7d0 100%); margin: 26px 0 30px; }
+  .gauge .soglia { position: absolute; top: -8px; bottom: -8px; width: 4px; background: var(--testo); border-radius: 2px; }
+  .gauge .soglia span { position: absolute; top: 46px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 12px; font-weight: 800; }
+  .gauge .boat { position: absolute; top: -22px; font-size: 34px; transform: translateX(-50%); transition: left 1.2s cubic-bezier(.2,.8,.2,1); }
+  .scene { font-size: 26px; letter-spacing: 4px; text-align: right; margin-top: -8px; }
+
+  /* barra settimana */
+  .bar { height: 20px; border-radius: 10px; background: #e2e8f0; overflow: hidden; }
+  .bar > div { height: 100%; background: linear-gradient(90deg, var(--corallo), #facc15); border-radius: 10px; transition: width 1s; }
+  .premio { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px dashed var(--bordo); }
+  .premio:first-child { border-top: 0; }
+
+  .festa-oggi { display: flex; align-items: center; gap: 14px; background: linear-gradient(90deg, #fdf2f8, #fef3c7) !important; border: 2px solid #f9a8d4; }
+  body.tv .festa-oggi { border-radius: 1.5vw; padding: 1.5vh 1.5vw; margin-bottom: 2vh; }
+  body.tv .festa-oggi h2 { margin: 0; }
+
+  /* icone regole */
+  .ico { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; position: relative; background: #e2e8f0; line-height: 1; }
+  .c-casa { background: #fef3c7; } .c-scuola { background: #dbeafe; } .c-sport { background: #ffedd5; }
+  .c-famiglia { background: #fce7f3; } .c-comportamento { background: #ede9fe; }
+  .ico.neg { background: #fee2e2; box-shadow: inset 0 0 0 2px #fca5a5; }
+  .ico.neg::after { content: '−'; position: absolute; right: -5px; bottom: -5px; width: 17px; height: 17px; border-radius: 50%; background: var(--rosso); color: #fff; font-size: 13px; line-height: 17px; text-align: center; font-weight: 800; font-family: 'Nunito', sans-serif; }
+  .sez { font-weight: 800; color: var(--grigio); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; margin: 14px 0 2px; }
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 6px; }
+  .chip { background: #f1f5f9; color: var(--testo); display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 10px; min-width: 74px; font-size: 12px; }
+  .chip.on { background: #e0f2fe; box-shadow: inset 0 0 0 2px var(--mare); }
+  .rgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; margin-top: 8px; }
+  .rtile { background: #f8fafc; color: var(--testo); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 6px 10px; font-size: 12px; font-weight: 700; border: 2px solid var(--bordo); }
+  .rtile:active { transform: scale(.96); }
+  .rtile.n { background: #fff7f7; }
+  .rtile .d { line-height: 1.2; text-align: center; }
+  .rtile .pt { font-weight: 800; font-size: 14px; }
+  .sheet { position: fixed; left: 12px; right: 12px; bottom: 84px; max-width: 736px; margin: 0 auto; background: #fff; border-radius: 18px; padding: 14px; box-shadow: 0 10px 40px rgba(15,23,42,.28); z-index: 6; border: 2px solid var(--mare); animation: fadein .25s; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(10px); } }
+  .tabs button { font-size: 11px; }
+
+  /* tappe */
+  .lvbar { position: relative; height: 16px; border-radius: 8px; background: #e2e8f0; margin: 26px 0 34px; }
+  .lvbar .fill { height: 100%; border-radius: 8px; background: linear-gradient(90deg, #38bdf8, #0284c7); transition: width 1s; }
+  .lvbar .lv { position: absolute; top: -22px; transform: translateX(-50%); text-align: center; opacity: .45; }
+  .lvbar .lv.on { opacity: 1; }
+  .lvbar .lv .m { font-size: 22px; display: block; }
+  .lvbar .lv .n { position: absolute; top: 44px; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: 800; white-space: nowrap; color: var(--grigio); }
+  body.tv .lvbar { height: 3vh; margin: 7vh 0 7vh; }
+  body.tv .lvbar .lv { top: -5vh; }
+  body.tv .lvbar .lv .m { font-size: 5vh; }
+  body.tv .lvbar .lv .n { top: 9vh; font-size: 1.4vw; }
+  body.tv .tappa b { font-size: 2.4vw !important; }
+  body.tv .tappa .temoji { font-size: 5vw !important; }
+  body.tv .tappa .tval { font-size: 6vw !important; }
+
+  /* lavagna */
+  .cols { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  @media (min-width: 720px) { .cols { grid-template-columns: 1fr 1fr 1fr; } }
+  .col { background: #f1f5f9; border-radius: 16px; padding: 10px; }
+  .col h3 { font-size: 17px; padding: 2px 6px 8px; }
+  .task { background: #fff; border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; border-left: 6px solid var(--mare); }
+  .task.done { opacity: .6; }
+  .task .t { font-weight: 800; }
+  .task .acts { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+
+  /* lista movimenti */
+  .mov { display: flex; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--bordo); }
+  .mov:first-child { border-top: 0; }
+  .mov .p { font-weight: 800; min-width: 52px; text-align: right; }
+  table.stats { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.stats th, table.stats td { padding: 8px 6px; text-align: right; border-top: 1px solid var(--bordo); }
+  table.stats th:first-child, table.stats td:first-child { text-align: left; }
+
+  /* tab bar */
+  .tabs { position: fixed; left: 0; right: 0; bottom: 0; background: #fff; border-top: 1px solid var(--bordo); display: flex; justify-content: center; padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); z-index: 5; }
+  .tabs button { flex: 1; max-width: 140px; background: transparent; color: var(--grigio); padding: 6px 2px; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .tabs button .i { font-size: 24px; }
+  .tabs button.on { color: var(--mare-scuro); }
+  .tabs button.on .i { transform: scale(1.15); }
+
+  #toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%) translateY(30px); background: var(--testo); color: #fff; padding: 12px 18px; border-radius: 14px; font-weight: 800; opacity: 0; transition: all .3s; z-index: 10; max-width: 90%; text-align: center; pointer-events: none; }
+  #toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast.err { background: var(--rosso); }
+  .loading { text-align: center; padding: 80px 20px; font-size: 22px; font-family: 'Baloo 2', sans-serif; }
+  .confetti { position: fixed; top: -20px; font-size: 26px; z-index: 20; pointer-events: none; animation: fall 1.8s ease-in forwards; }
+  @keyframes fall { to { transform: translateY(105vh) rotate(540deg); opacity: .2; } }
+
+  /* ====== MODALITÀ TV ====== */
+  body.tv { background: #0c4a6e; color: #fff; overflow: hidden; font-size: 2vw; }
+  body.tv .tvwrap { position: fixed; inset: 0; padding: 3.5vh 4vw; display: flex; flex-direction: column; background: linear-gradient(180deg, #0ea5e9 0%, #0369a1 55%, #fde68a 55.2%, #fcd34d 100%); }
+  body.tv .tvhead { display: flex; align-items: center; gap: 2vw; font-family: 'Baloo 2', sans-serif; }
+  body.tv .tvhead h1 { font-size: 3.4vw; }
+  body.tv .tvhead .clock { margin-left: auto; font-size: 3vw; font-weight: 800; }
+  body.tv .panel { flex: 1; display: none; background: rgba(255,255,255,.95); color: var(--testo); border-radius: 2.5vw; margin-top: 2.5vh; padding: 3.5vh 3.5vw; box-shadow: 0 2vh 5vh rgba(0,0,0,.25); }
+  body.tv .panel.on { display: block; animation: fadein .6s; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(2vh); } }
+  body.tv .panel h2 { font-size: 3vw; margin-bottom: 2vh; }
+  body.tv .vg-num { font-size: 9vw; }
+  body.tv .gauge { height: 6vh; border-radius: 3vh; margin: 7vh 0 6vh; }
+  body.tv .gauge .boat { font-size: 7vh; top: -5vh; }
+  body.tv .gauge .soglia span { top: 8vh; font-size: 1.6vw; }
+  body.tv .muted { font-size: 1.7vw; }
+  body.tv .bar { height: 4vh; border-radius: 2vh; }
+  body.tv .premio { font-size: 2.2vw; padding: 1.5vh 0; }
+  body.tv .task { font-size: 2vw; padding: 1.4vh 1.4vw; }
+  body.tv .col h3 { font-size: 2.3vw; }
+  body.tv .cols { grid-template-columns: 1fr 1fr; }
+  body.tv .dots { text-align: center; margin-top: 1.5vh; font-size: 2vw; letter-spacing: 1vw; color: #78350f; }
+  body.tv .ev { display: flex; gap: 2vw; padding: 1.3vh 0; border-top: .2vh solid var(--bordo); font-size: 2.1vw; }
+  body.tv .ev:first-child { border-top: 0; }
+  body.tv .ev b { min-width: 18vw; }
+  body.tv .countdown { font-size: 11vw; line-height: 1; color: var(--rosso); }
+  body.tv .two { display: flex; gap: 4vw; height: 100%; }
+  body.tv .two > div { flex: 1; }
+</style>
+</head>
+<body>
+<div id="app"><div class="loading">🏆 Coppa Bedduzzi sta arrivando…</div></div>
+<div id="toast"></div>
+
+<script>
+var BOOT = { token: '', tv: /[?&]tv=1/.test(location.search) };
+var VERSIONE_PAGINA = '2.0';
+var IMG = {};
+var S = { d: null, tab: 'casa', busy: false, tvIdx: 0, preview: null, filtro: '' };
+
+/* ---------------------------- utilità ---------------------------- */
+function e(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+function fmt(n) { n = Math.round(Number(n) || 0); return (n < 0 ? '−' : '') + String(Math.abs(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+function sgn(n) { return (n > 0 ? '+' : '') + fmt(n); }
+var GG = ['dom', 'lun', 'mar', 'mer', 'gio', 'ven', 'sab'];
+var MM = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'];
+function pad(n) { return (n < 10 ? '0' : '') + n; }
+function fdate(iso, ora) {
+  if (!iso) return '';
+  var d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  return GG[d.getDay()] + ' ' + d.getDate() + ' ' + MM[d.getMonth()] + (ora ? ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) : '');
+}
+function val(id) { var el = document.getElementById(id); return el ? el.value : ''; }
+function chi(id) {
+  if (id === 'famiglia' || id === 'tutti') return { soprannome: 'Tutti', nome: 'Famiglia', emoji: '🏠', colore: '#0ea5e9' };
+  if (id === 'lilly') return { id: 'lilly', soprannome: 'Lilly', nome: 'Lilly', emoji: '🐶', colore: '#b45309', ruolo: 'cane' };
+  if (id === 'sistema') return { soprannome: 'Sistema', nome: 'Sistema', emoji: '⚙️', colore: '#64748b' };
+  var f = (S.d && S.d.famiglia) || [];
+  for (var i = 0; i < f.length; i++) if (f[i].id === id) return f[i];
+  return { soprannome: id, nome: id, emoji: '❔', colore: '#64748b' };
+}
+function nomeChi(id) { var p = chi(id); return p.emoji + ' ' + p.soprannome; }
+var HAS_IMG = true;
+/** Avatar: il ritratto se c'è, altrimenti l'emoji. */
+function av(id, px) {
+  px = px || 24;
+  if (HAS_IMG && IMG[id]) return '<img class="av" src="' + IMG[id] + '" alt="" style="width:' + px + 'px;height:' + px + 'px">';
+  return '<span class="av-e" style="font-size:' + Math.round(px * 0.8) + 'px">' + e(chi(id).emoji) + '</span>';
+}
+function nomeChiH(id) { return av(id, 22) + ' ' + e(chi(id).soprannome); }
+/** Motivo con il ritratto di Lilly quando si parla di lei. */
+function motivoH(t) { return e(t) + (/lilly/i.test(String(t)) ? ' ' + av('lilly', 22) : ''); }
+
+function toast(msg, err) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = err ? 'on err' : 'on';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function () { t.className = ''; }, 3200);
+}
+function festa() {
+  var em = ['🎉', '⭐', '🐚', '🌊', '☀️', '🏖️'];
+  for (var i = 0; i < 18; i++) {
+    var c = document.createElement('div');
+    c.className = 'confetti';
+    c.textContent = em[i % em.length];
+    c.style.left = (Math.random() * 100) + 'vw';
+    c.style.animationDelay = (Math.random() * 0.5) + 's';
+    document.body.appendChild(c);
+    (function (x) { setTimeout(function () { x.parentNode && x.parentNode.removeChild(x); }, 2600); })(c);
+  }
+}
+
+/* ---------------------------- server (API Apps Script) ---------------------------- */
+var API = window.BEDDUZZI_API || '';
+var TOKEN_KEY = 'bedduzzi_token', IMG_KEY = 'bedduzzi_img', IMG_TS = 'bedduzzi_img_ts';
+function store(k, v) { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (x) {} }
+function load(k) { try { return localStorage.getItem(k); } catch (x) { return null; } }
+
+/**
+ * Chiamata anonima all'archivio: niente cookie Google (credentials: 'omit'),
+ * così non conta quanti account Google ci sono sul telefono.
+ */
+function apiCall(action, payload, ok, ko) {
+  var body = JSON.stringify({ k: BOOT.token, a: action, p: payload || {} });
+  var finito = false;
+  var bene = function (j) {
+    if (finito) return; finito = true;
+    if (j && j.ok) ok(j.data, j); else ko((j && j.error) || 'Qualcosa è andato storto');
+  };
+  var male = function () { if (finito) return; finito = true; ko('Connessione non riuscita. Controlla internet e riprova.'); };
+  if (window.fetch) {
+    fetch(API, { method: 'POST', body: body, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, credentials: 'omit', redirect: 'follow', cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(bene)['catch'](male);
+  } else {
+    // televisori e browser molto vecchi
+    var x = new XMLHttpRequest();
+    x.open('POST', API, true);
+    x.withCredentials = false;
+    x.setRequestHeader('Content-Type', 'text/plain;charset=utf-8');
+    x.onload = function () { try { bene(JSON.parse(x.responseText)); } catch (er) { male(); } };
+    x.onerror = male;
+    x.send(body);
+  }
+}
+
+function call(action, payload, okMsg, party) {
+  if (S.busy) return;
+  S.busy = true;
+  apiCall(action, payload, function (d) {
+    S.busy = false; S.d = d; S.preview = null;
+    render();
+    if (okMsg) toast(okMsg);
+    if (party) festa();
+  }, function (msg) {
+    S.busy = false;
+    toast(msg, true);
+  });
+}
+function refresh() { call('dashboard'); }
+
+/* ---------------------------- render ---------------------------- */
+function render() {
+  var d = S.d;
+  if (!d) return;
+  if (BOOT.tv) return renderTV();
+  var r = d.me.ruolo;
+  var tabs = r === 'genitore'
+    ? [['casa', '🏖️', 'Casa'], ['lavagna', '📋', 'Lavagna'], ['punti', '⭐', 'Punti'], ['storico', '📊', 'Storico'], ['gettoni', '🪙', 'Gettoni']]
+    : [['casa', '🏖️', 'Casa'], ['lavagna', '📋', 'Lavagna'], ['dona', '💛', 'Mamma e papà'], ['salvadanaio', '🐷', 'Salvadanaio'], ['regole', '📜', 'Regole']];
+  var ok = false;
+  for (var i = 0; i < tabs.length; i++) if (tabs[i][0] === S.tab) ok = true;
+  if (!ok) S.tab = 'casa';
+
+  var h = '<div class="top"><div class="inner"><div class="avatar">' + av(d.me.id, 58) + '</div>' +
+    '<div><h1>Ciao ' + e(d.me.soprannome) + '!</h1><div class="sub">Coppa Bedduzzi · ' + d.viareggio.giorni + ' giorni a Viareggio</div></div>' +
+    '<div class="sun">☀️</div></div></div><div class="wrap">';
+  var v = { casa: viewCasa, lavagna: viewLavagna, punti: viewPunti, storico: viewStorico, gettoni: viewGettoni, dona: viewDona, salvadanaio: viewSalvadanaio, regole: viewRegole }[S.tab];
+  v = (function (orig) { return function (dd) {
+    return orig(dd) + (r === 'genitore' && d.versione !== VERSIONE_PAGINA
+      ? '<div class="card" style="border:2px solid var(--corallo)"><b>⚠️ Versioni diverse</b><div class="muted">L\'archivio (Code.gs in Apps Script) è alla versione ' + e(d.versione || '?') + ', l\'app alla ' + VERSIONE_PAGINA + '. Aggiorna la parte rimasta indietro.</div></div>'
+      : '') + '<div class="muted" style="text-align:center;margin:18px 0 0">Coppa Bedduzzi v' + e(VERSIONE_PAGINA) +
+      ' · <a href="#" onclick="esci();return false" style="color:var(--grigio)">Cambia utente</a></div>';
+  }; })(v);
+  h += v(d) + '</div>' + (r === 'genitore' && S.preview ? previewSheet() : '') + '<div class="tabs">';
+  for (var j = 0; j < tabs.length; j++) {
+    h += '<button class="' + (tabs[j][0] === S.tab ? 'on' : '') + '" onclick="go(\'' + tabs[j][0] + '\')"><span class="i">' + tabs[j][1] + '</span>' + tabs[j][2] + '</button>';
+  }
+  h += '</div>';
+  document.getElementById('app').innerHTML = h;
+}
+function go(t) { S.tab = t; render(); window.scrollTo(0, 0); }
+
+/* ---- blocchi condivisi ---- */
+function blocViareggio(d) {
+  var v = d.viareggio;
+  var min = d.soglia - 2000, max = Math.max(d.start, d.totale) + 500;
+  var pos = function (x) { return Math.max(2, Math.min(98, (x - min) / (max - min) * 100)); };
+  var settRimaste = Math.max(1, v.giorni / 7);
+  var serve = Math.ceil((d.soglia - v.previsioneFermi) / settRimaste);
+  var stato = v.cuscinetto > 0
+    ? '<span class="pill pos">' + fmt(v.cuscinetto) + ' sopra la soglia</span>'
+    : '<span class="pill neg">' + fmt(-v.cuscinetto) + ' sotto la soglia!</span>';
+  var consiglio = serve > 0
+    ? 'Per arrivare tranquilli ad agosto servono in media <b>+' + fmt(serve + d.costo) + ' punti a settimana</b> (il costo settimanale è ' + fmt(d.costo) + ').'
+    : 'Se andiamo avanti così Viareggio è nostro! Continuiamo 💪';
+  return '<div class="card vg">' + (HAS_IMG && IMG.gruppo ? '<div class="hero" style="background-image:url(' + IMG.gruppo + ')"></div>' : '') + '<h2>🏖️ Obiettivo Viareggio</h2>' +
+    '<div class="row"><div class="vg-num big">' + fmt(d.totale) + '</div><div class="muted">punti di famiglia<br>' + stato + '</div></div>' +
+    '<div class="gauge"><div class="soglia" style="left:' + pos(d.soglia) + '%"><span>soglia ' + fmt(d.soglia) + '</span></div>' +
+    '<div class="boat" style="left:' + pos(d.totale) + '%">⛵</div></div>' +
+    '<div class="muted">' + consiglio + '</div></div>';
+}
+function blocSettimana(d) {
+  var s = d.settimana, pr = d.premi || [], next = null;
+  for (var i = 0; i < pr.length; i++) if (pr[i].soglia > s.saldo) { next = pr[i]; break; }
+  var h = '<div class="card"><h2>🗓️ Questa settimana</h2>' +
+    '<div class="row"><div class="big" style="font-size:40px;color:' + (s.saldo >= 0 ? 'var(--verde)' : 'var(--rosso)') + '">' + sgn(s.saldo) + '</div>' +
+    '<div class="muted grow">saldo netto da lunedì<br>' + (next ? 'mancano <b>' + fmt(next.soglia - s.saldo) + '</b> per: ' + e(next.premio) : 'tutti i premi sbloccati! 🎉') + '</div></div>';
+  if (next) h += '<div class="bar" style="margin:12px 0"><div style="width:' + Math.max(0, Math.min(100, s.saldo / next.soglia * 100)) + '%"></div></div>';
+  h += '<div>';
+  for (var j = 0; j < pr.length; j++) {
+    var ok = s.saldo >= pr[j].soglia;
+    h += '<div class="premio"><span style="font-size:22px">' + (ok ? '✅' : '🎁') + '</span><span class="grow">' + e(pr[j].premio) + '</span><span class="pill' + (ok ? ' pos' : '') + '">+' + fmt(pr[j].soglia) + '</span></div>';
+  }
+  return h + '</div><div class="muted">I premi della settimana ripartono da zero ogni lunedì.</div></div>';
+}
+function blocCalendario(d, n) {
+  var c = d.calendario || {}, ev = (c.eventi || []).slice(0, n || 8);
+  var h = '<div class="card"><h2>📅 Prossimi appuntamenti</h2>';
+  if (c.errore) h += '<div class="muted">' + e(c.errore) + '</div>';
+  else if (!ev.length) h += '<div class="muted">Nessun appuntamento nei prossimi giorni.</div>';
+  for (var i = 0; i < ev.length; i++) {
+    h += '<div class="mov"><div style="min-width:110px"><b>' + fdate(ev[i].inizio, !ev[i].giornata) + '</b></div><div class="grow">' + e(ev[i].titolo) +
+      (ev[i].luogo ? '<div class="muted">' + e(ev[i].luogo) + '</div>' : '') + '</div></div>';
+  }
+  return h + '</div>';
+}
+function testoFesta(f) {
+  return f.nome + (f.anni ? ' (' + f.anni + ' anni)' : '');
+}
+function avFesta(f, px) {
+  if (f.persona && (chi(f.persona).ruolo || (HAS_IMG && IMG[f.persona]))) return av(f.persona, px);
+  return '<span class="av-e" style="font-size:' + Math.round(px * 0.8) + 'px">' + e(f.emoji) + '</span>';
+}
+/** Striscione del giorno di festa (in cima alla pagina). */
+function bannerFesta(d) {
+  var oggi = (d.feste || []).filter(function (f) { return f.giorni === 0; });
+  if (!oggi.length) return '';
+  return oggi.map(function (f) {
+    var t = f.persona ? (f.persona === 'lilly' ? 'Buon compleanno Lilly! 🐾' : 'Buon compleanno ' + chi(f.persona).soprannome + '!' + (f.anni ? ' ' + f.anni + ' anni 🎉' : ' 🎉')) : (/^(Pasqua|Epifania)$/.test(f.nome) ? 'Buona ' : 'Buon ') + f.nome + '!';
+    return '<div class="card festa-oggi">' + avFesta(f, 64) + '<div class="grow"><h2>' + e(t) + '</h2><div class="muted">Oggi si festeggia tutti insieme</div></div><div style="font-size:40px">' + e(f.emoji) + '</div></div>';
+  }).join('');
+}
+function blocFeste(d, n) {
+  var f = (d.feste || []).filter(function (x) { return x.giorni > 0; }).slice(0, n || 4);
+  if (!f.length) return '';
+  var h = '<div class="card"><h2>🎉 Feste in arrivo</h2>';
+  f.forEach(function (x) {
+    h += '<div class="mov">' + avFesta(x, 40) + '<div class="grow"><b>' + e(testoFesta(x)) + '</b><div class="muted">' + fdate(x.data) + '</div></div>' +
+      '<div style="text-align:right"><div class="big" style="font-size:26px;color:var(--corallo)">' + x.giorni + '</div><div class="muted">' + (x.giorni === 1 ? 'giorno' : 'giorni') + '</div></div></div>';
+  });
+  return h + '</div>';
+}
+
+/* ---- Obiettivi a tappe ---- */
+var MEDAGLIE = ['🥉', '🥈', '🥇', '🏆', '🌟'];
+function blocObiettivi(d) {
+  var ob = d.obiettivi || [];
+  if (!ob.length) return '';
+  var h = '<div class="card"><h2>🎯 Le nostre tappe</h2>';
+  ob.forEach(function (o, idx) {
+    var lv = o.livelli || [], next = null, presi = 0;
+    for (var i = 0; i < lv.length; i++) { if (o.valore >= lv[i].valore) presi = i + 1; else if (!next) next = lv[i]; }
+    var max = lv.length ? lv[lv.length - 1].valore * 1.06 : Math.max(1, o.valore);
+    var pc = function (x) { return Math.max(0, Math.min(100, x / max * 100)); };
+    h += '<div class="tappa"' + (idx ? ' style="border-top:1px dashed var(--bordo);padding-top:14px;margin-top:14px"' : '') + '>' +
+      '<div class="row"><div class="temoji" style="font-size:34px">' + e(o.emoji) + '</div><div class="grow"><b style="font-size:18px">' + e(o.nome) + '</b>' +
+      '<div class="muted">' + (o.giorni > 0 ? 'mancano ' + o.giorni + ' giorni · ' + fdate(o.data) : o.giorni === 0 ? 'è oggi!' : 'conclusa') + '</div></div>' +
+      '<div class="big tval" style="font-size:30px;color:var(--mare-scuro)">' + fmt(o.valore) + '</div></div>' +
+      '<div class="lvbar"><div class="fill" style="width:' + pc(o.valore) + '%"></div>';
+    lv.forEach(function (l, j) {
+      h += '<div class="lv' + (o.valore >= l.valore ? ' on' : '') + '" style="left:' + pc(l.valore) + '%"><span class="m">' + MEDAGLIE[Math.min(j, MEDAGLIE.length - 1)] + '</span><span class="n">' + e(l.nome) + ' ' + fmt(l.valore) + '</span></div>';
+    });
+    h += '</div>';
+    var msg;
+    if (!next) msg = lv.length ? 'Tutti i livelli raggiunti! ' + MEDAGLIE[Math.min(lv.length - 1, MEDAGLIE.length - 1)] + ' Fantastiche!' : '';
+    else {
+      var atteso = Math.round(next.valore * o.percTempo);
+      msg = 'Prossimo livello: <b>' + e(next.nome) + '</b>, mancano <b>' + fmt(next.valore - o.valore) + '</b> punti. ' +
+        (o.giorni > 0 ? (o.valore >= atteso ? '<span class="pill pos">Siete in linea ✅</span>' : '<span class="pill warn">Serve una spinta 💪</span>') : '');
+    }
+    h += '<div class="muted" style="margin-top:6px">' + msg + '</div>' +
+      (o.premio ? '<div class="muted">🎁 Premio: ' + e(o.premio) + '</div>' : '') + '</div>';
+  });
+  return h + '<div class="muted" style="margin-top:10px">Contano l\'impegno e la costanza, non solo i voti. Si arriva insieme.</div></div>';
+}
+
+/* ---- Casa ---- */
+function viewCasa(d) {
+  return bannerFesta(d) + blocViareggio(d) + blocObiettivi(d) + blocSettimana(d) + blocFeste(d, 4) + blocCalendario(d, 8);
+}
+
+/* ---- Lavagna ---- */
+function viewLavagna(d) {
+  var me = d.me, gen = me.ruolo === 'genitore';
+  var stati = ['Da fare', 'In corso', 'Fatto'], icone = { 'Da fare': '📝', 'In corso': '⏳', 'Fatto': '✅' };
+  var h = '<div class="card"><h2>➕ Nuova cosa da fare</h2><div class="stack">' +
+    '<input id="l_testo" maxlength="140" placeholder="Es. Portare fuori Lilly">' +
+    '<div class="row"><select id="l_ass" class="grow"><option value="tutti">🏠 Tutti</option><option value="lilly">🐶 Per Lilly</option>';
+  for (var i = 0; i < d.famiglia.length; i++) h += '<option value="' + e(d.famiglia[i].id) + '">' + e(d.famiglia[i].emoji + ' ' + d.famiglia[i].soprannome) + '</option>';
+  h += '</select>' + (gen ? '<input id="l_punti" type="number" min="0" max="500" placeholder="⭐ punti" style="width:110px">' : '') +
+    '<input id="l_scad" type="date" style="width:160px"></div>' +
+    '<button onclick="addTask()">Aggiungi alla lavagna</button></div></div><div class="cols">';
+  for (var s = 0; s < stati.length; s++) {
+    var lista = d.lavagna.filter(function (t) { return t.stato === stati[s]; });
+    if (stati[s] === 'Fatto') lista = lista.filter(function (t) { return !t.confermato; }).concat(lista.filter(function (t) { return t.confermato; }).slice(-10));
+    h += '<div class="col"><h3>' + icone[stati[s]] + ' ' + stati[s] + ' (' + lista.length + ')</h3>';
+    if (!lista.length) h += '<div class="muted" style="padding:6px">Niente qui</div>';
+    for (var k = 0; k < lista.length; k++) h += taskCard(lista[k], d);
+    h += '</div>';
+  }
+  return h + '</div>';
+}
+function taskCard(t, d) {
+  var me = d.me, gen = me.ruolo === 'genitore';
+  var p = chi(t.assegnato);
+  var puoMuovere = !t.confermato && (gen || t.assegnato === me.id || t.assegnato === 'tutti' || t.assegnato === 'lilly' || t.creato_da === me.id);
+  var puoEliminare = gen || (t.creato_da === me.id && !t.confermato);
+  var h = '<div class="task' + (t.confermato ? ' done' : '') + '" style="border-left-color:' + e(p.colore) + '">' +
+    '<div class="t">' + (t.assegnato === 'lilly' ? e(t.testo) : motivoH(t.testo)) + '</div><div class="muted">' + nomeChiH(t.assegnato) +
+    (t.punti ? ' · <span class="pill warn">⭐ ' + t.punti + '</span>' : '') +
+    (t.scadenza ? ' · entro ' + fdate(t.scadenza) : '') + (t.confermato ? ' · chiusa ✔' : '') + '</div><div class="acts">';
+  if (puoMuovere) {
+    if (t.stato !== 'Da fare') h += '<button class="mini sec" onclick="moveTask(\'' + t.id + '\',\'' + (t.stato === 'Fatto' ? 'In corso' : 'Da fare') + '\')">◀</button>';
+    if (t.stato !== 'Fatto') h += '<button class="mini" onclick="moveTask(\'' + t.id + '\',\'' + (t.stato === 'Da fare' ? 'In corso' : 'Fatto') + '\')">' + (t.stato === 'Da fare' ? 'Inizio ▶' : 'Fatto ✔') + '</button>';
+  }
+  if (gen && t.stato === 'Fatto' && t.punti > 0 && !t.confermato && t.assegnato !== me.id) {
+    h += '<button class="mini ok" onclick="call(\'lavagna_conferma\',{id:\'' + t.id + '\'},\'Punti assegnati!\',true)">Conferma +' + t.punti + '</button>';
+  }
+  if (puoEliminare) h += '<button class="mini neg" onclick="delTask(\'' + t.id + '\')">🗑</button>';
+  return h + '</div></div>';
+}
+function addTask() {
+  call('lavagna_add', { testo: val('l_testo'), assegnato: val('l_ass'), punti: val('l_punti'), scadenza: val('l_scad') }, 'Aggiunta alla lavagna 📋');
+}
+function moveTask(id, stato) { call('lavagna_stato', { id: id, stato: stato }, stato === 'Fatto' ? 'Brava/o! ✅' : null, stato === 'Fatto'); }
+function delTask(id) {
+  if (delTask._pending !== id) { delTask._pending = id; toast('Tocca di nuovo 🗑 per eliminare'); setTimeout(function () { delTask._pending = null; }, 3000); return; }
+  delTask._pending = null;
+  call('lavagna_elimina', { id: id }, 'Eliminata');
+}
+
+/* ---- Bimbe: punti a mamma e papà ---- */
+function viewDona(d) {
+  var h = '<div class="card"><h2>💛 Punti a mamma e papà</h2><div class="muted">Ogni settimana puoi regalare e togliere un po\' di punti. Per toglierli devi scrivere il motivo.</div></div>';
+  for (var i = 0; i < d.quote.length; i++) {
+    var q = d.quote[i];
+    h += '<div class="card"><div class="row">' + av(q.id, 60) + '<h2 class="grow">' + e(q.nome) + '</h2></div>' +
+      '<input id="mot_' + q.id + '" maxlength="120" placeholder="Perché? (obbligatorio per togliere)" style="margin:8px 0">' +
+      '<div class="muted">Puoi ancora <b>regalare ' + q.restaPos + '</b> punti</div><div class="row" style="margin:6px 0 12px">';
+    [5, 10, 20].forEach(function (n) { h += '<button ' + (n > q.restaPos ? 'disabled' : '') + ' onclick="dona(\'' + q.id + '\',' + n + ')">+' + n + '</button>'; });
+    h += '</div><div class="muted">Puoi ancora <b>togliere ' + q.restaNeg + '</b> punti</div><div class="row" style="margin-top:6px">';
+    [5, 10].forEach(function (n) { h += '<button class="neg" ' + (n > q.restaNeg ? 'disabled' : '') + ' onclick="dona(\'' + q.id + '\',-' + n + ')">−' + n + '</button>'; });
+    h += '</div></div>';
+  }
+  var md = d.mieDonazioni || [];
+  if (md.length) {
+    h += '<div class="card"><h2>Questa settimana hai dato</h2>';
+    for (var j = 0; j < md.length; j++) h += '<div class="mov"><div class="p" style="color:' + (md[j].punti > 0 ? 'var(--verde)' : 'var(--rosso)') + '">' + sgn(md[j].punti) + '</div><div class="grow">' + nomeChiH(md[j].persona) + ' · ' + motivoH(md[j].motivo) + (md[j].stato === 'contestato' ? ' <span class="pill warn">contestato</span>' : '') + '</div></div>';
+    h += '</div>';
+  }
+  return h;
+}
+function dona(id, n) { call('dona', { persona: id, punti: n, motivo: val('mot_' + id) }, n > 0 ? 'Punti regalati 💛' : 'Fatto, punti tolti', n > 0); }
+
+/* ---- Bimbe: salvadanaio ---- */
+function viewSalvadanaio(d) {
+  var g = d.gettoni;
+  var h = '<div class="card" style="text-align:center"><div style="font-size:64px">🐷</div><div class="big" style="font-size:56px;color:var(--corallo)">' + fmt(g.saldo) + '</div><div class="muted">gettoni nel tuo salvadanaio</div></div>' +
+    '<div class="card"><h2>Come si guadagnano</h2><div class="muted">Con i lavori extra, oltre a quelli di tutti i giorni: lavare la macchina, sistemare l\'armadio, un voto molto alto… Chiedi a mamma o papà! Con i gettoni puoi chiedere un vestito o qualcosa che desideri.</div></div>';
+  if (g.storia.length) {
+    h += '<div class="card"><h2>Ultimi movimenti</h2>';
+    for (var i = 0; i < g.storia.length; i++) h += '<div class="mov"><div class="p" style="color:' + (g.storia[i].gettoni > 0 ? 'var(--verde)' : 'var(--rosso)') + '">' + sgn(g.storia[i].gettoni) + '</div><div class="grow">' + e(g.storia[i].motivo) + '<div class="muted">' + fdate(g.storia[i].data) + '</div></div></div>';
+    h += '</div>';
+  }
+  return h;
+}
+
+/* ---- Genitori: punti ---- */
+function viewPunti(d) {
+  var me = d.me;
+  var hasMic = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+  var figlie = d.famiglia.filter(function (p) { return p.ruolo === 'figlia'; });
+  var es1 = figlie[0] ? figlie[0].soprannome : 'Nome', es2 = figlie[1] ? figlie[1].soprannome : es1;
+  var h = '', comando = '<div class="card"><h2>🎙️ Comando rapido</h2><div class="muted">Scrivi o detta, per esempio: <i>"più 10 a ' + e(es1) + ' per i compiti"</i>, <i>"' + e(es2) + ' denti"</i>, <i>"meno 15 a mamma perso la pazienza"</i>.</div>' +
+    '<div class="row" style="margin-top:10px"><input id="cmd" class="grow" placeholder="Comando…" onkeydown="if(event.keyCode===13)interpreta()">' +
+    (hasMic ? '<button class="sec" onclick="ascolta()" title="Parla">🎤</button>' : '') +
+    '<button onclick="interpreta()">Vai</button></div></div>';
+
+  // griglia: tocca la persona, poi l'icona
+  var sel = S.sel && (S.sel === 'famiglia' || chi(S.sel).ruolo) && S.sel !== me.id ? S.sel : '';
+  h = '<div class="card"><h2>👆 Tocca e assegna</h2><div class="chips">' + d.famiglia.filter(function (p) { return p.id !== me.id; }).concat([{ id: 'famiglia', soprannome: 'Tutti' }]).map(function (p) {
+    return '<button class="chip' + (sel === p.id ? ' on' : '') + '" onclick="S.sel=\'' + p.id + '\';S.preview=null;render()">' + (p.id === 'famiglia' ? '<span class="av-e" style="font-size:32px">🏠</span>' : av(p.id, 40)) + '<span>' + e(p.soprannome) + '</span></button>';
+  }).join('') + '</div>';
+  if (!sel) h += '<div class="muted" style="margin-top:8px">Scegli prima a chi dare (o togliere) i punti.</div>';
+  else {
+    var rr = regoleFor(sel);
+    var pos = rr.filter(function (r) { return r.punti > 0; }), neg = rr.filter(function (r) { return r.punti < 0; });
+    var griglia = function (lista) {
+      return '<div class="rgrid">' + lista.map(function (r) {
+        return '<button class="rtile' + (r.punti < 0 ? ' n' : '') + '" onclick="pick(\'' + r.id + '\')">' + icoReg(r, 44) + '<span class="d">' + e(r.descrizione) + '</span><span class="pt" style="color:' + (r.punti > 0 ? 'var(--verde)' : 'var(--rosso)') + '">' + sgn(r.punti) + '</span></button>';
+      }).join('') + '</div>';
+    };
+    if (pos.length) h += '<div class="sez">Fanno guadagnare</div>' + griglia(pos);
+    if (neg.length) h += '<div class="sez">Fanno perdere</div>' + griglia(neg);
+  }
+  h += '</div>' + comando;
+
+  // assegnazione manuale
+  h += '<div class="card"><h2>⭐ Assegna punti</h2><div class="stack"><select id="a_per" onchange="aggiornaRegole()"><option value="">Chi?</option>';
+  for (var i = 0; i < d.famiglia.length; i++) if (d.famiglia[i].id !== me.id) h += '<option value="' + e(d.famiglia[i].id) + '">' + e(d.famiglia[i].emoji + ' ' + d.famiglia[i].soprannome) + '</option>';
+  h += '<option value="famiglia">🏠 Tutta la famiglia</option></select>' +
+    '<select id="a_reg" onchange="sceltaRegola()"><option value="">— scegli prima la persona —</option></select>' +
+    '<select id="a_cat"><option value="">Categoria (facoltativa)</option>' + (d.categorie || []).map(function (c) { return '<option value="' + c + '">' + c.charAt(0).toUpperCase() + c.slice(1) + '</option>'; }).join('') + '</select>' +
+    '<div class="row"><input id="a_punti" type="number" placeholder="Punti (es. 10 o -15)" style="width:170px"><input id="a_mot" class="grow" maxlength="120" placeholder="Motivo"></div>' +
+    '<button onclick="assegna()">Registra</button></div></div>';
+
+  // contestazioni
+  var daDecidere = d.movimenti.filter(function (m) { return m.stato === 'contestato' && m.persona !== me.id; });
+  var mieContest = d.movimenti.filter(function (m) { return m.stato === 'contestato' && m.persona === me.id; });
+  if (daDecidere.length || mieContest.length) {
+    h += '<div class="card"><h2>⚖️ Contestazioni</h2>';
+    daDecidere.forEach(function (m) {
+      h += movRow(m) + '<div class="row" style="margin:-4px 0 10px 62px"><button class="mini ok" onclick="call(\'decidi\',{id:\'' + m.id + '\',esito:\'conferma\'},\'Punto confermato\')">Il punto resta</button>' +
+        '<button class="mini neg" onclick="call(\'decidi\',{id:\'' + m.id + '\',esito:\'annulla\'},\'Punto annullato\')">Annulla il punto</button></div>';
+    });
+    mieContest.forEach(function (m) { h += movRow(m) + '<div class="muted" style="margin:-4px 0 10px 62px">In attesa della decisione dell\'altro genitore</div>'; });
+    h += '</div>';
+  }
+
+  // punti ricevuti da me (contestabili)
+  var ricevuti = d.movimenti.filter(function (m) { return m.persona === me.id && m.da !== me.id && m.da !== 'sistema'; }).slice(0, 15);
+  h += '<div class="card"><h2>📥 Punti che hai ricevuto</h2>';
+  if (!ricevuti.length) h += '<div class="muted">Ancora nessuno.</div>';
+  ricevuti.forEach(function (m) {
+    h += movRow(m);
+    if (m.stato === 'ok' && m.punti < 0) h += '<div style="margin:-4px 0 10px 62px"><button class="mini sec" onclick="call(\'contesta\',{id:\'' + m.id + '\'},\'Contestazione inviata\')">Contesta</button></div>';
+  });
+  return h + '</div>';
+}
+function movRow(m) {
+  var st = m.stato === 'annullato' ? ' <span class="pill">annullato</span>' : m.stato === 'contestato' ? ' <span class="pill warn">contestato</span>' : m.stato === 'confermato' ? ' <span class="pill pos">confermato</span>' : '';
+  return '<div class="mov" style="' + (m.stato === 'annullato' ? 'opacity:.5' : '') + '">' + icoMov(m, 36) + '<div class="p" style="color:' + (m.punti > 0 ? 'var(--verde)' : 'var(--rosso)') + '">' + sgn(m.punti) + '</div>' +
+    '<div class="grow"><b>' + nomeChiH(m.persona) + '</b> · ' + motivoH(m.motivo) + st + '<div class="muted">' + fdate(m.data, true) + ' · da ' + e(chi(m.da).soprannome) + '</div></div></div>';
+}
+/* ---- icone delle regole ---- */
+var CAT_ICO = { casa: '🏠', scuola: '📚', sport: '🏐', famiglia: '💞', comportamento: '🙂' };
+var SPEC_ICO = { COSTO: '⏳', BIMBE: '💛', LAVAGNA: '📋' };
+function regolaById(id) {
+  var rr = (S.d && S.d.regole) || [];
+  for (var i = 0; i < rr.length; i++) if (rr[i].id === id) return rr[i];
+  return null;
+}
+function tile(emoji, cat, neg, px) {
+  px = px || 36;
+  return '<span class="ico c-' + e(cat || 'x') + (neg ? ' neg' : '') + '" style="width:' + px + 'px;height:' + px + 'px;font-size:' + Math.round(px * 0.56) + 'px;border-radius:' + Math.round(px * 0.3) + 'px">' + e(emoji) + '</span>';
+}
+function icoReg(r, px) { return tile(r.icona || CAT_ICO[r.categoria] || '⭐', r.categoria, r.punti < 0, px); }
+function icoMov(m, px) {
+  var r = regolaById(m.regola);
+  if (r) return tile(r.icona || CAT_ICO[r.categoria] || '⭐', r.categoria, m.punti < 0, px);
+  if (SPEC_ICO[m.regola]) return tile(SPEC_ICO[m.regola], m.regola === 'COSTO' ? 'x' : 'famiglia', m.punti < 0, px);
+  return tile(CAT_ICO[m.categoria] || (m.punti < 0 ? '⚠️' : '⭐'), m.categoria, m.punti < 0, px);
+}
+function pick(id) {
+  var r = regolaById(id);
+  if (!r || !S.sel) return;
+  S.preview = { persona: S.sel, punti: r.punti, motivo: r.descrizione, regola: r.id, categoria: r.categoria };
+  render();
+}
+function previewSheet() {
+  var p = S.preview;
+  return '<div class="sheet"><div class="row">' + icoMov(p, 48) + '<div class="big" style="font-size:32px;color:' + (p.punti > 0 ? 'var(--verde)' : 'var(--rosso)') + '">' + sgn(p.punti) + '</div>' +
+    '<div class="grow"><b>' + nomeChiH(p.persona) + '</b><div class="muted">' + motivoH(p.motivo) + (p.categoria ? ' · <span class="pill">' + e(p.categoria) + '</span>' : '') + '</div></div></div>' +
+    '<div class="row" style="margin-top:10px"><button class="ok grow" onclick="confermaPreview()">Conferma</button><button class="sec" onclick="S.preview=null;render()">Annulla</button></div></div>';
+}
+
+/* ---- Bimbe: le regole del gioco ---- */
+function viewRegole(d) {
+  var rr = d.regole || [];
+  var nomiCat = { casa: 'Casa', scuola: 'Scuola', sport: 'Sport e pallavolo', famiglia: 'Famiglia', comportamento: 'Comportamento' };
+  var riga = function (r) {
+    return '<div class="mov">' + icoReg(r, 40) + '<div class="grow">' + e(r.descrizione) + '</div><span class="pill ' + (r.punti > 0 ? 'pos' : 'neg') + '">' + sgn(r.punti) + '</span></div>';
+  };
+  var blocco = function (titolo, lista) {
+    if (!lista.length) return '';
+    var h = '<div class="card"><h2>' + titolo + '</h2>';
+    var cats = ['scuola', 'sport', 'casa', 'famiglia', 'comportamento', ''];
+    cats.forEach(function (c) {
+      var l = lista.filter(function (r) { return (r.categoria || '') === c || (c === '' && !nomiCat[r.categoria]); });
+      if (!l.length) return;
+      h += '<div class="sez">' + (CAT_ICO[c] ? CAT_ICO[c] + ' ' : '') + (nomiCat[c] || 'Altro') + '</div>';
+      l.forEach(function (r) { h += riga(r); });
+    });
+    return h + '</div>';
+  };
+  var mie = rr.filter(function (r) { return r.per === 'figlie' || r.per === 'tutti'; });
+  var gen = rr.filter(function (r) { return r.per === 'genitori'; });
+  return '<div class="card"><h2>📜 Le regole del gioco</h2><div class="muted">Ecco cosa fa guadagnare e perdere punti. Le regole possono cambiare: se hai un\'idea, proponila a mamma e papà!</div></div>' +
+    blocco('⭐ Fanno guadagnare', mie.filter(function (r) { return r.punti > 0; })) +
+    blocco('⚠️ Fanno perdere', mie.filter(function (r) { return r.punti < 0; })) +
+    blocco('🧔👩 Le regole di mamma e papà', gen);
+}
+
+function regoleFor(personaId) {
+  var d = S.d, ruolo = personaId === 'famiglia' ? 'famiglia' : chi(personaId).ruolo;
+  return (d.regole || []).filter(function (r) {
+    return r.per === 'tutti' || (r.per === 'figlie' && ruolo === 'figlia') || (r.per === 'genitori' && ruolo === 'genitore');
+  });
+}
+function aggiornaRegole() {
+  var per = val('a_per'), sel = document.getElementById('a_reg');
+  var rr = per ? regoleFor(per) : [];
+  var h = '<option value="">— altro (scrivi tu) —</option>';
+  rr.forEach(function (r) { h += '<option value="' + e(r.id) + '">' + e((r.icona ? r.icona + ' ' : '') + r.descrizione) + ' (' + sgn(r.punti) + ')</option>'; });
+  sel.innerHTML = h;
+}
+function sceltaRegola() {
+  var id = val('a_reg'), rr = S.d.regole || [];
+  for (var i = 0; i < rr.length; i++) if (rr[i].id === id) {
+    document.getElementById('a_punti').value = rr[i].punti;
+    document.getElementById('a_mot').value = rr[i].descrizione;
+    document.getElementById('a_cat').value = rr[i].categoria || '';
+  }
+}
+function assegna() {
+  var p = Number(val('a_punti'));
+  call('assegna', { persona: val('a_per'), punti: p, motivo: val('a_mot'), regola: val('a_reg'), categoria: val('a_cat') }, 'Registrato ' + sgn(p), p > 0);
+}
+
+/* ---- comando vocale / testuale ---- */
+var NUMW = { un: 1, uno: 1, una: 1, due: 2, tre: 3, quattro: 4, cinque: 5, sei: 6, sette: 7, otto: 8, nove: 9, dieci: 10, undici: 11, dodici: 12,
+  tredici: 13, quattordici: 14, quindici: 15, sedici: 16, diciassette: 17, diciotto: 18, diciannove: 19, venti: 20, venticinque: 25, trenta: 30,
+  trentacinque: 35, quaranta: 40, quarantacinque: 45, cinquanta: 50, sessanta: 60, settanta: 70, ottanta: 80, novanta: 90, cento: 100,
+  centocinquanta: 150, duecento: 200, trecento: 300, quattrocento: 400, cinquecento: 500 };
+var STOP = { a: 1, al: 1, alla: 1, allo: 1, ai: 1, per: 1, il: 1, lo: 1, la: 1, i: 1, gli: 1, le: 1, di: 1, del: 1, della: 1, punti: 1, punto: 1,
+  piu: 1, meno: 1, dai: 1, da: 1, togli: 1, aggiungi: 1, ha: 1, ho: 1, e: 1, che: 1, con: 1, un: 1, una: 1, uno: 1 };
+function norm(s) {
+  s = String(s || '').toLowerCase();
+  if (s.normalize) s = s.normalize('NFD').replace(/[̀-ͯ]/g, '');
+  return s.replace(/[^a-z0-9+\-\s]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+function stem(w) { return w.length > 5 ? w.slice(0, 5) : w; }
+
+/** Interpreta un comando. Ritorna {persona, punti, motivo, regola} oppure {errore}. Funzione pura (testabile). */
+function parseCmd(text, famiglia, regole, meId) {
+  var t = norm(text);
+  if (!t) return { errore: 'Scrivi o detta un comando' };
+  var words = t.split(' ');
+  var segno = 0, num = 0, persona = '', used = {};
+  // persona
+  var alias = { famiglia: 'famiglia', tutti: 'famiglia', tutta: 'famiglia' };
+  famiglia.forEach(function (p) {
+    alias[norm(p.nome)] = p.id; alias[norm(p.soprannome)] = p.id; alias[norm(p.id)] = p.id;
+  });
+  for (var i = 0; i < words.length; i++) {
+    var w = words[i];
+    if (!persona && alias[w] && alias[w] !== meId) { persona = alias[w]; used[i] = 1; continue; }
+    if (/^[+-]?\d+$/.test(w) && !num) {
+      num = Math.abs(parseInt(w, 10));
+      if (w.charAt(0) === '-') segno = -1; else if (w.charAt(0) === '+') segno = 1;
+      used[i] = 1; continue;
+    }
+    if (w === '+' ) { segno = 1; used[i] = 1; continue; }
+    if (w === '-' ) { segno = -1; used[i] = 1; continue; }
+    if (NUMW[w] && !num && !(w === 'un' || w === 'una' || w === 'uno') ) { num = NUMW[w]; used[i] = 1; continue; }
+    if (/^(piu|aggiungi|dai|bonus)$/.test(w) && !segno) { segno = 1; used[i] = 1; continue; }
+    if (/^(meno|togli|togliere|toglie|levare|leva|malus)$/.test(w) && !segno) { segno = -1; used[i] = 1; continue; }
+  }
+  if (!persona) {
+    for (var q = 0; q < words.length; q++) if (alias[words[q]] && alias[words[q]] === meId) return { errore: 'Non puoi darti punti da solo 😉' };
+    return { errore: 'Non ho capito a chi: usa un nome o un soprannome' };
+  }
+  // motivo: le parole dopo "per", altrimenti quelle rimaste
+  var idxPer = words.indexOf('per');
+  var resto = [];
+  for (var k = (idxPer >= 0 ? idxPer + 1 : 0); k < words.length; k++) if (!used[k] && !(idxPer < 0 && STOP[words[k]])) resto.push(words[k]);
+  while (resto.length && STOP[resto[0]]) resto.shift();
+  var motivo = resto.join(' ').trim();
+  // regola più somigliante (solo regole adatte alla persona)
+  var ruolo = 'famiglia';
+  famiglia.forEach(function (p) { if (p.id === persona) ruolo = p.ruolo; });
+  var best = null, bestScore = 0;
+  var mw = resto.filter(function (w) { return w.length >= 4 && !STOP[w]; }).map(stem);
+  (regole || []).forEach(function (r) {
+    if (!(r.per === 'tutti' || (r.per === 'figlie' && ruolo === 'figlia') || (r.per === 'genitori' && ruolo === 'genitore'))) return;
+    var rw = norm(r.descrizione).split(' ').filter(function (w) { return w.length >= 4; }).map(stem);
+    var score = 0;
+    mw.forEach(function (w) { if (rw.indexOf(w) >= 0) score++; });
+    if (score > bestScore) { bestScore = score; best = r; }
+  });
+  var punti;
+  if (num) {
+    if (!segno) segno = (best && best.punti < 0) ? -1 : 1;
+    punti = segno * num;
+  } else if (best) {
+    punti = best.punti;
+    if (segno && (segno > 0) !== (punti > 0)) punti = -punti;
+  } else {
+    return { errore: 'Quanti punti? Es. "più 10 a ' + (famiglia[0] ? famiglia[0].soprannome : 'Nome') + ' per ..."' };
+  }
+  if (best && !motivo) motivo = best.descrizione;
+  if (!motivo) motivo = best ? best.descrizione : 'Comando rapido';
+  motivo = motivo.charAt(0).toUpperCase() + motivo.slice(1);
+  if (best && bestScore > 0 && resto.length <= 3) motivo = best.descrizione;
+  return { persona: persona, punti: punti, motivo: motivo, regola: best ? best.id : '', categoria: (best && best.categoria) || indovinaCat(t) };
+}
+function indovinaCat(t) {
+  if (/(compit|studi|verific|interrog|scuol|\bvot[oi]\b|prof|maestr|eserciz|lezion|zaino|pagell|materi)/.test(t)) return 'scuola';
+  if (/(allen|partit|pallavol|volley|gara|palestr)/.test(t)) return 'sport';
+  if (/(sparecch|apparecch|letto|camera|piatti|lavastov|spesa|pulit|denti)/.test(t)) return 'casa';
+  return '';
+}
+function interpreta() {
+  var r = parseCmd(val('cmd'), S.d.famiglia, S.d.regole, S.d.me.id);
+  if (r.errore) { toast(r.errore, true); return; }
+  S.preview = r;
+  var cmd = val('cmd');
+  render();
+  document.getElementById('cmd').value = cmd;
+}
+function confermaPreview() {
+  var p = S.preview;
+  if (!p) return;
+  call('assegna', p, 'Registrato ' + sgn(p.punti) + ' a ' + chi(p.persona).soprannome, p.punti > 0);
+}
+function ascolta() {
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  try {
+    var rec = new SR();
+    rec.lang = 'it-IT';
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+    rec.onresult = function (ev) {
+      document.getElementById('cmd').value = ev.results[0][0].transcript;
+      interpreta();
+    };
+    rec.onerror = function () { toast('Microfono non disponibile qui: usa il 🎤 della tastiera del telefono', true); };
+    rec.start();
+    toast('Ti ascolto… 🎙️');
+  } catch (err) {
+    toast('Microfono non disponibile qui: usa il 🎤 della tastiera del telefono', true);
+  }
+}
+
+/* ---- Genitori: storico ---- */
+function viewStorico(d) {
+  var h = '<div class="card"><h2>📊 Andamento per persona</h2><div class="muted">Visibile solo a mamma e papà.</div>' +
+    '<table class="stats"><tr><th></th><th>Settimana</th><th>30 giorni</th><th>Totale</th></tr>';
+  d.stats.forEach(function (s) {
+    var cell = function (x) { return '<td><span style="color:var(--verde)">+' + fmt(x.pos) + '</span><br><span style="color:var(--rosso)">' + fmt(x.neg) + '</span></td>'; };
+    h += '<tr><td><b>' + nomeChiH(s.id) + '</b></td>' + cell(s.settimana) + cell(s.mese) + cell(s.totale) + '</tr>';
+  });
+  h += '</table></div><div class="card"><h2>🧾 Tutti i movimenti</h2><select onchange="S.filtro=this.value;render()" style="margin-bottom:8px"><option value="">Tutti</option>';
+  d.famiglia.concat([{ id: 'famiglia', emoji: '🏠', soprannome: 'Famiglia' }]).forEach(function (p) {
+    h += '<option value="' + e(p.id) + '"' + (S.filtro === p.id ? ' selected' : '') + '>' + e(p.emoji + ' ' + p.soprannome) + '</option>';
+  });
+  h += '</select>';
+  var lista = d.movimenti.filter(function (m) { return !S.filtro || m.persona === S.filtro; }).slice(0, 120);
+  if (!lista.length) h += '<div class="muted">Nessun movimento.</div>';
+  lista.forEach(function (m) {
+    h += movRow(m);
+    if (m.da === d.me.id && m.stato !== 'annullato') h += '<div style="margin:-4px 0 10px 62px"><button class="mini neg" onclick="annullaMov(\'' + m.id + '\')">Annulla (errore)</button></div>';
+  });
+  return h + '</div>';
+}
+function annullaMov(id) {
+  if (annullaMov._p !== id) { annullaMov._p = id; toast('Tocca di nuovo per annullare'); setTimeout(function () { annullaMov._p = null; }, 3000); return; }
+  annullaMov._p = null;
+  call('annulla', { id: id }, 'Movimento annullato');
+}
+
+/* ---- Genitori: gettoni ---- */
+function viewGettoni(d) {
+  var h = '';
+  d.gettoniBimbe.forEach(function (g) {
+    var p = chi(g.id);
+    h += '<div class="card"><div class="row">' + av(g.id, 60) + '<h2 class="grow">' + e(p.soprannome) + '</h2>' +
+      '<div class="big" style="font-size:34px;color:var(--corallo)">🪙 ' + fmt(g.saldo) + '</div></div>' +
+      '<div class="row" style="margin-top:10px"><input id="g_n_' + g.id + '" type="number" min="1" placeholder="Gettoni" style="width:110px">' +
+      '<input id="g_m_' + g.id + '" class="grow" maxlength="120" placeholder="Motivo (es. lavato la macchina / felpa)"></div>' +
+      '<div class="row" style="margin-top:8px"><button class="ok" onclick="gettoni(\'' + g.id + '\',1)">Aggiungi</button><button class="neg" onclick="gettoni(\'' + g.id + '\',-1)">Spendi</button></div>';
+    g.storia.forEach(function (x) { h += '<div class="mov"><div class="p" style="color:' + (x.gettoni > 0 ? 'var(--verde)' : 'var(--rosso)') + '">' + sgn(x.gettoni) + '</div><div class="grow">' + e(x.motivo) + '<div class="muted">' + fdate(x.data) + '</div></div></div>'; });
+    h += '</div>';
+  });
+  return h;
+}
+function gettoni(id, segno) {
+  var n = Math.abs(parseInt(val('g_n_' + id), 10) || 0) * segno;
+  call('gettoni', { persona: id, gettoni: n, motivo: val('g_m_' + id) }, segno > 0 ? 'Gettoni aggiunti 🪙' : 'Gettoni spesi');
+}
+
+/* ============================ MODALITÀ TV ============================ */
+var TV_PANELS = ['viareggio', 'tappe', 'settimana', 'lavagna', 'agenda'];
+function renderTV() {
+  var d = S.d;
+  document.body.className = 'tv';
+  var p = TV_PANELS[S.tvIdx % TV_PANELS.length];
+  var h = '<div class="tvwrap"><div class="tvhead"><span style="font-size:4vw">🏆</span><h1>Coppa Bedduzzi</h1><div class="clock" id="clock"></div></div>';
+  h += '<div class="panel on">' + bannerFesta(d).replace(/class="card festa-oggi"/g, 'class="festa-oggi"');
+  if (p === 'viareggio') {
+    var vgHtml = blocViareggio(d).replace('<div class="card vg">', '<div>').replace(/<div class="hero"[^>]*><\/div>/, '');
+    h += (HAS_IMG && IMG.gruppo)
+      ? '<div class="two"><div>' + vgHtml + '</div><div class="tvfoto" style="flex:0 0 30%;background-image:url(' + IMG.gruppo + ')"></div></div>'
+      : vgHtml;
+  } else if (p === 'tappe') {
+    h += blocObiettivi(d).replace('<div class="card">', '<div>');
+  } else if (p === 'settimana') {
+    h += blocSettimana(d).replace('<div class="card">', '<div>');
+  } else if (p === 'lavagna') {
+    h += '<h2>📋 La lavagna</h2><div class="cols">';
+    ['Da fare', 'In corso'].forEach(function (st) {
+      var l = d.lavagna.filter(function (t) { return t.stato === st; }).slice(0, 6);
+      h += '<div class="col"><h3>' + (st === 'Da fare' ? '📝 ' : '⏳ ') + st + '</h3>';
+      if (!l.length) h += '<div class="muted" style="padding:1vh">Niente qui 🎉</div>';
+      l.forEach(function (t) { var c = chi(t.assegnato); h += '<div class="task" style="border-left-color:' + e(c.colore) + '"><b>' + e(t.testo) + '</b> <span class="muted">' + av(t.assegnato, 40) + '</span></div>'; });
+      h += '</div>';
+    });
+    h += '</div>';
+  } else {
+    var ev = ((d.calendario || {}).eventi || []).slice(0, 6);
+    h += '<div class="two"><div><h2>📅 Prossimi giorni</h2>';
+    if (!ev.length) h += '<div class="muted">Nessun appuntamento.</div>';
+    ev.forEach(function (x) { h += '<div class="ev"><b>' + fdate(x.inizio, !x.giornata) + '</b><span>' + e(x.titolo) + '</span></div>'; });
+    var prossime = (d.feste || []).filter(function (x) { return x.giorni > 0; }).slice(0, 3);
+    h += '</div><div style="flex:0 0 40%"><h2>🎉 Feste in arrivo</h2>';
+    prossime.forEach(function (x) { h += '<div class="ev" style="align-items:center">' + avFesta(x, 70) + '<span class="grow" style="flex:1">' + e(testoFesta(x)) + '</span><b style="min-width:0;color:var(--corallo)">' + x.giorni + ' gg</b></div>'; });
+    h += '<div class="ev"><span style="flex:1">🏖️ Viareggio</span><b style="min-width:0;color:var(--mare-scuro)">' + d.viareggio.giorni + ' gg</b></div></div></div>';
+      '<h2 style="margin-top:4vh">🏖️ Agosto</h2><div class="countdown big" style="color:var(--mare-scuro);font-size:7vw">' + d.viareggio.giorni + '</div><div class="muted">giorni a Viareggio</div></div></div>';
+  }
+  h += '</div><div class="dots">';
+  for (var i = 0; i < TV_PANELS.length; i++) h += (i === S.tvIdx % TV_PANELS.length ? '●' : '○');
+  h += '</div></div>';
+  document.getElementById('app').innerHTML = h;
+  tick();
+}
+function tick() {
+  var c = document.getElementById('clock');
+  if (!c) return;
+  var n = new Date();
+  c.textContent = GG[n.getDay()] + ' ' + n.getDate() + ' ' + MM[n.getMonth()] + ' · ' + pad(n.getHours()) + ':' + pad(n.getMinutes());
+}
+function tvNext(step) { S.tvIdx = (S.tvIdx + (step || 1) + TV_PANELS.length) % TV_PANELS.length; renderTV(); }
+
+/* ---------------------------- avvio ---------------------------- */
+function leggiToken() {
+  var m = location.search.match(/[?&]k=([A-Za-z0-9]+)/);
+  if (m) {
+    store(TOKEN_KEY, m[1]);
+    // toglie il codice dalla barra degli indirizzi (resta salvato sul dispositivo)
+    try { history.replaceState(null, '', location.pathname + (BOOT.tv ? '?tv=1' : '')); } catch (x) {}
+    return m[1];
+  }
+  return load(TOKEN_KEY) || '';
+}
+function schermataCodice(msg) {
+  document.body.className = '';
+  document.getElementById('app').innerHTML = '<div class="wrap" style="padding-top:48px"><div class="card" style="text-align:center">' +
+    '<img src="icona-192.png" alt="" style="width:96px;height:96px;border-radius:22px"><h2 style="margin-top:10px">Coppa Bedduzzi</h2>' +
+    '<div class="muted" style="margin:6px 0 14px">' + e(msg || 'Incolla qui il tuo link personale (quello che ti ha mandato papà).') + '</div>' +
+    '<input id="codice" placeholder="Incolla il link…" autocomplete="off" onkeydown="if(event.keyCode===13)entra()">' +
+    '<button onclick="entra()" style="margin-top:10px;width:100%">Entra</button></div></div>';
+}
+function entra() {
+  var v = String(val('codice') || '').trim();
+  var m = v.match(/[?&]k=([A-Za-z0-9]+)/);
+  var t = m ? m[1] : v.replace(/[^A-Za-z0-9]/g, '');
+  if (t.length < 10) { toast('Questo non sembra un link valido', true); return; }
+  store(TOKEN_KEY, t);
+  BOOT.token = t;
+  avvia();
+}
+function esci() {
+  if (esci._p !== 1) { esci._p = 1; toast('Tocca di nuovo "Cambia utente" per uscire'); setTimeout(function () { esci._p = 0; }, 3000); return; }
+  esci._p = 0;
+  store(TOKEN_KEY, null);
+  BOOT.token = ''; S.d = null;
+  schermataCodice('Sei uscito. Incolla un link personale per entrare.');
+}
+function caricaImmagini() {
+  var c = load(IMG_KEY), ts = Number(load(IMG_TS) || 0);
+  if (c) { try { IMG = JSON.parse(c) || {}; } catch (x) { IMG = {}; } }
+  if (c && Date.now() - ts < 3 * 864e5) return; // ricarica le foto ogni 3 giorni
+  apiCall('immagini', {}, function (m) {
+    IMG = m || {};
+    store(IMG_KEY, JSON.stringify(IMG)); store(IMG_TS, String(Date.now()));
+    if (S.d) render();
+  }, function () {});
+}
+var timerAvviati = false;
+function avviaTimer() {
+  if (timerAvviati) return;
+  timerAvviati = true;
+  if (BOOT.tv) {
+    setInterval(function () { tvNext(1); }, 15000);
+    setInterval(tick, 20000);
+    setInterval(function () { apiCall('dashboard', {}, function (d) { S.d = d; renderTV(); }, function () {}); }, 120000);
+    document.addEventListener('keydown', function (ev) {
+      if (ev.keyCode === 39 || ev.keyCode === 13) tvNext(1);
+      if (ev.keyCode === 37) tvNext(-1);
+    });
+    document.addEventListener('click', function () { tvNext(1); });
+  } else {
+    // aggiorna da sola quando si torna sull'app
+    document.addEventListener('visibilitychange', function () { if (!document.hidden && !S.busy && S.d) refresh(); });
+  }
+}
+function avvia() {
+  var app = document.getElementById('app');
+  if (!API || /INCOLLA/.test(API)) {
+    app.innerHTML = '<div class="loading">⚙️ Manca l\'indirizzo dell\'archivio nel file config.js</div>';
+    return;
+  }
+  if (!BOOT.token) { schermataCodice(); return; }
+  app.innerHTML = '<div class="loading">🏆 Coppa Bedduzzi sta arrivando…</div>';
+  caricaImmagini();
+  apiCall('dashboard', {}, function (d) {
+    S.d = d;
+    if (d.me && d.me.ruolo === 'tv') BOOT.tv = true;
+    render();
+    avviaTimer();
+  }, function (msg) {
+    if (/link non valido/i.test(msg)) { store(TOKEN_KEY, null); BOOT.token = ''; schermataCodice('Questo link non funziona. Chiedi a papà il tuo link personale.'); }
+    else app.innerHTML = '<div class="loading">😕 ' + e(msg) + '<br><button onclick="avvia()" style="margin-top:16px">Riprova</button></div>';
+  });
+}
+BOOT.token = leggiToken();
+avvia();
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js')['catch'](function () {}); });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!-- COPPA BEDDUZZI – prova.html – versione 2.0: verifica che il telefono raggiunga l'archivio senza problemi di account -->
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Prova Coppa Bedduzzi</title>
+<script src="config.js"></script>
+<style>
+  body { font-family: system-ui, sans-serif; background: #fef9e7; color: #1e293b; margin: 0; padding: 24px 16px; }
+  .card { background: #fff; border-radius: 18px; padding: 18px; max-width: 520px; margin: 0 auto 14px; box-shadow: 0 6px 20px rgba(15,23,42,.08); }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  .r { padding: 10px 0; border-top: 1px solid #e2e8f0; font-size: 16px; }
+  .r:first-child { border-top: 0; }
+  .ok { color: #16a34a; font-weight: 800; } .ko { color: #dc2626; font-weight: 800; }
+  input, button { font-size: 16px; padding: 10px 12px; border-radius: 12px; border: 2px solid #e2e8f0; width: 100%; box-sizing: border-box; }
+  button { background: #0ea5e9; color: #fff; border: 0; font-weight: 800; margin-top: 8px; }
+  .muted { color: #64748b; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="card"><h1>🏆 Prova Coppa Bedduzzi</h1>
+  <div class="muted">Apri questa pagina sul telefono <b>normalmente</b> (non in incognito). Se tutte le righe diventano verdi, la v2.0 funziona anche con più account Google.</div>
+</div>
+<div class="card" id="esiti"><div class="r">⏳ Preparo la prova…</div></div>
+<div class="card" id="manuale" style="display:none">
+  <div class="muted">Incolla il tuo link personale (o solo il codice dopo <b>k=</b>):</div>
+  <input id="cod" placeholder="Link o codice"><button onclick="prova(estrai(document.getElementById('cod').value))">Prova</button>
+</div>
+<script>
+var API = window.BEDDUZZI_API || '';
+function estrai(v) { var m = String(v).match(/[?&]k=([A-Za-z0-9]+)/); return m ? m[1] : String(v).replace(/[^A-Za-z0-9]/g, ''); }
+function riga(html) { var d = document.createElement('div'); d.className = 'r'; d.innerHTML = html; document.getElementById('esiti').appendChild(d); }
+function testo(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+function prova(k) {
+  var box = document.getElementById('esiti'); box.innerHTML = '';
+  if (!API || /INCOLLA/.test(API)) { riga('<span class="ko">✗</span> Manca l\'indirizzo dell\'archivio in config.js'); return; }
+  if (!/\/exec$/.test(API)) riga('<span class="ko">!</span> L\'indirizzo in config.js non finisce con /exec: controllalo.');
+  riga('✓ Indirizzo archivio presente');
+  if (!k || k.length < 10) { riga('<span class="ko">✗</span> Manca il codice personale'); document.getElementById('manuale').style.display = 'block'; return; }
+  if (!window.fetch) { riga('<span class="ko">✗</span> Questo browser è troppo vecchio per la prova'); return; }
+  var t0 = Date.now();
+  // 1) lettura anonima (GET)
+  fetch(API + '?api=1&a=dashboard&k=' + encodeURIComponent(k), { credentials: 'omit', redirect: 'follow', cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      if (!j.ok) throw new Error(j.error || 'risposta non valida');
+      var d = j.data;
+      riga('<span class="ok">✓</span> Lettura riuscita in ' + ((Date.now() - t0) / 1000).toFixed(1) + ' s: <b>Ciao ' + testo(d.me.soprannome) + '!</b> Punti di famiglia: <b>' + d.totale + '</b> · archivio v' + testo(d.versione || '?'));
+      // 2) chiamata come quella dell'app (POST)
+      var t1 = Date.now();
+      return fetch(API, { method: 'POST', body: JSON.stringify({ k: k, a: 'dashboard', p: {} }), headers: { 'Content-Type': 'text/plain;charset=utf-8' }, credentials: 'omit', redirect: 'follow', cache: 'no-store' })
+        .then(function (r) { return r.json(); })
+        .then(function (j2) {
+          if (!j2.ok) throw new Error(j2.error || 'risposta non valida');
+          riga('<span class="ok">✓</span> Invio dati riuscito in ' + ((Date.now() - t1) / 1000).toFixed(1) + ' s');
+          riga('<span class="ok">🎉 Tutto a posto: si può passare alla v2.0!</span>');
+        });
+    })['catch'](function (err) {
+      riga('<span class="ko">✗</span> Non riuscito: ' + testo(err.message || err));
+      riga('<span class="muted">Mandami una foto di questa schermata. Controlla anche che in Apps Script il deployment abbia "Chi ha accesso: Chiunque".</span>');
+    });
+}
+prova(estrai(location.search));
+</script>
+</body>
+</html>
