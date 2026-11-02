@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- COPPA BEDDUZZI – app – index.html – versione 2.1 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
+<!-- COPPA BEDDUZZI – app – index.html – versione 2.2 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -103,6 +103,16 @@
   @keyframes fadein { from { opacity: 0; transform: translateY(10px); } }
   .tabs button { font-size: 11px; }
 
+  /* festa a schermo intero */
+  #festa { position: fixed; inset: 0; z-index: 15; background: rgba(12,74,110,.72); display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadein .3s; }
+  .festa-card { background: #fff; border-radius: 26px; padding: 26px 22px; max-width: 380px; width: 100%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+  .festa-card .av { width: 84px; height: 84px; margin: 6px auto 0; display: block; }
+  .festa-emoji { font-size: 72px; line-height: 1; animation: salta 1s ease-in-out infinite alternate; }
+  @keyframes salta { from { transform: translateY(0) scale(1); } to { transform: translateY(-8px) scale(1.08); } }
+  .festa-foto { height: 120px; border-radius: 16px; background-size: cover; background-position: center 30%; margin: 10px 0 0; }
+  .festa-sup { margin-top: 12px; font-weight: 800; color: var(--corallo); text-transform: uppercase; font-size: 13px; letter-spacing: .05em; }
+  .festa-card h2 { font-size: 26px; margin: 4px 0 6px; }
+
   /* listino e richieste */
   .lis { padding: 12px 0; border-top: 1px solid var(--bordo); }
   .lis:first-of-type { border-top: 0; }
@@ -191,7 +201,7 @@
 
 <script>
 var BOOT = { token: '', tv: /[?&]tv=1/.test(location.search) };
-var VERSIONE_PAGINA = '2.1';
+var VERSIONE_PAGINA = '2.2';
 var IMG = {};
 var S = { d: null, tab: 'casa', busy: false, tvIdx: 0, preview: null, filtro: '' };
 
@@ -331,6 +341,7 @@ function render() {
   }
   h += '</div>';
   document.getElementById('app').innerHTML = h;
+  setTimeout(mostraFeste, 400);
 }
 function go(t) { S.tab = t; render(); window.scrollTo(0, 0); }
 
@@ -418,7 +429,7 @@ function blocObiettivi(d) {
     var pc = function (x) { return Math.max(0, Math.min(100, x / max * 100)); };
     h += '<div class="tappa"' + (idx ? ' style="border-top:1px dashed var(--bordo);padding-top:14px;margin-top:14px"' : '') + '>' +
       '<div class="row"><div class="temoji" style="font-size:34px">' + e(o.emoji) + '</div><div class="grow"><b style="font-size:18px">' + e(o.nome) + '</b>' +
-      '<div class="muted">' + (o.giorni > 0 ? 'mancano ' + o.giorni + ' giorni · ' + fdate(o.data) : o.giorni === 0 ? 'è oggi!' : 'conclusa') + '</div></div>' +
+      '<div class="muted">' + (o.giorni === null ? 'senza scadenza' : o.giorni > 0 ? 'mancano ' + o.giorni + ' giorni · ' + fdate(o.data) : o.giorni === 0 ? 'è oggi!' : 'conclusa') + (o.personale ? ' · <span class="pill">personale</span>' : '') + '</div></div>' +
       '<div class="big tval" style="font-size:30px;color:var(--mare-scuro)">' + fmt(o.valore) + '</div></div>' +
       '<div class="lvbar"><div class="fill" style="width:' + pc(o.valore) + '%"></div>';
     lv.forEach(function (l, j) {
@@ -428,9 +439,9 @@ function blocObiettivi(d) {
     var msg;
     if (!next) msg = lv.length ? 'Tutti i livelli raggiunti! ' + MEDAGLIE[Math.min(lv.length - 1, MEDAGLIE.length - 1)] + ' Fantastiche!' : '';
     else {
-      var atteso = Math.round(next.valore * o.percTempo);
+      var atteso = o.percTempo === null ? null : Math.round(next.valore * o.percTempo);
       msg = 'Prossimo livello: <b>' + e(next.nome) + '</b>, mancano <b>' + fmt(next.valore - o.valore) + '</b> punti. ' +
-        (o.giorni > 0 ? (o.valore >= atteso ? '<span class="pill pos">Siete in linea ✅</span>' : '<span class="pill warn">Serve una spinta 💪</span>') : '');
+        (atteso !== null && o.giorni > 0 ? (o.valore >= atteso ? '<span class="pill pos">Siete in linea ✅</span>' : '<span class="pill warn">Serve una spinta 💪</span>') : '');
     }
     h += '<div class="muted" style="margin-top:6px">' + msg + '</div>' +
       (o.premio ? '<div class="muted">🎁 Premio: ' + e(o.premio) + '</div>' : '') + '</div>';
@@ -438,9 +449,72 @@ function blocObiettivi(d) {
   return h + '<div class="muted" style="margin-top:10px">Contano l\'impegno e la costanza, non solo i voti. Si arriva insieme.</div></div>';
 }
 
+/* ---- Medaglie ---- */
+function rigaMedaglia(m, conNome) {
+  return '<div class="mov"><span class="ico c-x" style="width:44px;height:44px;font-size:24px;border-radius:50%;background:linear-gradient(135deg,#fde68a,#fbbf24)">' + e(m.emoji) + '</span>' +
+    '<div class="grow"><b>' + e(m.titolo) + '</b>' + (conNome ? ' · ' + nomeChiH(m.persona) : '') + '<div class="muted">' + e(m.dettaglio) + '</div></div></div>';
+}
+/** In Casa: solo le proprie medaglie (anche per i genitori). */
+function blocMedaglie(d, soloMie) {
+  var mie = (d.medaglie || []).filter(function (m) { return !soloMie || m.persona.split(',').indexOf(d.me.id) >= 0; });
+  if (!mie.length) return '';
+  var h = '<div class="card"><h2>🏅 ' + (soloMie ? 'Le mie medaglie' : 'Medaglie') + ' (' + mie.length + ')</h2>';
+  mie.slice(0, 8).forEach(function (m) { h += rigaMedaglia(m, !soloMie); });
+  return h + '</div>';
+}
+
+/* ---- Festa a schermo intero (obiettivi e medaglie) ---- */
+function testoFestaGrande(f, me) {
+  var mia = f.persona.split(',').indexOf(me.id) >= 0;
+  var nomi = f.persona === 'famiglia' ? '' : f.persona.split(',').map(function (id) { return chi(id).soprannome; }).join(' e ');
+  if (f.tipo === 'medaglia') return mia ? 'Hai vinto una medaglia!' : 'Medaglia per ' + nomi + '!';
+  if (f.persona === 'famiglia') return 'Obiettivo di famiglia raggiunto!';
+  return mia ? 'Hai raggiunto il tuo obiettivo!' : nomi + ' ha raggiunto un obiettivo!';
+}
+function mostraFeste() {
+  var d = S.d;
+  if (!d || BOOT.tv || document.getElementById('festa')) return;
+  var lista = (d.festeNuove || []).filter(function (f) { return !S.visteOra || S.visteOra.indexOf(f.id) < 0; });
+  if (!lista.length) return;
+  var i = 0;
+  var box = document.createElement('div');
+  box.id = 'festa';
+  document.body.appendChild(box);
+  var disegna = function () {
+    var f = lista[i];
+    var volto = f.persona !== 'famiglia' && f.persona.indexOf(',') < 0 ? av(f.persona, 84) : (HAS_IMG && IMG.gruppo ? '<div class="festa-foto" style="background-image:url(' + IMG.gruppo + ')"></div>' : '');
+    box.innerHTML = '<div class="festa-card"><div class="festa-emoji">' + e(f.emoji) + '</div>' + volto +
+      '<div class="festa-sup">' + e(testoFestaGrande(f, d.me)) + '</div><h2>' + e(f.titolo) + '</h2>' +
+      (f.dettaglio ? '<div class="muted">' + e(f.dettaglio) + '</div>' : '') +
+      '<button class="ok" style="margin-top:18px;width:100%;font-size:18px;padding:14px" onclick="avantiFesta()">' + (i < lista.length - 1 ? 'Evviva! Avanti 🎉' : 'Evviva! 🎉') + '</button>' +
+      (lista.length > 1 ? '<div class="muted" style="margin-top:8px">' + (i + 1) + ' di ' + lista.length + '</div>' : '') + '</div>';
+    festa(); setTimeout(festa, 700);
+  };
+  window.avantiFesta = function () {
+    i++;
+    if (i < lista.length) { disegna(); return; }
+    box.parentNode && box.parentNode.removeChild(box);
+    var ids = lista.map(function (f) { return f.id; });
+    S.visteOra = (S.visteOra || []).concat(ids);
+    apiCall('visto', { ids: ids }, function (nd) { S.d = nd; render(); }, function () {});
+  };
+  disegna();
+}
+
+/** TV: traguardi di famiglia delle ultime ore. */
+function bannerTraguardi(d) {
+  var f = (d.festeTV || []).slice(0, 2);
+  return '<div style="text-align:center;padding-top:2vh"><div style="font-size:9vw;line-height:1">🎉🏆🎉</div>' +
+    '<div class="festa-sup" style="font-size:1.8vw;margin-top:2vh">Obiettivo di famiglia raggiunto!</div>' +
+    f.map(function (x) {
+      return '<h2 style="font-size:4.4vw;margin:1.5vh 0">' + e(x.emoji) + ' ' + e(x.titolo) + '</h2><div class="muted" style="font-size:2.2vw">' + e(x.dettaglio) + '</div>';
+    }).join('<div style="height:3vh"></div>') +
+    (HAS_IMG && IMG.gruppo ? '<div class="tvfoto" style="height:30vh;min-height:0;width:40%;margin:3vh auto 0;background-image:url(' + IMG.gruppo + ')"></div>' : '') + '</div>';
+}
+
 /* ---- Casa ---- */
 function viewCasa(d) {
-  return bannerFesta(d) + blocViareggio(d) + blocObiettivi(d) + blocSettimana(d) + blocFeste(d, 4) + blocCalendario(d, 8);
+  return bannerFesta(d) + blocViareggio(d) + blocObiettivi(d) + blocMedaglie(d, true) + blocSettimana(d) + blocFeste(d, 4) + blocCalendario(d, 8);
 }
 
 /* ---- Lavagna ---- */
@@ -832,7 +906,7 @@ function ascolta() {
 
 /* ---- Genitori: storico ---- */
 function viewStorico(d) {
-  var h = '<div class="card"><h2>📊 Andamento per persona</h2><div class="muted">Visibile solo a mamma e papà.</div>' +
+  var h = blocMedaglie(d, false) + '<div class="card"><h2>📊 Andamento per persona</h2><div class="muted">Visibile solo a mamma e papà.</div>' +
     '<table class="stats"><tr><th></th><th>Settimana</th><th>30 giorni</th><th>Totale</th></tr>';
   d.stats.forEach(function (s) {
     var cell = function (x) { return '<td><span style="color:var(--verde)">+' + fmt(x.pos) + '</span><br><span style="color:var(--rosso)">' + fmt(x.neg) + '</span></td>'; };
@@ -914,14 +988,20 @@ function compra(lid, pid) {
 }
 
 /* ============================ MODALITÀ TV ============================ */
-var TV_PANELS = ['viareggio', 'tappe', 'settimana', 'lavagna', 'agenda'];
+var TV_BASE = ['viareggio', 'tappe', 'settimana', 'lavagna', 'agenda'];
+var TV_PANELS = TV_BASE;
 function renderTV() {
   var d = S.d;
   document.body.className = 'tv';
+  // con un traguardo di famiglia recente, la schermata di festa entra nella rotazione
+  TV_PANELS = (d.festeTV && d.festeTV.length) ? ['traguardi'].concat(TV_BASE) : TV_BASE;
   var p = TV_PANELS[S.tvIdx % TV_PANELS.length];
   var h = '<div class="tvwrap"><div class="tvhead"><span style="font-size:4vw">🏆</span><h1>Coppa Bedduzzi</h1><div class="clock" id="clock"></div></div>';
   h += '<div class="panel on">' + bannerFesta(d).replace(/class="card festa-oggi"/g, 'class="festa-oggi"');
-  if (p === 'viareggio') {
+  if (p === 'traguardi') {
+    h += bannerTraguardi(d);
+    setTimeout(festa, 300);
+  } else if (p === 'viareggio') {
     var vgHtml = blocViareggio(d).replace('<div class="card vg">', '<div>').replace(/<div class="hero"[^>]*><\/div>/, '');
     h += (HAS_IMG && IMG.gruppo)
       ? '<div class="two"><div>' + vgHtml + '</div><div class="tvfoto" style="flex:0 0 30%;background-image:url(' + IMG.gruppo + ')"></div></div>'
