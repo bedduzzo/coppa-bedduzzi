@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- COPPA BEDDUZZI – app – index.html – versione 2.3 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
+<!-- COPPA BEDDUZZI – app – index.html – versione 2.4 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -47,7 +47,7 @@
   .av-e { vertical-align: middle; }
   .card.vg { overflow: hidden; padding-top: 0; }
   .card.vg h2 { margin-top: 16px; }
-  .hero { margin: 0 -18px; height: 210px; background-size: cover; background-position: center 28%; }
+  .hero { margin: 0 -18px; height: 150px; background-size: cover; background-position: center 28%; }
   body.tv .tvfoto { border-radius: 2vw; background-size: cover; background-position: center 30%; min-height: 62vh; }
   .top h1 { font-size: 24px; line-height: 1.1; }
   .top .sub { opacity: .9; font-size: 14px; }
@@ -66,7 +66,7 @@
   .pill.warn { background: #fef3c7; color: #b45309; }
 
   /* Viareggio */
-  .vg-num { font-size: 52px; line-height: 1; color: var(--mare-scuro); }
+  .vg-num { font-size: 40px; line-height: 1; color: var(--mare-scuro); }
   .gauge { position: relative; height: 34px; border-radius: 17px; background: linear-gradient(90deg, #fecaca 0%, #fde68a 45%, #bbf7d0 100%); margin: 26px 0 30px; }
   .gauge .soglia { position: absolute; top: -8px; bottom: -8px; width: 4px; background: var(--testo); border-radius: 2px; }
   .gauge .soglia span { position: absolute; top: 46px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 12px; font-weight: 800; }
@@ -111,7 +111,9 @@
   .ttile .tl { font-size: 1.45vw; font-weight: 800; margin-top: 1vh; line-height: 1.15; }
   .ttile .tp { font-size: 2.3vw; font-weight: 800; margin-top: .6vh; color: var(--verde); font-family: 'Baloo 2', sans-serif; }
   .ttile.neg .tp { color: var(--rosso); }
-  body.tv .panel { min-height: 0; overflow: hidden; }
+  body.tv .panel { min-height: 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+  body.tv .panel::-webkit-scrollbar { display: none; }
+  .tvpausa { position: fixed; right: 3vw; bottom: 3vh; background: rgba(15,23,42,.85); color: #fff; padding: 1.2vh 1.6vw; border-radius: 1vw; font-size: 1.6vw; font-weight: 800; z-index: 9; }
   .tvcode { font-size: 12vw; letter-spacing: 1.5vw; color: var(--mare-scuro); margin: 4vh 0 3vh; line-height: 1; }
 
   /* festa a schermo intero */
@@ -212,7 +214,7 @@
 
 <script>
 var BOOT = { token: '', tv: /[?&]tv=1/.test(location.search) };
-var VERSIONE_PAGINA = '2.3';
+var VERSIONE_PAGINA = '2.4';
 var IMG = {};
 var S = { d: null, tab: 'casa', busy: false, tvIdx: 0, preview: null, filtro: '' };
 
@@ -227,6 +229,9 @@ function sgn(n) { return (n > 0 ? '+' : '') + fmt(n); }
 var GG = ['dom', 'lun', 'mar', 'mer', 'gio', 'ven', 'sab'];
 var MM = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'];
 function pad(n) { return (n < 10 ? '0' : '') + n; }
+var GGL = ['domenica', 'lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato'];
+var MML = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
+function oggiLungo() { var n = new Date(); return GGL[n.getDay()] + ' ' + n.getDate() + ' ' + MML[n.getMonth()]; }
 function fdate(iso, ora) {
   if (!iso) return '';
   var d = new Date(iso);
@@ -337,11 +342,11 @@ function render() {
   if (!ok) S.tab = 'casa';
 
   var h = '<div class="top"><div class="inner"><div class="avatar">' + av(d.me.id, 58) + '</div>' +
-    '<div><h1>Ciao ' + e(d.me.soprannome) + '!</h1><div class="sub">Coppa Bedduzzi · ' + d.viareggio.giorni + ' giorni a Viareggio</div></div>' +
+    '<div><h1>Ciao ' + e(d.me.soprannome) + '!</h1><div class="sub">Coppa Bedduzzi · ' + oggiLungo() + '</div></div>' +
     '<div class="sun">☀️</div></div></div><div class="wrap">';
   var v = { casa: viewCasa, lavagna: viewLavagna, punti: viewPunti, storico: viewStorico, gettoni: viewGettoni, dona: viewDona, salvadanaio: viewSalvadanaio, regole: viewRegole }[S.tab];
   v = (function (orig) { return function (dd) {
-    return orig(dd) + (r === 'genitore' && d.versione !== VERSIONE_PAGINA
+    return orig(dd) + (r === 'genitore' && versioniDiverse(d.versione, VERSIONE_PAGINA)
       ? '<div class="card" style="border:2px solid var(--corallo)"><b>⚠️ Versioni diverse</b><div class="muted">L\'archivio (Code.gs in Apps Script) è alla versione ' + e(d.versione || '?') + ', l\'app alla ' + VERSIONE_PAGINA + '. Aggiorna la parte rimasta indietro.</div></div>'
       : '') + '<div class="muted" style="text-align:center;margin:18px 0 0">Coppa Bedduzzi v' + e(VERSIONE_PAGINA) +
       ' · <a href="#" onclick="esci();return false" style="color:var(--grigio)">Cambia utente</a></div>';
@@ -354,6 +359,12 @@ function render() {
   document.getElementById('app').innerHTML = h;
   setTimeout(mostraFeste, 400);
 }
+function numVer(v) { var p = String(v || '0').split('.'); return [parseInt(p[0], 10) || 0, parseInt(p[1], 10) || 0]; }
+/** Avvisa se l'archivio è più nuovo dell'app, o se cambia la versione principale (2.x → 3.x). */
+function versioniDiverse(arch, app) {
+  var a = numVer(arch), b = numVer(app);
+  return a[0] !== b[0] || a[1] > b[1];
+}
 function go(t) { S.tab = t; render(); window.scrollTo(0, 0); }
 
 /* ---- blocchi condivisi ---- */
@@ -365,11 +376,12 @@ function blocViareggio(d) {
   var serve = Math.ceil((d.soglia - v.previsioneFermi) / settRimaste);
   var stato = v.cuscinetto > 0
     ? '<span class="pill pos">' + fmt(v.cuscinetto) + ' sopra la soglia</span>'
-    : '<span class="pill neg">' + fmt(-v.cuscinetto) + ' sotto la soglia!</span>';
+    : '<span class="pill warn">mancano ' + fmt(-v.cuscinetto) + ' punti alla soglia</span>';
   var consiglio = serve > 0
-    ? 'Per arrivare tranquilli ad agosto servono in media <b>+' + fmt(serve + d.costo) + ' punti a settimana</b> (il costo settimanale è ' + fmt(d.costo) + ').'
-    : 'Se andiamo avanti così Viareggio è nostro! Continuiamo 💪';
-  return '<div class="card vg">' + (HAS_IMG && IMG.gruppo ? '<div class="hero" style="background-image:url(' + IMG.gruppo + ')"></div>' : '') + '<h2>🏖️ Obiettivo Viareggio</h2>' +
+    ? 'Con una media di <b>+' + fmt(serve + d.costo) + ' punti a settimana</b> ci arriviamo tranquilli (il costo settimanale è ' + fmt(d.costo) + ').'
+    : 'Andando avanti così ci arriviamo insieme. Continuiamo 💪';
+  return '<div class="card vg">' + (HAS_IMG && IMG.gruppo ? '<div class="hero" style="background-image:url(' + IMG.gruppo + ')"></div>' : '') + '<h2>🏖️ Viareggio, tutti insieme</h2>' +
+    '<div class="muted" style="margin:-4px 0 8px">Un obiettivo importante da realizzare insieme: ad agosto, se restiamo sopra ' + fmt(d.soglia) + ' punti.</div>' +
     '<div class="row"><div class="vg-num big">' + fmt(d.totale) + '</div><div class="muted">punti di famiglia<br>' + stato + '</div></div>' +
     '<div class="gauge"><div class="soglia" style="left:' + pos(d.soglia) + '%"><span>soglia ' + fmt(d.soglia) + '</span></div>' +
     '<div class="boat" style="left:' + pos(d.totale) + '%">⛵</div></div>' +
@@ -544,7 +556,7 @@ function bannerTraguardi(d) {
 
 /* ---- Casa ---- */
 function viewCasa(d) {
-  return bannerFesta(d) + blocViareggio(d) + blocObiettivi(d) + blocMedaglie(d, true) + blocSettimana(d) + blocFeste(d, 4) + blocCalendario(d, 8);
+  return bannerFesta(d) + blocSettimana(d) + blocObiettivi(d) + blocViareggio(d) + blocMedaglie(d, true) + blocFeste(d, 4) + blocCalendario(d, 8);
 }
 
 /* ---- Lavagna ---- */
@@ -1023,13 +1035,16 @@ function compra(lid, pid) {
 }
 
 /* ============================ MODALITÀ TV ============================ */
-var TV_BASE = ['viareggio', 'tappe', 'regole_piu', 'settimana', 'regole_altre', 'lavagna', 'agenda'];
+var TV_BASE = ['settimana', 'tappe', 'regole_piu', 'viareggio', 'lavagna', 'regole_altre', 'agenda'];
 var TV_PANELS = TV_BASE;
 function renderTV() {
   var d = S.d;
   document.body.className = 'tv';
   // con un traguardo di famiglia recente, la schermata di festa entra nella rotazione
-  TV_PANELS = (d.festeTV && d.festeTV.length) ? ['traguardi'].concat(TV_BASE) : TV_BASE;
+  // le tappe vanno a 2 per schermata, così si leggono senza scorrere
+  var nTappe = Math.max(1, Math.ceil((d.obiettivi || []).length / 2)), base = [];
+  TV_BASE.forEach(function (x) { if (x === 'tappe') { for (var t = 0; t < nTappe; t++) base.push('tappe:' + t); } else base.push(x); });
+  TV_PANELS = (d.festeTV && d.festeTV.length) ? ['traguardi'].concat(base) : base;
   var p = TV_PANELS[S.tvIdx % TV_PANELS.length];
   var h = '<div class="tvwrap"><div class="tvhead"><span style="font-size:4vw">🏆</span><h1>Coppa Bedduzzi</h1><div class="clock" id="clock"></div></div>';
   h += '<div class="panel on">' + bannerFesta(d).replace(/class="card festa-oggi"/g, 'class="festa-oggi"');
@@ -1043,8 +1058,11 @@ function renderTV() {
       : vgHtml;
   } else if (p === 'regole_piu' || p === 'regole_altre') {
     h += cartelloneTV(d, p);
-  } else if (p === 'tappe') {
-    h += blocObiettivi(d).replace('<div class="card">', '<div>');
+  } else if (p.indexOf('tappe') === 0) {
+    var pag = parseInt(p.split(':')[1] || '0', 10);
+    var dd = {}; for (var kk in d) dd[kk] = d[kk];
+    dd.obiettivi = (d.obiettivi || []).slice(pag * 2, pag * 2 + 2);
+    h += blocObiettivi(dd).replace('<div class="card">', '<div>').replace('🎯 Le nostre tappe', '🎯 Le nostre tappe' + (nTappe > 1 ? ' <span class="muted">' + (pag + 1) + '/' + nTappe + '</span>' : ''));
   } else if (p === 'settimana') {
     h += blocSettimana(d).replace('<div class="card">', '<div>');
   } else if (p === 'lavagna') {
@@ -1066,14 +1084,49 @@ function renderTV() {
     h += '</div><div style="flex:0 0 40%"><h2>🎉 Feste in arrivo</h2>';
     prossime.forEach(function (x) { h += '<div class="ev" style="align-items:center">' + avFesta(x, 70) + '<span class="grow" style="flex:1">' + e(testoFesta(x)) + '</span><b style="min-width:0;color:var(--corallo)">' + x.giorni + ' gg</b></div>'; });
     h += '<div class="ev"><span style="flex:1">🏖️ Viareggio</span><b style="min-width:0;color:var(--mare-scuro)">' + d.viareggio.giorni + ' gg</b></div></div></div>';
-      '<h2 style="margin-top:4vh">🏖️ Agosto</h2><div class="countdown big" style="color:var(--mare-scuro);font-size:7vw">' + d.viareggio.giorni + '</div><div class="muted">giorni a Viareggio</div></div></div>';
   }
   h += '</div><div class="dots">';
   for (var i = 0; i < TV_PANELS.length; i++) h += (i === S.tvIdx % TV_PANELS.length ? '●' : '○');
   h += '</div></div>';
+  if (TV.pausa) h += '<div class="tvpausa">⏸ In pausa · premi OK per ripartire</div>';
   document.getElementById('app').innerHTML = h;
   tick();
+  programmaTV();
 }
+
+/* ---- TV: scorrimento automatico e tempi delle schermate ---- */
+var TV = { durata: 25000, pausa: false, timer: null, scroll: null };
+function fermaTV() { clearTimeout(TV.timer); clearInterval(TV.scroll); }
+function programmaTV() {
+  fermaTV();
+  if (TV.pausa) return;
+  setTimeout(function () {
+    var pn = document.querySelector('body.tv .panel');
+    var extra = pn ? pn.scrollHeight - pn.clientHeight : 0;
+    if (extra > 8) {
+      // pagina lunga: si ferma 5 s in alto, scorre piano fino in fondo, si ferma 6 s, poi cambia
+      var vel = 45, ms = Math.round(extra / vel * 1000);
+      TV.timer = setTimeout(function () {
+        var t0 = Date.now();
+        TV.scroll = setInterval(function () {
+          var k = Math.min(1, (Date.now() - t0) / ms);
+          pn.scrollTop = Math.round(extra * k);
+          if (k >= 1) { clearInterval(TV.scroll); TV.timer = setTimeout(function () { tvNext(1); }, 6000); }
+        }, 40);
+      }, 5000);
+    } else {
+      TV.timer = setTimeout(function () { tvNext(1); }, TV.durata);
+    }
+  }, 120);
+}
+function scorriTV(dir) {
+  var pn = document.querySelector('body.tv .panel');
+  if (!pn) return;
+  fermaTV();
+  pn.scrollTop += dir * Math.round(pn.clientHeight * 0.6);
+  if (!TV.pausa) TV.timer = setTimeout(function () { tvNext(1); }, 30000);
+}
+function pausaTV() { TV.pausa = !TV.pausa; renderTV(); }
 function tick() {
   var c = document.getElementById('clock');
   if (!c) return;
@@ -1157,12 +1210,16 @@ function avviaTimer() {
   if (timerAvviati) return;
   timerAvviati = true;
   if (BOOT.tv) {
-    setInterval(function () { tvNext(1); }, 15000);
     setInterval(tick, 20000);
-    setInterval(function () { apiCall('dashboard', {}, function (d) { S.d = d; renderTV(); }, function () {}); }, 120000);
+    // i dati nuovi si vedono dalla schermata successiva (non interrompe quella in corso)
+    setInterval(function () { apiCall('dashboard', {}, function (d) { S.d = d; }, function () {}); }, 120000);
     document.addEventListener('keydown', function (ev) {
-      if (ev.keyCode === 39 || ev.keyCode === 13) tvNext(1);
-      if (ev.keyCode === 37) tvNext(-1);
+      var k = ev.keyCode;
+      if (k === 39) { ev.preventDefault(); tvNext(1); }
+      else if (k === 37) { ev.preventDefault(); tvNext(-1); }
+      else if (k === 40) { ev.preventDefault(); scorriTV(1); }
+      else if (k === 38) { ev.preventDefault(); scorriTV(-1); }
+      else if (k === 13) { ev.preventDefault(); pausaTV(); }
     });
     document.addEventListener('click', function () { tvNext(1); });
   } else {
