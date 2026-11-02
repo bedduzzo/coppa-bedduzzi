@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- COPPA BEDDUZZI – app – index.html – versione 2.2 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
+<!-- COPPA BEDDUZZI – app – index.html – versione 2.3 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -103,6 +103,17 @@
   @keyframes fadein { from { opacity: 0; transform: translateY(10px); } }
   .tabs button { font-size: 11px; }
 
+  /* cartellone regole e codice TV */
+  .tgrid { display: grid; gap: 1vw; }
+  .ttile { border-radius: 1.4vw; padding: 1.2vh .8vw 1vh; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 15.5vh; position: relative; }
+  .ttile.neg { background: #fee2e2; box-shadow: inset 0 0 0 .25vw #fca5a5; }
+  .ttile .te { font-size: 3.4vw; line-height: 1; }
+  .ttile .tl { font-size: 1.45vw; font-weight: 800; margin-top: 1vh; line-height: 1.15; }
+  .ttile .tp { font-size: 2.3vw; font-weight: 800; margin-top: .6vh; color: var(--verde); font-family: 'Baloo 2', sans-serif; }
+  .ttile.neg .tp { color: var(--rosso); }
+  body.tv .panel { min-height: 0; overflow: hidden; }
+  .tvcode { font-size: 12vw; letter-spacing: 1.5vw; color: var(--mare-scuro); margin: 4vh 0 3vh; line-height: 1; }
+
   /* festa a schermo intero */
   #festa { position: fixed; inset: 0; z-index: 15; background: rgba(12,74,110,.72); display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadein .3s; }
   .festa-card { background: #fff; border-radius: 26px; padding: 26px 22px; max-width: 380px; width: 100%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
@@ -201,7 +212,7 @@
 
 <script>
 var BOOT = { token: '', tv: /[?&]tv=1/.test(location.search) };
-var VERSIONE_PAGINA = '2.2';
+var VERSIONE_PAGINA = '2.3';
 var IMG = {};
 var S = { d: null, tab: 'casa', busy: false, tvIdx: 0, preview: null, filtro: '' };
 
@@ -499,6 +510,25 @@ function mostraFeste() {
     apiCall('visto', { ids: ids }, function (nd) { S.d = nd; render(); }, function () {});
   };
   disegna();
+}
+
+/** TV: cartellone delle regole a tessere grandi, con poco testo. */
+function tessereTV(lista, cols) {
+  return '<div class="tgrid" style="grid-template-columns:repeat(' + cols + ',1fr)">' + lista.map(function (r) {
+    return '<div class="ttile c-' + e(r.categoria || 'x') + (r.punti < 0 ? ' neg' : '') + '"><div class="te">' + e(r.icona || CAT_ICO[r.categoria] || '⭐') + '</div>' +
+      '<div class="tl">' + e(r.breve || r.descrizione) + '</div><div class="tp">' + sgn(r.punti) + '</div></div>';
+  }).join('') + '</div>';
+}
+function cartelloneTV(d, p) {
+  var rr = d.regoleTV || [];
+  var bimbe = rr.filter(function (r) { return r.per === 'figlie' || r.per === 'tutti'; });
+  if (p === 'regole_piu') {
+    var pos = bimbe.filter(function (r) { return r.punti > 0; }).sort(function (a, b) { return a.punti - b.punti; }).slice(0, 18);
+    return '<h2>⭐ Così si guadagna</h2>' + tessereTV(pos, 6);
+  }
+  var neg = bimbe.filter(function (r) { return r.punti < 0; }).sort(function (a, b) { return b.punti - a.punti; }).slice(0, 6);
+  var gen = rr.filter(function (r) { return r.per === 'genitori'; }).slice(0, 6);
+  return '<h2>⚠️ Così si perde</h2>' + tessereTV(neg, 6) + (gen.length ? '<h2 style="margin-top:2.5vh">🧔👩 Mamma e papà</h2>' + tessereTV(gen, 6) : '');
 }
 
 /** TV: traguardi di famiglia delle ultime ore. */
@@ -923,7 +953,12 @@ function viewStorico(d) {
     h += movRow(m);
     if (m.da === d.me.id && m.stato !== 'annullato') h += '<div style="margin:-4px 0 10px 62px"><button class="mini neg" onclick="annullaMov(\'' + m.id + '\')">Annulla (errore)</button></div>';
   });
-  return h + '</div>';
+  return h + '</div>' + cardCollegaTV();
+}
+function cardCollegaTV() {
+  return '<div class="card"><h2>📺 Collega la TV</h2><div class="muted">Sulla TV apri <b>' + e(location.host + location.pathname.replace(/index\.html$/, '')) + 'tv</b>: comparirà un codice di 6 cifre. Scrivilo qui.</div>' +
+    '<div class="row" style="margin-top:10px"><input id="tv_cod" inputmode="numeric" maxlength="7" placeholder="Codice TV" style="width:150px;font-size:22px;letter-spacing:.15em;text-align:center">' +
+    '<button onclick="call(\'collega_tv\',{codice:val(\'tv_cod\')},\'TV collegata! 📺\',true)">Collega</button></div></div>';
 }
 function annullaMov(id) {
   if (annullaMov._p !== id) { annullaMov._p = id; toast('Tocca di nuovo per annullare'); setTimeout(function () { annullaMov._p = null; }, 3000); return; }
@@ -988,7 +1023,7 @@ function compra(lid, pid) {
 }
 
 /* ============================ MODALITÀ TV ============================ */
-var TV_BASE = ['viareggio', 'tappe', 'settimana', 'lavagna', 'agenda'];
+var TV_BASE = ['viareggio', 'tappe', 'regole_piu', 'settimana', 'regole_altre', 'lavagna', 'agenda'];
 var TV_PANELS = TV_BASE;
 function renderTV() {
   var d = S.d;
@@ -1006,6 +1041,8 @@ function renderTV() {
     h += (HAS_IMG && IMG.gruppo)
       ? '<div class="two"><div>' + vgHtml + '</div><div class="tvfoto" style="flex:0 0 30%;background-image:url(' + IMG.gruppo + ')"></div></div>'
       : vgHtml;
+  } else if (p === 'regole_piu' || p === 'regole_altre') {
+    h += cartelloneTV(d, p);
   } else if (p === 'tappe') {
     h += blocObiettivi(d).replace('<div class="card">', '<div>');
   } else if (p === 'settimana') {
@@ -1056,13 +1093,38 @@ function leggiToken() {
   }
   return load(TOKEN_KEY) || '';
 }
+var tvPoll = null;
+function schermataTV() {
+  document.body.className = 'tv';
+  var app = document.getElementById('app');
+  app.innerHTML = '<div class="tvwrap"><div class="tvhead"><span style="font-size:4vw">🏆</span><h1>Coppa Bedduzzi</h1></div><div class="panel on" style="text-align:center"><div class="loading">Preparo il codice…</div></div></div>';
+  apiCall('tv_codice', {}, function (c) {
+    app.querySelector('.panel').innerHTML = '<h2>📺 Collega questa TV</h2>' +
+      '<div class="muted" style="font-size:2vw">Sul telefono di mamma o papà apri Coppa Bedduzzi → <b>📊 Storico</b> → <b>Collega la TV</b> e scrivi:</div>' +
+      '<div class="big tvcode">' + c.codice.slice(0, 3) + ' ' + c.codice.slice(3) + '</div>' +
+      '<div class="muted" style="font-size:1.6vw">Il codice vale ' + c.minuti + ' minuti, poi ne compare uno nuovo.</div>';
+    clearInterval(tvPoll);
+    tvPoll = setInterval(function () {
+      apiCall('tv_stato', { id: c.id }, function (st) {
+        if (st.stato === 'collegato' && st.token) {
+          clearInterval(tvPoll);
+          store(TOKEN_KEY, st.token); BOOT.token = st.token; BOOT.tv = true;
+          festa(); avvia();
+        } else if (st.stato === 'scaduto') { clearInterval(tvPoll); schermataTV(); }
+      }, function () {});
+    }, 3000);
+  }, function (msg) {
+    app.querySelector('.panel').innerHTML = '<div class="loading">😕 ' + e(msg) + '<br><button onclick="schermataTV()" style="margin-top:16px">Riprova</button></div>';
+  });
+}
 function schermataCodice(msg) {
   document.body.className = '';
   document.getElementById('app').innerHTML = '<div class="wrap" style="padding-top:48px"><div class="card" style="text-align:center">' +
     '<img src="icona-192.png" alt="" style="width:96px;height:96px;border-radius:22px"><h2 style="margin-top:10px">Coppa Bedduzzi</h2>' +
     '<div class="muted" style="margin:6px 0 14px">' + e(msg || 'Incolla qui il tuo link personale (quello che ti ha mandato papà).') + '</div>' +
     '<input id="codice" placeholder="Incolla il link…" autocomplete="off" onkeydown="if(event.keyCode===13)entra()">' +
-    '<button onclick="entra()" style="margin-top:10px;width:100%">Entra</button></div></div>';
+    '<button onclick="entra()" style="margin-top:10px;width:100%">Entra</button>' +
+    '<div style="margin-top:14px"><a href="#" onclick="BOOT.tv=true;schermataTV();return false" style="color:var(--grigio)">📺 È un televisore? Collegalo con un codice</a></div></div></div>';
 }
 function entra() {
   var v = String(val('codice') || '').trim();
@@ -1114,7 +1176,7 @@ function avvia() {
     app.innerHTML = '<div class="loading">⚙️ Manca l\'indirizzo dell\'archivio nel file config.js</div>';
     return;
   }
-  if (!BOOT.token) { schermataCodice(); return; }
+  if (!BOOT.token) { if (BOOT.tv) schermataTV(); else schermataCodice(); return; }
   app.innerHTML = '<div class="loading">🏆 Coppa Bedduzzi sta arrivando…</div>';
   caricaImmagini();
   apiCall('dashboard', {}, function (d) {
