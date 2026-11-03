@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- COPPA BEDDUZZI – app – index.html – versione 2.4 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
+<!-- COPPA BEDDUZZI – app – index.html – versione 2.8 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -116,6 +116,33 @@
   .tvpausa { position: fixed; right: 3vw; bottom: 3vh; background: rgba(15,23,42,.85); color: #fff; padding: 1.2vh 1.6vw; border-radius: 1vw; font-size: 1.6vw; font-weight: 800; z-index: 9; }
   .tvcode { font-size: 12vw; letter-spacing: 1.5vw; color: var(--mare-scuro); margin: 4vh 0 3vh; line-height: 1; }
 
+  /* mappa */
+  .mappa { width: 100%; height: auto; display: block; border-radius: 16px; touch-action: manipulation; }
+  .mappa-mini .mappa { max-height: 200px; }
+  .mappa-grande .mappa { aspect-ratio: 100 / 70; }
+  .mappa .luogo { cursor: pointer; }
+  .mappa .em { font-size: 4.6px; }
+  .mappa .nome { font-size: 2.3px; font-weight: 800; fill: #1e293b; paint-order: stroke; stroke: #fff; stroke-width: .7px; font-family: 'Nunito', sans-serif; }
+  .mappa .zona { font-size: 2.6px; font-weight: 800; fill: #65a30d; opacity: .7; font-family: 'Baloo 2', sans-serif; text-anchor: middle; }
+  .mappa .dest { font-size: 2.2px; font-weight: 800; fill: #0369a1; paint-order: stroke; stroke: #fff; stroke-width: .6px; }
+  .mappa .pulsa { animation: pulsa 1.8s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+  @keyframes pulsa { 0%, 100% { opacity: .9; transform: scale(1); } 50% { opacity: .2; transform: scale(1.35); } }
+  .mappa-tv .mappa { height: 72vh; width: 100%; }
+  body.tv .mov { font-size: 1.7vw; padding: 1.2vh 0; }
+  body.tv .mov .av { width: 4.4vw !important; height: 4.4vw !important; }
+  body.tv .mov .muted { font-size: 1.3vw; }
+
+  /* campionato */
+  .esito { width: 34px; height: 34px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; flex: 0 0 auto; }
+  .esito.v { background: #dcfce7; color: var(--verde); } .esito.p { background: #fee2e2; color: var(--rosso); } .esito.f { background: #f1f5f9; }
+  .prossima .pv { font-size: 22px; color: var(--mare-scuro); margin-top: 2px; }
+  .prossima .sq { font-weight: 800; font-size: 16px; margin-top: 2px; }
+  table.classifica td, table.classifica th { padding: 6px 4px; }
+  table.classifica tr.noi td { background: #fef3c7; font-weight: 800; }
+  table.classifica td:nth-child(2), table.classifica th:nth-child(2) { text-align: left; }
+  body.tv .prossima .pv { font-size: 3vw; } body.tv .prossima .sq { font-size: 2vw; }
+  body.tv table.classifica { font-size: 1.5vw; } body.tv .esito { width: 3vw; height: 3vw; font-size: 1.6vw; }
+
   /* festa a schermo intero */
   #festa { position: fixed; inset: 0; z-index: 15; background: rgba(12,74,110,.72); display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadein .3s; }
   .festa-card { background: #fff; border-radius: 26px; padding: 26px 22px; max-width: 380px; width: 100%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
@@ -214,7 +241,7 @@
 
 <script>
 var BOOT = { token: '', tv: /[?&]tv=1/.test(location.search) };
-var VERSIONE_PAGINA = '2.4';
+var VERSIONE_PAGINA = '2.8';
 var IMG = {};
 var S = { d: null, tab: 'casa', busy: false, tvIdx: 0, preview: null, filtro: '' };
 
@@ -339,12 +366,13 @@ function render() {
     : [['casa', '🏖️', 'Casa'], ['lavagna', '📋', 'Lavagna'], ['dona', '💛', 'Mamma e papà'], ['salvadanaio', '🐷', 'Salvadanaio'], ['regole', '📜', 'Regole']];
   var ok = false;
   for (var i = 0; i < tabs.length; i++) if (tabs[i][0] === S.tab) ok = true;
+  if (S.tab === 'mappa' || S.tab === 'partite') ok = true;
   if (!ok) S.tab = 'casa';
 
   var h = '<div class="top"><div class="inner"><div class="avatar">' + av(d.me.id, 58) + '</div>' +
     '<div><h1>Ciao ' + e(d.me.soprannome) + '!</h1><div class="sub">Coppa Bedduzzi · ' + oggiLungo() + '</div></div>' +
     '<div class="sun">☀️</div></div></div><div class="wrap">';
-  var v = { casa: viewCasa, lavagna: viewLavagna, punti: viewPunti, storico: viewStorico, gettoni: viewGettoni, dona: viewDona, salvadanaio: viewSalvadanaio, regole: viewRegole }[S.tab];
+  var v = { casa: viewCasa, lavagna: viewLavagna, punti: viewPunti, storico: viewStorico, gettoni: viewGettoni, dona: viewDona, salvadanaio: viewSalvadanaio, regole: viewRegole, mappa: viewMappa, partite: viewPartite }[S.tab];
   v = (function (orig) { return function (dd) {
     return orig(dd) + (r === 'genitore' && versioniDiverse(d.versione, VERSIONE_PAGINA)
       ? '<div class="card" style="border:2px solid var(--corallo)"><b>⚠️ Versioni diverse</b><div class="muted">L\'archivio (Code.gs in Apps Script) è alla versione ' + e(d.versione || '?') + ', l\'app alla ' + VERSIONE_PAGINA + '. Aggiorna la parte rimasta indietro.</div></div>'
@@ -358,6 +386,7 @@ function render() {
   h += '</div>';
   document.getElementById('app').innerHTML = h;
   setTimeout(mostraFeste, 400);
+  if (S.tab === 'mappa') animaMappa('mappaGrande');
 }
 function numVer(v) { var p = String(v || '0').split('.'); return [parseInt(p[0], 10) || 0, parseInt(p[1], 10) || 0]; }
 /** Avvisa se l'archivio è più nuovo dell'app, o se cambia la versione principale (2.x → 3.x). */
@@ -472,6 +501,226 @@ function blocObiettivi(d) {
   return h + '<div class="muted" style="margin-top:10px">Contano l\'impegno e la costanza, non solo i voti. Si arriva insieme.</div></div>';
 }
 
+/* ============================ MAPPA DEI LUOGHI ============================ */
+var VB_TUTTA = [0, 0, 100, 70];
+var COL_TIPO = { casa: '#f97316', scuola: '#2563eb', palestra: '#16a34a', lavoro: '#7c3aed', viaggio: '#0ea5e9', lezione: '#db2777', famiglia: '#ea580c', parrocchia: '#a16207', cuore: '#e11d48', spesa: '#0d9488', partita: '#f59e0b' };
+function hhmm(iso) { var x = new Date(iso); return pad(x.getHours()) + ':' + pad(x.getMinutes()); }
+function quandoBreve(iso) {
+  var x = new Date(iso), oggi = new Date(), dom = new Date(); dom.setDate(dom.getDate() + 1);
+  var g = x.toDateString() === oggi.toDateString() ? 'oggi' : x.toDateString() === dom.toDateString() ? 'domani' : GG[x.getDay()] + ' ' + x.getDate();
+  return g + ' ' + hhmm(iso);
+}
+function vbPer(m, idLuogo) {
+  var l = (m.luoghi || []).filter(function (x) { return x.id === idLuogo; })[0];
+  if (!l) return VB_TUTTA.slice();
+  var w = 38, h = 26.6;
+  return [Math.max(0, Math.min(100 - w, l.x - w / 2)), Math.max(0, Math.min(70 - h, l.y - h / 2)), w, h];
+}
+/** Il disegno: mare, fiume, campagna, strade, luoghi e persone. */
+function svgMappa(d, id, opts) {
+  opts = opts || {};
+  var m = d.mappa || { luoghi: [], adesso: [] };
+  var vb = (opts.vb || VB_TUTTA).join(' ');
+  var casa = m.luoghi.filter(function (l) { return l.tipo === 'casa'; })[0] || { x: 50, y: 35 };
+  var h = '<svg id="' + id + '" class="mappa" viewBox="' + vb + '" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">' +
+    '<defs><radialGradient id="terra_' + id + '" cx="55%" cy="45%" r="75%"><stop offset="0" stop-color="#ecfccb"/><stop offset="1" stop-color="#bbf7d0"/></radialGradient>' +
+    '<clipPath id="cl_' + id + '"><circle cx="0" cy="0" r="4.3"/></clipPath><clipPath id="cp_' + id + '"><circle cx="0" cy="0" r="2.3"/></clipPath></defs>' +
+    '<rect x="-5" y="-5" width="110" height="80" fill="url(#terra_' + id + ')"/>' +
+    // mare a ovest
+    '<path d="M-5,-5 L4,-5 C6,10 2,22 5,35 C8,50 3,60 6,75 L-5,75 Z" fill="#7dd3fc"/>' +
+    '<path d="M4,-5 C6,10 2,22 5,35 C8,50 3,60 6,75" fill="none" stroke="#fef3c7" stroke-width="1.6"/>' +
+    // fiume
+    '<path d="M100,22 C82,26 70,18 58,24 C46,30 34,26 24,32 C16,37 10,40 5,42" fill="none" stroke="#93c5fd" stroke-width="2.4" stroke-linecap="round" opacity=".9"/>' +
+    // campi
+    '<g opacity=".35" fill="#86efac"><rect x="55" y="58" width="14" height="7" rx="1.5"/><rect x="26" y="58" width="10" height="8" rx="1.5"/><rect x="60" y="6" width="12" height="6" rx="1.5"/><rect x="22" y="8" width="9" height="7" rx="1.5"/></g>' +
+    // nomi delle zone
+    '<g class="zona"><text x="84" y="20">Cascina</text><text x="56" y="68">Casciavola · Navacchio</text><text x="20" y="5">Versilia</text><text x="38" y="4">Lucca ›</text></g>';
+  // strade dalla casa a ogni luogo
+  m.luoghi.forEach(function (l) {
+    if (l.tipo === 'casa' || l.tipo === 'viaggio') return;
+    var cx = (casa.x + l.x) / 2 + (l.y - casa.y) * 0.15, cy = (casa.y + l.y) / 2 - (l.x - casa.x) * 0.12;
+    h += '<path d="M' + casa.x + ',' + casa.y + ' Q' + cx + ',' + cy + ' ' + l.x + ',' + l.y + '" fill="none" stroke="#fde68a" stroke-width="1.5" stroke-linecap="round"/>' +
+      '<path d="M' + casa.x + ',' + casa.y + ' Q' + cx + ',' + cy + ' ' + l.x + ',' + l.y + '" fill="none" stroke="#f59e0b" stroke-width=".25" stroke-dasharray="1 1.2"/>';
+  });
+  // luoghi
+  m.luoghi.forEach(function (l) {
+    var col = COL_TIPO[l.tipo] || '#64748b', img = HAS_IMG && IMG['luogo_' + l.id];
+    h += '<g class="luogo" onclick="selLuogo(\'' + l.id + '\')" transform="translate(' + l.x + ',' + l.y + ')">' +
+      (l.tipo === 'viaggio' ? '<circle r="6.3" fill="#e0f2fe" stroke="' + col + '" stroke-width=".5" stroke-dasharray="1.2 .8"/>' : '') +
+      '<circle r="4.8" fill="#fff" stroke="' + col + '" stroke-width=".8"/>' +
+      (img ? '<image href="' + img + '" x="-4.3" y="-4.3" width="8.6" height="8.6" clip-path="url(#cl_' + id + ')"/>'
+           : '<text class="em" y="1.6" text-anchor="middle">' + e(l.emoji) + '</text>') +
+      (l.tipo === 'cuore' ? '<text x="2.6" y="-2.4" font-size="3.4">❤️</text>' : '') +
+      '<text class="nome" y="8" text-anchor="middle">' + e(l.nome) + '</text></g>';
+  });
+  // persone: attorno al luogo dove sono adesso
+  var perLuogo = {};
+  (m.adesso || []).forEach(function (a) { (perLuogo[a.luogo] = perLuogo[a.luogo] || []).push(a); });
+  var angoli = [-40, -140, -90, 20, 160, 90];
+  Object.keys(perLuogo).forEach(function (lid) {
+    var l = m.luoghi.filter(function (x) { return x.id === lid; })[0];
+    if (!l) return;
+    perLuogo[lid].forEach(function (a, i) {
+      var ang = angoli[i % angoli.length] * Math.PI / 180, r = 6.4;
+      var px = l.x + Math.cos(ang) * r, py = l.y + Math.sin(ang) * r, p = chi(a.persona), img = HAS_IMG && IMG[a.persona];
+      h += '<g class="pers" transform="translate(' + px.toFixed(2) + ',' + py.toFixed(2) + ')">' +
+        '<circle r="3.4" fill="none" stroke="' + e(p.colore || '#0ea5e9') + '" stroke-width=".5" class="pulsa"/>' +
+        '<circle r="2.6" fill="#fff" stroke="' + e(p.colore || '#0ea5e9') + '" stroke-width=".6"/>' +
+        (img ? '<image href="' + img + '" x="-2.3" y="-2.3" width="4.6" height="4.6" clip-path="url(#cp_' + id + ')"/>' : '<text y="1" text-anchor="middle" font-size="3">' + e(p.emoji) + '</text>') +
+        (a.testo && i === 0 ? '<text class="dest" y="5.4" text-anchor="middle">' + e(a.testo) + '</text>' : '') + '</g>';
+    });
+  });
+  return h + '</svg>';
+}
+/** Zoom morbido verso il luogo scelto (o verso la mappa intera). */
+function animaMappa(id, verso) {
+  var el = document.getElementById(id);
+  if (!el || !S.d || !S.d.mappa) return;
+  var target = verso || (S.mapSel ? vbPer(S.d.mappa, S.mapSel) : VB_TUTTA);
+  var from = (el.getAttribute('viewBox') || '0 0 100 70').split(' ').map(Number);
+  var t0 = Date.now(), ms = 650;
+  clearInterval(el._anim);
+  el._anim = setInterval(function () {
+    var k = Math.min(1, (Date.now() - t0) / ms), q = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+    var vb = from.map(function (v, i) { return v + (target[i] - v) * q; });
+    el.setAttribute('viewBox', vb.map(function (v) { return v.toFixed(2); }).join(' '));
+    if (k >= 1) { clearInterval(el._anim); S.mapVB = target; }
+  }, 16);
+}
+function selLuogo(id) {
+  if (S.tab !== 'mappa') { S.mapSel = id; go('mappa'); return; }
+  S.mapSel = S.mapSel === id ? null : id;
+  render();
+}
+function nomeLuogo(m, id) { var l = (m.luoghi || []).filter(function (x) { return x.id === id; })[0]; return l ? l.emoji + ' ' + l.nome : id; }
+function rigaPresenza(m, a, conLuogo) {
+  var p = chi(a.persona);
+  return '<div class="mov">' + av(a.persona, 36) + '<div class="grow"><b>' + e(p.soprannome) + '</b>' + (conLuogo ? ' · ' + e(nomeLuogo(m, a.luogo)) : '') +
+    (a.testo ? ' · <b>' + e(a.testo) + '</b>' : '') +
+    '<div class="muted">' + (a.inizio ? quandoBreve(a.inizio) + '–' + hhmm(a.fine) : (a.fonte === 'qui' ? '📍 l\'ha segnato' : '📅 dal calendario') + (a.fino ? ' · fino ' + (new Date(a.fino) - new Date() > 20 * 3600e3 ? 'al ' + fdate(a.fino) : 'alle ' + hhmm(a.fino)) : '')) +
+    (a.titolo ? ' · ' + e(a.titolo) : '') + '</div></div></div>';
+}
+/** In Casa: piccola mappa e chi è in giro adesso. */
+function blocDoveSiamo(d) {
+  var m = d.mappa;
+  if (!m || !m.luoghi || !m.luoghi.length) return '';
+  var h = '<div class="card" onclick="go(\'mappa\')" style="cursor:pointer"><div class="row"><h2 class="grow">📍 Dove siamo</h2><span class="pill">Apri la mappa ›</span></div>' +
+    '<div class="mappa-mini">' + svgMappa(d, 'mappaMini') + '</div>';
+  if (m.adesso.length) m.adesso.slice(0, 4).forEach(function (a) { h += rigaPresenza(m, a, true); });
+  else h += '<div class="muted">Nessuno risulta fuori casa in questo momento.</div>';
+  return h + '</div>';
+}
+function viewMappa(d) {
+  var m = d.mappa || { luoghi: [], adesso: [], prossimi: [] };
+  var sel = S.mapSel ? m.luoghi.filter(function (l) { return l.id === S.mapSel; })[0] : null;
+  var h = '<div class="card" style="padding:12px"><div class="row" style="margin-bottom:8px"><button class="mini sec" onclick="S.mapSel=null;go(\'casa\')">‹ Casa</button>' +
+    '<h2 class="grow" style="margin:0">📍 La nostra mappa</h2>' + (sel ? '<button class="mini sec" onclick="selLuogo(\'' + sel.id + '\')">⤢ Tutta</button>' : '') + '</div>' +
+    '<div class="mappa-grande">' + svgMappa(d, 'mappaGrande', { vb: S.mapVB || VB_TUTTA }) + '</div>' +
+    '<div class="muted" style="margin-top:6px;text-align:center">Tocca un luogo per avvicinarti</div></div>';
+  if (sel) {
+    var qui = m.adesso.filter(function (a) { return a.luogo === sel.id; });
+    var poi = m.prossimi.filter(function (a) { return a.luogo === sel.id; }).slice(0, 6);
+    var mio = m.adesso.filter(function (a) { return a.persona === d.me.id && a.fonte === 'qui'; })[0];
+    h += '<div class="card"><div class="row"><span class="ico c-x" style="width:52px;height:52px;font-size:30px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 3px ' + (COL_TIPO[sel.tipo] || '#64748b') + '">' + e(sel.emoji) + '</span>' +
+      '<div class="grow"><h2 style="margin:0">' + e(sel.nome) + '</h2>' + (sel.note ? '<div class="muted">' + e(sel.note) + '</div>' : '') + '</div></div>' +
+      '<div class="sez">Adesso qui</div>' + (qui.length ? qui.map(function (a) { return rigaPresenza(m, a, false); }).join('') : '<div class="muted">Nessuno in questo momento.</div>') +
+      '<div class="sez">Prossimamente</div>' + (poi.length ? poi.map(function (a) { return rigaPresenza(m, a, false); }).join('') : '<div class="muted">Niente in calendario nei prossimi giorni.</div>');
+    if (sel.tipo === 'viaggio') {
+      h += '<div class="sez">Parti?</div><div class="stack"><input id="viaggio_dest" maxlength="60" placeholder="Destinazione (es. Milano)">' +
+        '<div class="row"><span class="muted">Torno il</span><input id="viaggio_fino" type="date" class="grow"></div>' +
+        '<button onclick="call(\'sono_qui\',{luogo:\'trasferta\',testo:val(\'viaggio_dest\'),fino:val(\'viaggio_fino\')},\'Buon viaggio! ✈️\')">✈️ Sono in trasferta</button></div>';
+    } else {
+      h += '<div class="row" style="margin-top:12px"><button onclick="call(\'sono_qui\',{luogo:\'' + sel.id + '\'},\'Segnato: sei qui 📍\')">📍 Sono qui</button>' +
+        (mio ? '<button class="sec" onclick="call(\'me_ne_vado\',{},\'Fatto\')">Me ne vado</button>' : '') + '</div>';
+    }
+    if (mio && sel.tipo === 'viaggio') h += '<div style="margin-top:8px"><button class="sec" onclick="call(\'me_ne_vado\',{},\'Bentornato! 🏠\')">🏠 Sono tornato</button></div>';
+    if (sel.id === 'lavoro_' + d.me.id) {
+      h += '<div class="sez">Hai cambiato sede?</div><div class="stack"><input id="lav_nome" maxlength="40" placeholder="Nome (es. Scuola Rossi)" value="' + e(sel.nome) + '">' +
+        '<input id="lav_note" maxlength="80" placeholder="Località / indirizzo" value="' + e(sel.note) + '">' +
+        '<button class="sec" onclick="call(\'cambia_lavoro\',{nome:val(\'lav_nome\'),note:val(\'lav_note\')},\'Sede aggiornata\')">✏️ Salva la nuova sede</button></div>';
+    }
+    h += '</div>';
+  } else {
+    h += '<div class="card"><h2>👀 Adesso</h2>' + (m.adesso.length ? m.adesso.map(function (a) { return rigaPresenza(m, a, true); }).join('') : '<div class="muted">Nessuno risulta fuori casa.</div>') + '</div>' +
+      '<div class="card"><h2>🗓️ Prossimamente</h2>' + (m.prossimi.length ? m.prossimi.slice(0, 8).map(function (a) { return rigaPresenza(m, a, true); }).join('') : '<div class="muted">Niente in calendario.</div>') + '</div>';
+  }
+  return h;
+}
+/** TV: mappa grande + chi è dove; zoom automatico sui luoghi dove c'è qualcuno. */
+function mappaTV(d) {
+  var m = d.mappa || { luoghi: [], adesso: [], prossimi: [] };
+  var oggi = new Date().toDateString();
+  var oggiPoi = m.prossimi.filter(function (a) { return new Date(a.inizio).toDateString() === oggi; }).slice(0, 4);
+  return '<div class="two"><div style="flex:0 0 62%"><div class="mappa-tv">' + svgMappa(d, 'mappaTV') + '</div></div><div>' +
+    '<h2>📍 Dove siamo</h2>' + (m.adesso.length ? m.adesso.map(function (a) { return rigaPresenza(m, a, true); }).join('') : '<div class="muted">Tutti a casa o in giro senza segnalarlo 🙂</div>') +
+    (oggiPoi.length ? '<h2 style="margin-top:2vh">Più tardi oggi</h2>' + oggiPoi.map(function (a) { return rigaPresenza(m, a, true); }).join('') : '') + '</div></div>';
+}
+
+/* ============================ CAMPIONATO ============================ */
+function giornoLungo(iso) { var x = new Date(iso); return GGL[x.getDay()] + ' ' + x.getDate() + ' ' + MML[x.getMonth()]; }
+function avversaria(p) { return p.noi === 'casa' ? p.ospite : p.casa; }
+function prossimaPartita(g) { var now = Date.now(); return g.partite.filter(function (p) { return !p.giocata && p.data && new Date(p.data).getTime() > now - 3 * 3600e3; })[0] || null; }
+function ultimePartite(g, n) { return g.partite.filter(function (p) { return p.giocata; }).slice(-n).reverse(); }
+function rigaRisultato(p) {
+  var nostri = p.noi === 'casa' ? p.set1 : p.set2, loro = p.noi === 'casa' ? p.set2 : p.set1;
+  return '<div class="mov"><span class="esito ' + (p.esito === 'V' ? 'v' : 'p') + '">' + (p.esito === 'V' ? 'V' : 'P') + '</span>' +
+    '<div class="grow"><b>' + nostri + '-' + loro + '</b> ' + (p.noi === 'casa' ? 'contro ' : 'a casa di ') + '<b>' + e(avversaria(p)) + '</b>' +
+    '<div class="muted">' + (p.data ? giornoLungo(p.data) + ' · ' : '') + e(p.giornata) + (p.parziali && p.parziali.length ? ' · ' + e(p.parziali.join(', ')) : '') + '</div></div></div>';
+}
+function boxProssima(p) {
+  if (!p) return '<div class="muted">Nessuna partita in calendario.</div>';
+  var casa = p.noi === 'casa';
+  return '<div class="prossima"><div class="muted">' + e(p.giornata) + (p.live ? ' · <span class="pill neg">IN DIRETTA</span>' : '') + '</div>' +
+    '<div class="big pv">' + e(p.data ? giornoLungo(p.data) + ' · ' + hhmm(p.data) : 'data da definire') + '</div>' +
+    '<div class="sq">' + e(p.casa) + ' <span class="muted">vs</span> ' + e(p.ospite) + '</div>' +
+    '<div class="row" style="margin-top:6px"><span class="pill ' + (casa ? 'pos' : 'warn') + '">' + (casa ? '🏠 In casa' : '🚗 In trasferta') + '</span>' +
+    '<span class="muted grow">📍 ' + e(p.palestra) + '</span></div>' + (p.note ? '<div class="muted">📝 ' + e(p.note) + '</div>' : '') + '</div>';
+}
+/** In Casa: prossima partita, ultimo risultato e posizione in classifica. */
+function blocPartite(d) {
+  var camp = d.campionato || [];
+  return camp.map(function (g) {
+    if (!g.partite || !g.partite.length) return '';
+    var chiG = chi(g.persona), noi = (g.classifica || []).filter(function (r) { return r.noi; })[0], ult = ultimePartite(g, 1)[0];
+    return '<div class="card" onclick="S.campSel=\'' + g.girone + '\';go(\'partite\')" style="cursor:pointer">' +
+      '<div class="row">' + av(g.persona, 40) + '<h2 class="grow" style="margin:0">🏐 Le partite di ' + e(chiG.soprannome) + '</h2><span class="pill">Tutto ›</span></div>' +
+      (g.vecchi ? '<div class="muted">⚠️ FIPAV non risponde: dati dell\'ultimo aggiornamento</div>' : '') +
+      '<div class="sez">Prossima partita</div>' + boxProssima(prossimaPartita(g)) +
+      (ult ? '<div class="sez">Ultima</div>' + rigaRisultato(ult) : '') +
+      (noi ? '<div class="muted" style="margin-top:6px">🏆 <b>' + noi.pos + 'ª</b> in classifica · ' + noi.punti + ' punti · ' + noi.v + ' vinte, ' + noi.p + ' perse</div>' : '') + '</div>';
+  }).join('');
+}
+function tabellaClassifica(g) {
+  var h = '<table class="stats classifica"><tr><th>#</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>Set</th></tr>';
+  (g.classifica || []).forEach(function (r) {
+    h += '<tr class="' + (r.noi ? 'noi' : '') + '"><td>' + r.pos + '</td><td>' + e(r.squadra) + '</td><td><b>' + r.punti + '</b></td><td>' + r.g + '</td><td>' + r.v + '</td><td>' + r.p + '</td><td>' + r.sv + '-' + r.sp + '</td></tr>';
+  });
+  return h + '</table>';
+}
+function viewPartite(d) {
+  var camp = d.campionato || [], g = camp.filter(function (x) { return x.girone === S.campSel; })[0] || camp[0];
+  if (!g) return '<div class="card"><button class="mini sec" onclick="go(\'casa\')">‹ Casa</button><div class="muted" style="margin-top:10px">Nessun campionato impostato.</div></div>';
+  var future = g.partite.filter(function (p) { return !p.giocata; }), giocate = ultimePartite(g, 99);
+  return '<div class="card"><div class="row"><button class="mini sec" onclick="go(\'casa\')">‹ Casa</button><h2 class="grow" style="margin:0">🏐 ' + e(chi(g.persona).soprannome) + '</h2></div>' +
+    '<div class="muted" style="margin-top:6px">' + e(g.titolo) + ' · <a href="' + e(g.link) + '" target="_blank" rel="noopener">FIPAV Online</a></div>' +
+    '<div class="sez">Prossima partita</div>' + boxProssima(prossimaPartita(g)) + '</div>' +
+    '<div class="card"><h2>🏆 Classifica</h2>' + tabellaClassifica(g) + '<div class="muted" style="margin-top:6px">Calcolata dai risultati: 3 punti per il 3-0 e il 3-1, 2 e 1 per il 3-2.</div></div>' +
+    (giocate.length ? '<div class="card"><h2>📋 Risultati</h2>' + giocate.map(rigaRisultato).join('') + '</div>' : '') +
+    (future.length ? '<div class="card"><h2>🗓️ Calendario</h2>' + future.map(function (p) {
+      return '<div class="mov"><span class="esito f">' + (p.noi === 'casa' ? '🏠' : '🚗') + '</span><div class="grow"><b>' + e(avversaria(p)) + '</b>' +
+        '<div class="muted">' + (p.data ? giornoLungo(p.data) + ' ' + hhmm(p.data) : 'data da definire') + ' · ' + e(p.giornata) + '<br>📍 ' + e(p.palestra) + '</div></div></div>';
+    }).join('') + '</div>' : '');
+}
+/** TV: prossima partita, ultimi risultati e classifica. */
+function partiteTV(d) {
+  var g = (d.campionato || [])[0];
+  if (!g) return '<h2>🏐 Campionato</h2><div class="muted">Nessun campionato impostato.</div>';
+  return '<h2>🏐 Le partite di ' + e(chi(g.persona).soprannome) + '</h2><div class="two"><div style="flex:0 0 52%">' +
+    '<div class="sez">Prossima partita</div>' + boxProssima(prossimaPartita(g)) +
+    '<div class="sez" style="margin-top:2vh">Ultimi risultati</div>' + ultimePartite(g, 3).map(rigaRisultato).join('') + '</div>' +
+    '<div><div class="sez">Classifica</div>' + tabellaClassifica(g) + '</div></div>';
+}
+
 /* ---- Medaglie ---- */
 function rigaMedaglia(m, conNome) {
   return '<div class="mov"><span class="ico c-x" style="width:44px;height:44px;font-size:24px;border-radius:50%;background:linear-gradient(135deg,#fde68a,#fbbf24)">' + e(m.emoji) + '</span>' +
@@ -556,7 +805,7 @@ function bannerTraguardi(d) {
 
 /* ---- Casa ---- */
 function viewCasa(d) {
-  return bannerFesta(d) + blocSettimana(d) + blocObiettivi(d) + blocViareggio(d) + blocMedaglie(d, true) + blocFeste(d, 4) + blocCalendario(d, 8);
+  return bannerFesta(d) + blocDoveSiamo(d) + blocPartite(d) + blocSettimana(d) + blocObiettivi(d) + blocViareggio(d) + blocMedaglie(d, true) + blocFeste(d, 4) + blocCalendario(d, 8);
 }
 
 /* ---- Lavagna ---- */
@@ -1035,7 +1284,7 @@ function compra(lid, pid) {
 }
 
 /* ============================ MODALITÀ TV ============================ */
-var TV_BASE = ['settimana', 'tappe', 'regole_piu', 'viareggio', 'lavagna', 'regole_altre', 'agenda'];
+var TV_BASE = ['settimana', 'mappa', 'partite', 'tappe', 'regole_piu', 'viareggio', 'lavagna', 'regole_altre', 'agenda'];
 var TV_PANELS = TV_BASE;
 function renderTV() {
   var d = S.d;
@@ -1056,6 +1305,10 @@ function renderTV() {
     h += (HAS_IMG && IMG.gruppo)
       ? '<div class="two"><div>' + vgHtml + '</div><div class="tvfoto" style="flex:0 0 30%;background-image:url(' + IMG.gruppo + ')"></div></div>'
       : vgHtml;
+  } else if (p === 'partite') {
+    h += partiteTV(d);
+  } else if (p === 'mappa') {
+    h += mappaTV(d);
   } else if (p === 'regole_piu' || p === 'regole_altre') {
     h += cartelloneTV(d, p);
   } else if (p.indexOf('tappe') === 0) {
@@ -1096,10 +1349,26 @@ function renderTV() {
 
 /* ---- TV: scorrimento automatico e tempi delle schermate ---- */
 var TV = { durata: 25000, pausa: false, timer: null, scroll: null };
-function fermaTV() { clearTimeout(TV.timer); clearInterval(TV.scroll); }
+function fermaTV() { clearTimeout(TV.timer); clearInterval(TV.scroll); clearInterval(TV.zoom); }
+/** Sulla schermata mappa: si avvicina a turno ai luoghi dove c'è qualcuno. */
+function zoomMappaTV() {
+  var m = S.d && S.d.mappa;
+  if (!m) return;
+  var tappe = [];
+  m.adesso.forEach(function (a) { if (tappe.indexOf(a.luogo) < 0) tappe.push(a.luogo); });
+  if (!tappe.length) return;
+  var giro = [];
+  tappe.forEach(function (t) { giro.push(t, null); });
+  var i = 0;
+  TV.zoom = setInterval(function () {
+    var t = giro[i++ % giro.length];
+    animaMappa('mappaTV', t ? vbPer(m, t) : VB_TUTTA);
+  }, 5000);
+}
 function programmaTV() {
   fermaTV();
   if (TV.pausa) return;
+  if (TV_PANELS[S.tvIdx % TV_PANELS.length] === 'mappa') zoomMappaTV();
   setTimeout(function () {
     var pn = document.querySelector('body.tv .panel');
     var extra = pn ? pn.scrollHeight - pn.clientHeight : 0;
