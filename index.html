@@ -127,7 +127,13 @@
   .mappa .dest { font-size: 2.2px; font-weight: 800; fill: #0369a1; paint-order: stroke; stroke: #fff; stroke-width: .6px; }
   .mappa .pulsa { animation: pulsa 1.8s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
   @keyframes pulsa { 0%, 100% { opacity: .9; transform: scale(1); } 50% { opacity: .2; transform: scale(1.35); } }
-  .mappa-tv .mappa { height: 72vh; width: 100%; }
+  .mappa-tv .mappa { height: 66vh; width: 100%; }
+  .legenda { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; margin-top: 6px; font-weight: 800; font-size: 13px; color: #334155; }
+  .legenda span { display: inline-flex; align-items: center; gap: 5px; }
+  .legenda i { font-style: normal; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; box-shadow: 0 0 0 2px #fff, 0 1px 3px rgba(0,0,0,.25); }
+  .legenda i.img { background: #fff center / cover no-repeat; }
+  body.tv .legenda { font-size: 26px; gap: 8px 28px; margin-top: 10px; }
+  body.tv .legenda i { width: 40px; height: 40px; font-size: 24px; }
   body.tv .mov { font-size: 1.7vw; padding: 1.2vh 0; }
   body.tv .mov .av { width: 4.4vw !important; height: 4.4vw !important; }
   body.tv .mov .muted { font-size: 1.3vw; }
@@ -241,7 +247,7 @@
 
 <script>
 var BOOT = { token: '', tv: /[?&]tv=1/.test(location.search) };
-var VERSIONE_PAGINA = '2.8';
+var VERSIONE_PAGINA = '2.9';
 var IMG = {};
 var S = { d: null, tab: 'casa', busy: false, tvIdx: 0, preview: null, filtro: '' };
 
@@ -308,7 +314,7 @@ function festa() {
 
 /* ---------------------------- server (API Apps Script) ---------------------------- */
 var API = window.BEDDUZZI_API || '';
-var TOKEN_KEY = 'bedduzzi_token', IMG_KEY = 'bedduzzi_img', IMG_TS = 'bedduzzi_img_ts';
+var TOKEN_KEY = 'bedduzzi_token', IMG_KEY = 'bedduzzi_img2', IMG_TS = 'bedduzzi_img2_ts';
 function store(k, v) { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (x) {} }
 function load(k) { try { return localStorage.getItem(k); } catch (x) { return null; } }
 
@@ -524,7 +530,7 @@ function svgMappa(d, id, opts) {
   var casa = m.luoghi.filter(function (l) { return l.tipo === 'casa'; })[0] || { x: 50, y: 35 };
   var h = '<svg id="' + id + '" class="mappa" viewBox="' + vb + '" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">' +
     '<defs><radialGradient id="terra_' + id + '" cx="55%" cy="45%" r="75%"><stop offset="0" stop-color="#ecfccb"/><stop offset="1" stop-color="#bbf7d0"/></radialGradient>' +
-    '<clipPath id="cl_' + id + '"><circle cx="0" cy="0" r="4.3"/></clipPath><clipPath id="cp_' + id + '"><circle cx="0" cy="0" r="2.3"/></clipPath></defs>' +
+    '<clipPath id="cl_' + id + '"><circle cx="0" cy="0" r="4.3"/></clipPath><clipPath id="cp_' + id + '"><circle cx="0" cy="0" r="2.3"/></clipPath><clipPath id="cs_' + id + '"><circle cx="0" cy="0" r="2.05"/></clipPath></defs>' +
     '<rect x="-5" y="-5" width="110" height="80" fill="url(#terra_' + id + ')"/>' +
     // mare a ovest
     '<path d="M-5,-5 L4,-5 C6,10 2,22 5,35 C8,50 3,60 6,75 L-5,75 Z" fill="#7dd3fc"/>' +
@@ -553,21 +559,26 @@ function svgMappa(d, id, opts) {
       (l.tipo === 'cuore' ? '<text x="2.6" y="-2.4" font-size="3.4">❤️</text>' : '') +
       '<text class="nome" y="8" text-anchor="middle">' + e(l.nome) + '</text></g>';
   });
-  // persone: attorno al luogo dove sono adesso
-  var perLuogo = {};
-  (m.adesso || []).forEach(function (a) { (perLuogo[a.luogo] = perLuogo[a.luogo] || []).push(a); });
-  var angoli = [-40, -140, -90, 20, 160, 90];
+  // persone: una pallina colorata col proprio simbolo, attorno al luogo dove sono (chi non è fuori è a casa)
+  var perLuogo = {}, fuori = {};
+  (m.adesso || []).forEach(function (a) { fuori[a.persona] = 1; (perLuogo[a.luogo] = perLuogo[a.luogo] || []).push(a); });
+  personeMappa(d).forEach(function (p) {
+    if (!fuori[p.id] && casa.id) (perLuogo[casa.id] = perLuogo[casa.id] || []).push({ persona: p.id, luogo: casa.id, aCasa: true });
+  });
+  var angoli = [-45, -135, 45, 135, -90, 90];
   Object.keys(perLuogo).forEach(function (lid) {
     var l = m.luoghi.filter(function (x) { return x.id === lid; })[0];
     if (!l) return;
     perLuogo[lid].forEach(function (a, i) {
-      var ang = angoli[i % angoli.length] * Math.PI / 180, r = 6.4;
-      var px = l.x + Math.cos(ang) * r, py = l.y + Math.sin(ang) * r, p = chi(a.persona), img = HAS_IMG && IMG[a.persona];
-      h += '<g class="pers" transform="translate(' + px.toFixed(2) + ',' + py.toFixed(2) + ')">' +
-        '<circle r="3.4" fill="none" stroke="' + e(p.colore || '#0ea5e9') + '" stroke-width=".5" class="pulsa"/>' +
-        '<circle r="2.6" fill="#fff" stroke="' + e(p.colore || '#0ea5e9') + '" stroke-width=".6"/>' +
-        (img ? '<image href="' + img + '" x="-2.3" y="-2.3" width="4.6" height="4.6" clip-path="url(#cp_' + id + ')"/>' : '<text y="1" text-anchor="middle" font-size="3">' + e(p.emoji) + '</text>') +
-        (a.testo && i === 0 ? '<text class="dest" y="5.4" text-anchor="middle">' + e(a.testo) + '</text>' : '') + '</g>';
+      var ang = angoli[i % angoli.length] * Math.PI / 180, r = 5.4;
+      var px = l.x + Math.cos(ang) * r, py = l.y + Math.sin(ang) * r, p = chi(a.persona), col = e(p.colore || '#0ea5e9'), simb = simbolo(a.persona);
+      h += '<g class="pers" transform="translate(' + px.toFixed(2) + ',' + py.toFixed(2) + ')"><title>' + e(p.soprannome || p.nome) + '</title>' +
+        (a.aCasa ? '' : '<circle r="2.7" fill="none" stroke="' + col + '" stroke-width=".4" class="pulsa"/>') +
+        (simb ? '<circle r="2.4" fill="#fff" stroke="' + col + '" stroke-width=".6"/>' +
+                '<image href="' + simb + '" x="-2.05" y="-2.05" width="4.1" height="4.1" clip-path="url(#cs_' + id + ')"/>'
+              : '<circle r="1.9" fill="' + col + '" stroke="#fff" stroke-width=".45"/>' +
+                '<text y=".75" text-anchor="middle" font-size="2">' + e(p.emoji) + '</text>') +
+        (a.testo && !a.aCasa && i === 0 ? '<text class="dest" y="4.6" text-anchor="middle">' + e(a.testo) + '</text>' : '') + '</g>';
     });
   });
   return h + '</svg>';
@@ -601,11 +612,26 @@ function rigaPresenza(m, a, conLuogo) {
     (a.titolo ? ' · ' + e(a.titolo) : '') + '</div></div></div>';
 }
 /** In Casa: piccola mappa e chi è in giro adesso. */
+/** Chi compare sulla mappa: la famiglia (senza la TV) e Lilly, che sta a casa. */
+function personeMappa(d) {
+  var l = (d.famiglia || []).filter(function (p) { return p.ruolo === 'genitore' || p.ruolo === 'figlia'; });
+  return l.concat([chi('lilly')]);
+}
+/** Il simbolino disegnato di ciascuno (dalle Immagini dell'archivio), se c'è. */
+function simbolo(id) { return (HAS_IMG && typeof IMG !== 'undefined' && IMG['simbolo_' + id]) || ''; }
+/** Legenda sotto la mappa: pallina colorata + simbolo + nome. */
+function legendaMappa(d) {
+  return '<div class="legenda">' + personeMappa(d).map(function (p) {
+    var s = simbolo(p.id);
+    return '<span>' + (s ? '<i class="img" style="box-shadow:0 0 0 2px ' + e(p.colore || '#0ea5e9') + ',0 1px 3px rgba(0,0,0,.25);background-image:url(' + s + ')"></i>'
+                         : '<i style="background:' + e(p.colore || '#0ea5e9') + '">' + e(p.emoji) + '</i>') + e(p.soprannome || p.nome) + '</span>';
+  }).join('') + '</div>';
+}
 function blocDoveSiamo(d) {
   var m = d.mappa;
   if (!m || !m.luoghi || !m.luoghi.length) return '';
   var h = '<div class="card" onclick="go(\'mappa\')" style="cursor:pointer"><div class="row"><h2 class="grow">📍 Dove siamo</h2><span class="pill">Apri la mappa ›</span></div>' +
-    '<div class="mappa-mini">' + svgMappa(d, 'mappaMini') + '</div>';
+    '<div class="mappa-mini">' + svgMappa(d, 'mappaMini') + '</div>' + legendaMappa(d);
   if (m.adesso.length) m.adesso.slice(0, 4).forEach(function (a) { h += rigaPresenza(m, a, true); });
   else h += '<div class="muted">Nessuno risulta fuori casa in questo momento.</div>';
   return h + '</div>';
@@ -615,7 +641,7 @@ function viewMappa(d) {
   var sel = S.mapSel ? m.luoghi.filter(function (l) { return l.id === S.mapSel; })[0] : null;
   var h = '<div class="card" style="padding:12px"><div class="row" style="margin-bottom:8px"><button class="mini sec" onclick="S.mapSel=null;go(\'casa\')">‹ Casa</button>' +
     '<h2 class="grow" style="margin:0">📍 La nostra mappa</h2>' + (sel ? '<button class="mini sec" onclick="selLuogo(\'' + sel.id + '\')">⤢ Tutta</button>' : '') + '</div>' +
-    '<div class="mappa-grande">' + svgMappa(d, 'mappaGrande', { vb: S.mapVB || VB_TUTTA }) + '</div>' +
+    '<div class="mappa-grande">' + svgMappa(d, 'mappaGrande', { vb: S.mapVB || VB_TUTTA }) + '</div>' + legendaMappa(d) +
     '<div class="muted" style="margin-top:6px;text-align:center">Tocca un luogo per avvicinarti</div></div>';
   if (sel) {
     var qui = m.adesso.filter(function (a) { return a.luogo === sel.id; });
@@ -651,7 +677,7 @@ function mappaTV(d) {
   var m = d.mappa || { luoghi: [], adesso: [], prossimi: [] };
   var oggi = new Date().toDateString();
   var oggiPoi = m.prossimi.filter(function (a) { return new Date(a.inizio).toDateString() === oggi; }).slice(0, 4);
-  return '<div class="two"><div style="flex:0 0 62%"><div class="mappa-tv">' + svgMappa(d, 'mappaTV') + '</div></div><div>' +
+  return '<div class="two"><div style="flex:0 0 62%"><div class="mappa-tv">' + svgMappa(d, 'mappaTV') + '</div>' + legendaMappa(d) + '</div><div>' +
     '<h2>📍 Dove siamo</h2>' + (m.adesso.length ? m.adesso.map(function (a) { return rigaPresenza(m, a, true); }).join('') : '<div class="muted">Tutti a casa o in giro senza segnalarlo 🙂</div>') +
     (oggiPoi.length ? '<h2 style="margin-top:2vh">Più tardi oggi</h2>' + oggiPoi.map(function (a) { return rigaPresenza(m, a, true); }).join('') : '') + '</div></div>';
 }
