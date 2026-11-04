@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- COPPA BEDDUZZI – app – index.html – versione 2.8 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
+<!-- COPPA BEDDUZZI – app – index.html – versione 2.10 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -247,7 +247,7 @@
 
 <script>
 var BOOT = { token: '', tv: /[?&]tv=1/.test(location.search) };
-var VERSIONE_PAGINA = '2.9';
+var VERSIONE_PAGINA = '2.10';
 var IMG = {};
 var S = { d: null, tab: 'casa', busy: false, tvIdx: 0, preview: null, filtro: '' };
 
@@ -405,6 +405,13 @@ function go(t) { S.tab = t; render(); window.scrollTo(0, 0); }
 /* ---- blocchi condivisi ---- */
 function blocViareggio(d) {
   var v = d.viareggio;
+  if (v.passato) {
+    // dopo Viareggio il gioco continua: resta il totale di famiglia, il prossimo grande obiettivo si sceglie insieme
+    return '<div class="card vg"><h2>🏆 Punti di famiglia</h2>' +
+      '<div class="row"><div class="vg-num big">' + fmt(d.totale) + '</div><div class="muted">punti di famiglia<br>' +
+      '<span class="pill">ogni lunedì −' + fmt(d.costo) + '</span></div></div>' +
+      '<div class="muted">Il gioco continua! Il prossimo grande obiettivo lo decidiamo insieme 💪</div></div>';
+  }
   var min = d.soglia - 2000, max = Math.max(d.start, d.totale) + 500;
   var pos = function (x) { return Math.max(2, Math.min(98, (x - min) / (max - min) * 100)); };
   var settRimaste = Math.max(1, v.giorni / 7);
@@ -1362,7 +1369,8 @@ function renderTV() {
     var prossime = (d.feste || []).filter(function (x) { return x.giorni > 0; }).slice(0, 3);
     h += '</div><div style="flex:0 0 40%"><h2>🎉 Feste in arrivo</h2>';
     prossime.forEach(function (x) { h += '<div class="ev" style="align-items:center">' + avFesta(x, 70) + '<span class="grow" style="flex:1">' + e(testoFesta(x)) + '</span><b style="min-width:0;color:var(--corallo)">' + x.giorni + ' gg</b></div>'; });
-    h += '<div class="ev"><span style="flex:1">🏖️ Viareggio</span><b style="min-width:0;color:var(--mare-scuro)">' + d.viareggio.giorni + ' gg</b></div></div></div>';
+    if (!d.viareggio.passato) h += '<div class="ev"><span style="flex:1">🏖️ Viareggio</span><b style="min-width:0;color:var(--mare-scuro)">' + d.viareggio.giorni + ' gg</b></div>';
+    h += '</div></div>';
   }
   h += '</div><div class="dots">';
   for (var i = 0; i < TV_PANELS.length; i++) h += (i === S.tvIdx % TV_PANELS.length ? '●' : '○');
