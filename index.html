@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- COPPA BEDDUZZI – app – index.html – versione 2.12 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
+<!-- COPPA BEDDUZZI – app – index.html – versione 2.13 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -247,7 +247,7 @@
 
 <script>
 var BOOT = { token: '', tv: /[?&]tv=1/.test(location.search) };
-var VERSIONE_PAGINA = '2.12';
+var VERSIONE_PAGINA = '2.13';
 var IMG = {};
 var S = { d: null, tab: 'casa', busy: false, tvIdx: 0, preview: null, filtro: '' };
 
@@ -672,6 +672,7 @@ function viewMappa(d) {
         '<input id="lav_note" maxlength="80" placeholder="Località / indirizzo" value="' + e(sel.note) + '">' +
         '<button class="sec" onclick="call(\'cambia_lavoro\',{nome:val(\'lav_nome\'),note:val(\'lav_note\')},\'Sede aggiornata\')">✏️ Salva la nuova sede</button></div>';
     }
+    if (d.me.ruolo === 'genitore' && sel.tipo !== 'viaggio' && sel.tipo !== 'partita') h += boxZona(sel);
     h += '</div>';
   } else {
     h += '<div class="card"><h2>👀 Adesso</h2>' + (m.adesso.length ? m.adesso.map(function (a) { return rigaPresenza(m, a, true); }).join('') : '<div class="muted">Nessuno risulta fuori casa.</div>') + '</div>' +
@@ -679,6 +680,44 @@ function viewMappa(d) {
     h += cardAutomazioni(d);
   }
   return h;
+}
+/** Genitori: la zona di un luogo per OwnTracks (coordinate incollate da Google Maps o prese dal telefono). */
+function boxZona(l) {
+  return '<details style="margin-top:12px"><summary><b>📡 Zona per la posizione automatica</b> ' +
+    (l.zona ? '<span class="pill pos">✅ impostata, ' + fmt(l.raggio) + ' m</span>' : '<span class="pill">da impostare</span>') + '</summary>' +
+    '<div class="muted" style="margin:8px 0">In Google Maps tieni premuto sul posto e copia i due numeri (es. 43.6801, 10.4835), ' +
+    'oppure vai lì e tocca “Prendi la mia posizione”.</div><div class="stack">' +
+    '<input id="zona_coord" placeholder="43.6801, 10.4835" inputmode="decimal">' +
+    '<div class="row"><span class="muted">Raggio</span><input id="zona_rag" type="number" min="60" max="1000" value="' + (l.raggio || 150) + '" style="width:100px"><span class="muted">metri</span></div>' +
+    '<div class="row"><button class="sec" onclick="prendiPosizione()">📍 Prendi la mia posizione</button>' +
+    '<button onclick="salvaZona(\'' + l.id + '\')">Salva la zona</button></div></div></details>';
+}
+function prendiPosizione() {
+  if (!navigator.geolocation) return toast('Questo telefono non dà la posizione', true);
+  navigator.geolocation.getCurrentPosition(function (p) {
+    document.getElementById('zona_coord').value = p.coords.latitude.toFixed(6) + ', ' + p.coords.longitude.toFixed(6);
+    toast('Posizione presa (precisione ' + Math.round(p.coords.accuracy) + ' m): ora tocca Salva');
+  }, function () { toast('Posizione non disponibile: permesso negato?', true); }, { enableHighAccuracy: true, timeout: 20000 });
+}
+function salvaZona(id) {
+  var m = String(val('zona_coord') || '').replace(/[()°]/g, '').match(/(-?\d+(?:[.,]\d+)?)\s*[,; ]\s*(-?\d+(?:[.,]\d+)?)/);
+  if (!m) return toast('Scrivi due numeri: latitudine, longitudine', true);
+  call('coordinate_luogo', { luogo: id, lat: m[1].replace(',', '.'), lon: m[2].replace(',', '.'), raggio: val('zona_rag') }, 'Zona salvata 📡');
+}
+/** OwnTracks: apre la configurazione personale (indirizzo + zone) direttamente nell'app. */
+function configuraOwnTracks(scarica) {
+  apiCall('owntracks_config', { url: String(window.BEDDUZZI_API || '') }, function (r) {
+    if (!r.zone) return toast('Prima un genitore deve impostare le zone dei luoghi (Mappa → luogo → Zona)', true);
+    var testo = JSON.stringify(r.config);
+    if (scarica) {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([testo], { type: 'application/octet-stream' }));
+      a.download = 'bedduzzi.otrc'; document.body.appendChild(a); a.click(); a.remove();
+      return;
+    }
+    var b64 = btoa(unescape(encodeURIComponent(testo)));
+    location.href = 'owntracks:///config?inline=' + encodeURIComponent(b64);
+  }, function (err) { toast(err, true); });
 }
 /** Link personali "arrivo/uscita" da incollare nelle automazioni del telefono (MacroDroid, Tasker, Comandi Rapidi). */
 function linkAuto(azione, luogo, ore) {
@@ -692,7 +731,14 @@ function copiaLink(t) {
 }
 function cardAutomazioni(d) {
   var m = d.mappa || {}, ls = (m.luoghi || []).filter(function (l) { return l.tipo !== 'viaggio' && l.tipo !== 'partita' && l.id !== 'casa'; });
-  var h = '<div class="card"><details><summary><b>🤖 Posizione automatica (per esperti)</b></summary>' +
+  var h = '<div class="card"><details><summary><b>🤖 Posizione automatica</b></summary>' +
+    '';
+  var nz = ls.concat((m.luoghi || []).filter(function (l) { return l.id === 'casa'; })).filter(function (l) { return l.zona; }).length;
+  h += '<div class="sez">Con l\'app OwnTracks (consigliato)</div><div class="muted" style="margin-bottom:8px">' +
+    '1) Installa <b>OwnTracks</b> dal Play Store o dall\'App Store. 2) Da questo telefono tocca il pulsante qui sotto: si apre OwnTracks già configurato con il tuo link e ' +
+    nz + ' zone. 3) Dai a OwnTracks il permesso della posizione <b>“Sempre”</b>. L\'archivio salva solo il nome del luogo, mai le coordinate.</div>' +
+    '<div class="row"><button onclick="configuraOwnTracks()">⚙️ Configura OwnTracks</button><button class="sec" onclick="configuraOwnTracks(true)">Scarica il file</button></div>' +
+    '<div class="sez">Oppure con le automazioni del telefono</div>' +
     '<div class="muted" style="margin:8px 0">Link <b>personali</b> di ' + e(d.me.soprannome || d.me.nome) + ' da mettere in un\'automazione del telefono ' +
     '(Android: MacroDroid o Tasker, “Richiesta HTTP” GET; iPhone: Comandi Rapidi → Automazione → “Quando arrivo/esco” → “Ottieni contenuti dell\'URL”). ' +
     '<b>Non condividerli</b>: chi li ha può spostarti sulla mappa.</div>';
