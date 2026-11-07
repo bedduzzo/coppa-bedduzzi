@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- COPPA BEDDUZZI – app – index.html – versione 2.16 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
+<!-- COPPA BEDDUZZI – app – index.html – versione 2.17 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -247,7 +247,7 @@
 
 <script>
 var BOOT = { token: '', tv: /[?&]tv=1/.test(location.search) };
-var VERSIONE_PAGINA = '2.16';
+var VERSIONE_PAGINA = '2.17';
 var IMG = {};
 var S = { d: null, tab: 'casa', busy: false, tvIdx: 0, preview: null, filtro: '' };
 
@@ -516,7 +516,7 @@ function blocObiettivi(d) {
 
 /* ============================ MAPPA DEI LUOGHI ============================ */
 var VB_TUTTA = [0, 0, 100, 70];
-var COL_TIPO = { casa: '#f97316', scuola: '#2563eb', palestra: '#16a34a', lavoro: '#7c3aed', viaggio: '#0ea5e9', lezione: '#db2777', famiglia: '#ea580c', parrocchia: '#a16207', cuore: '#e11d48', spesa: '#0d9488', partita: '#f59e0b', mare: '#0891b2' };
+var COL_TIPO = { casa: '#f97316', scuola: '#2563eb', palestra: '#16a34a', lavoro: '#7c3aed', viaggio: '#0ea5e9', lezione: '#db2777', famiglia: '#ea580c', parrocchia: '#a16207', cuore: '#e11d48', spesa: '#0d9488', partita: '#f59e0b', mare: '#0891b2', svago: '#c026d3' };
 function hhmm(iso) { var x = new Date(iso); return pad(x.getHours()) + ':' + pad(x.getMinutes()); }
 function quandoBreve(iso) {
   var x = new Date(iso), oggi = new Date(), dom = new Date(); dom.setDate(dom.getDate() + 1);
@@ -663,9 +663,18 @@ function viewMappa(d) {
         '<div class="row"><span class="muted">Torno il</span><input id="viaggio_fino" type="date" class="grow"></div>' +
         '<button onclick="call(\'sono_qui\',{luogo:\'trasferta\',testo:val(\'viaggio_dest\'),fino:val(\'viaggio_fino\')},\'Buon viaggio! ✈️\')">✈️ Sono in trasferta</button></div>';
     } else {
-      h += '<div class="row" style="margin-top:12px"><button onclick="call(\'sono_qui\',{luogo:\'' + sel.id + '\'},\'Segnato: sei qui 📍\')">📍 Sono qui</button>' +
-        (mio ? '<button class="sec" onclick="call(\'me_ne_vado\',{},\'Fatto\')">Me ne vado</button>' : '') + '</div>';
+      // chi segno qui: io per default; un genitore può scegliere chiunque, le figlie anche Lilly
+      var possibili = personeMappa(d).filter(function (p) { return d.me.ruolo === 'genitore' || p.id === d.me.id || p.id === 'lilly'; });
+      if (!S.chiQui || S.chiQuiLuogo !== sel.id) { S.chiQui = [d.me.id]; S.chiQuiLuogo = sel.id; }
+      h += '<div class="sez">Chi c\'è?</div><div class="row" style="flex-wrap:wrap;gap:6px">' + possibili.map(function (p) {
+        var on = S.chiQui.indexOf(p.id) >= 0;
+        return '<button class="chip' + (on ? ' on' : '') + '" onclick="toggleChiQui(\'' + p.id + '\')">' + av(p.id, 30) + e(p.id === d.me.id ? 'Io' : (p.soprannome || p.nome)) + '</button>';
+      }).join('') + '</div>' +
+        '<div class="row" style="margin-top:10px"><button onclick="segnaQui(\'' + sel.id + '\')">📍 ' + (S.chiQui.length > 1 ? 'Siamo qui' : (S.chiQui[0] === d.me.id ? 'Sono qui' : 'È qui')) + '</button>' +
+        (qui.some(function (a) { return a.fonte === 'qui'; }) ? '<button class="sec" onclick="vannoVia()">🏠 Tornati a casa</button>' : '') + '</div>';
     }
+    if (d.me.ruolo === 'genitore' && ['casa', 'trasferta', 'partita'].indexOf(sel.id) < 0)
+      h += '<div style="margin-top:10px;text-align:right"><button class="mini sec" onclick="if(confirm(\'Tolgo «' + e(sel.nome).replace(/'/g, '') + '» dalla mappa?\')){S.mapSel=null;call(\'luogo_togli\',{luogo:\'' + sel.id + '\'},\'Luogo tolto\')}">🗑️ Togli dalla mappa</button></div>';
     if (mio && sel.tipo === 'viaggio') h += '<div style="margin-top:8px"><button class="sec" onclick="call(\'me_ne_vado\',{},\'Bentornato! 🏠\')">🏠 Sono tornato</button></div>';
     if (sel.id === 'lavoro_' + d.me.id) {
       h += '<div class="sez">Hai cambiato sede?</div><div class="stack"><input id="lav_nome" maxlength="40" placeholder="Nome (es. Scuola Rossi)" value="' + e(sel.nome) + '">' +
@@ -677,9 +686,38 @@ function viewMappa(d) {
   } else {
     h += '<div class="card"><h2>👀 Adesso</h2>' + (m.adesso.length ? m.adesso.map(function (a) { return rigaPresenza(m, a, true); }).join('') : '<div class="muted">Nessuno risulta fuori casa.</div>') + '</div>' +
       '<div class="card"><h2>🗓️ Prossimamente</h2>' + (m.prossimi.length ? m.prossimi.slice(0, 8).map(function (a) { return rigaPresenza(m, a, true); }).join('') : '<div class="muted">Niente in calendario.</div>') + '</div>';
+    if (d.me.ruolo === 'genitore') h += cardNuovoLuogo();
     h += cardAutomazioni(d);
   }
   return h;
+}
+function toggleChiQui(id) {
+  var i = S.chiQui.indexOf(id);
+  if (i >= 0) { if (S.chiQui.length > 1) S.chiQui.splice(i, 1); } else S.chiQui.push(id);
+  render();
+}
+function segnaQui(luogo) {
+  var n = S.chiQui.length;
+  call('sono_qui', { luogo: luogo, chi: S.chiQui.slice() }, n > 1 ? 'Segnati qui 📍' : 'Segnato qui 📍');
+}
+function vannoVia() { call('me_ne_vado', { chi: S.chiQui.slice() }, 'Tornati a casa 🏠'); }
+/** Genitori: aggiungere un luogo alla mappa dall'app. */
+function cardNuovoLuogo() {
+  var tipi = [['svago', '☕ Bar, ristorante, svago'], ['spesa', '🛒 Negozi e spesa'], ['famiglia', '🏡 Parenti e amici'], ['lezione', '📚 Lezioni e corsi'],
+              ['palestra', '🏐 Sport'], ['scuola', '🏫 Scuola'], ['mare', '🏖️ Mare'], ['cuore', '❤️ Posto del cuore']];
+  return '<div class="card"><details><summary><b>➕ Aggiungi un luogo</b></summary><div class="stack" style="margin-top:10px">' +
+    '<div class="row"><input id="nl_emoji" maxlength="4" value="☕" style="width:64px;text-align:center;font-size:22px"><input id="nl_nome" class="grow" maxlength="40" placeholder="Nome (es. Colazione fuori)"></div>' +
+    '<select id="nl_tipo">' + tipi.map(function (t) { return '<option value="' + t[0] + '">' + t[1] + '</option>'; }).join('') + '</select>' +
+    '<input id="nl_note" maxlength="80" placeholder="Indirizzo o nota (facoltativo)">' +
+    '<input id="nl_coord" placeholder="Coordinate da Google Maps (facoltative): 43.68, 10.49" inputmode="decimal">' +
+    '<div class="muted">Con le coordinate il luogo ha anche la zona per la posizione automatica (100 m). Il posto sulla mappa lo sceglie l\'app, vicino a casa.</div>' +
+    '<button onclick="aggiungiLuogo()">➕ Aggiungi alla mappa</button></div></details></div>';
+}
+function aggiungiLuogo() {
+  var p = { nome: val('nl_nome'), emoji: val('nl_emoji'), tipo: val('nl_tipo'), note: val('nl_note') };
+  var m = String(val('nl_coord') || '').match(/(-?\d+(?:[.,]\d+)?)\s*[,; ]\s*(-?\d+(?:[.,]\d+)?)/);
+  if (m) { p.lat = m[1].replace(',', '.'); p.lon = m[2].replace(',', '.'); }
+  call('luogo_add', p, 'Luogo aggiunto 📍');
 }
 /** Genitori: la zona di un luogo per OwnTracks (coordinate incollate da Google Maps o prese dal telefono). */
 function boxZona(l) {

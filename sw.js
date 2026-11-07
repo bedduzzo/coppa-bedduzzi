@@ -1,7 +1,7 @@
-/* COPPA BEDDUZZI – sw.js – versione 2.16
+/* COPPA BEDDUZZI – sw.js – versione 2.17
  * Rende l'app installabile e la apre anche con rete scarsa.
  * Prende sempre prima la versione nuova dalla rete; i dati (Apps Script) non passano di qui. */
-var CACHE = 'bedduzzi-2.16';
+var CACHE = 'bedduzzi-2.17';
 self.addEventListener('install', function () { self.skipWaiting(); });
 self.addEventListener('activate', function (e) {
   e.waitUntil(caches.keys().then(function (ks) {
