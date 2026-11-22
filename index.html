@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- COPPA BEDDUZZI – app – index.html – versione 2.17 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
+<!-- COPPA BEDDUZZI – app – index.html – versione 2.19 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -86,7 +86,18 @@
   /* icone regole */
   .ico { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; position: relative; background: #e2e8f0; line-height: 1; }
   .c-casa { background: #fef3c7; } .c-scuola { background: #dbeafe; } .c-sport { background: #ffedd5; }
-  .c-famiglia { background: #fce7f3; } .c-comportamento { background: #ede9fe; }
+  .c-famiglia { background: #fce7f3; } .c-comportamento { background: #ede9fe; } .c-lilly { background: #fde7c7; }
+  .todo { display: flex; align-items: center; gap: 12px; background: #fff; border: 2px solid var(--bordo); border-radius: 18px; padding: 12px; margin-top: 10px; }
+  .todo .em { font-size: 34px; width: 52px; height: 52px; border-radius: 16px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .todo .tx { flex: 1; font-weight: 800; line-height: 1.25; }
+  .todo .tx .muted { font-weight: 600; }
+  .todo .fatto { font-size: 16px; padding: 12px 14px; white-space: nowrap; }
+  .todo.attesa { background: #fffbeb; border-color: #fcd34d; }
+  .badge { display: inline-block; min-width: 18px; height: 18px; line-height: 18px; padding: 0 5px; border-radius: 9px; background: var(--rosso); color: #fff; font-size: 11px; font-weight: 800; position: absolute; top: 0; right: 18%; }
+  .tabs button { position: relative; }
+  .avviso { border: 3px solid #f59e0b; background: #fffbeb; }
+  .conf { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid #fde68a; }
+  .conf:first-of-type { border-top: 0; }
   .ico.neg { background: #fee2e2; box-shadow: inset 0 0 0 2px #fca5a5; }
   .ico.neg::after { content: '−'; position: absolute; right: -5px; bottom: -5px; width: 17px; height: 17px; border-radius: 50%; background: var(--rosso); color: #fff; font-size: 13px; line-height: 17px; text-align: center; font-weight: 800; font-family: 'Nunito', sans-serif; }
   .sez { font-weight: 800; color: var(--grigio); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; margin: 14px 0 2px; }
@@ -247,7 +258,7 @@
 
 <script>
 var BOOT = { token: '', tv: /[?&]tv=1/.test(location.search) };
-var VERSIONE_PAGINA = '2.17';
+var VERSIONE_PAGINA = '2.19';
 var IMG = {};
 var S = { d: null, tab: 'casa', busy: false, tvIdx: 0, preview: null, filtro: '' };
 
@@ -369,7 +380,7 @@ function render() {
   var r = d.me.ruolo;
   var tabs = r === 'genitore'
     ? [['casa', '🏖️', 'Casa'], ['lavagna', '📋', 'Lavagna'], ['punti', '⭐', 'Punti'], ['storico', '📊', 'Storico'], ['gettoni', '🪙', 'Gettoni']]
-    : [['casa', '🏖️', 'Casa'], ['lavagna', '📋', 'Lavagna'], ['dona', '💛', 'Mamma e papà'], ['salvadanaio', '🐷', 'Salvadanaio'], ['regole', '📜', 'Regole']];
+    : [['casa', '🏖️', 'Casa'], ['lavagna', '📋', 'Lavagna'], ['dona', '💛', 'Dai punti'], ['salvadanaio', '🐷', 'Salvadanaio'], ['regole', '📜', 'Regole']];
   var ok = false;
   for (var i = 0; i < tabs.length; i++) if (tabs[i][0] === S.tab) ok = true;
   if (S.tab === 'mappa' || S.tab === 'partite') ok = true;
@@ -387,10 +398,13 @@ function render() {
   }; })(v);
   h += v(d) + '</div>' + (r === 'genitore' && S.preview ? previewSheet() : '') + '<div class="tabs">';
   for (var j = 0; j < tabs.length; j++) {
-    h += '<button class="' + (tabs[j][0] === S.tab ? 'on' : '') + '" onclick="go(\'' + tabs[j][0] + '\')"><span class="i">' + tabs[j][1] + '</span>' + tabs[j][2] + '</button>';
+    var nb = tabs[j][0] === 'casa' && r === 'genitore' ? daConfermare(d).length : 0;
+    h += '<button class="' + (tabs[j][0] === S.tab ? 'on' : '') + '" onclick="go(\'' + tabs[j][0] + '\')"><span class="i">' + tabs[j][1] + '</span>' + tabs[j][2] + (nb ? '<span class="badge">' + nb + '</span>' : '') + '</button>';
   }
   h += '</div>';
   document.getElementById('app').innerHTML = h;
+  // numerino sull'icona dell'app (Android, app installata): quante cose aspettano l'ok
+  try { if (r === 'genitore' && navigator.setAppBadge) { var nn = daConfermare(d).length; if (nn) navigator.setAppBadge(nn); else navigator.clearAppBadge(); } } catch (x) { /* non supportato */ }
   setTimeout(mostraFeste, 400);
   if (S.tab === 'mappa') animaMappa('mappaGrande');
 }
@@ -946,29 +960,141 @@ function bannerTraguardi(d) {
 
 /* ---- Casa ---- */
 function viewCasa(d) {
-  return bannerFesta(d) + blocDoveSiamo(d) + blocPartite(d) + blocSettimana(d) + blocObiettivi(d) + blocViareggio(d) + blocMedaglie(d, true) + blocFeste(d, 4) + blocCalendario(d, 8);
+  return bannerFesta(d) + blocDaConfermare(d) + blocDoveSiamo(d) + blocPartite(d) + blocSettimana(d) + blocObiettivi(d) + blocViareggio(d) + blocMedaglie(d, true) + blocFeste(d, 4) + blocCalendario(d, 8);
+}
+
+/** Genitori: tutto quello che aspetta un ok (attività fatte dalle bimbe, punti proposti per Lilly). */
+function daConfermare(d) {
+  if (d.me.ruolo !== 'genitore') return [];
+  var l = (d.lavagna || []).filter(function (t) { return t.stato === 'Fatto' && !t.confermato; }).map(function (t) { return { tipo: 'lav', t: t }; });
+  return l.concat((d.inAttesa || []).map(function (m) { return { tipo: 'mov', m: m }; }));
+}
+function blocDaConfermare(d) {
+  var l = daConfermare(d), ric = (d.richieste || []).filter(function (r) { return r.stato === 'nuova'; }).length;
+  if (!l.length && !ric) return '';
+  var h = '<div class="card avviso"><h2>🔔 Da confermare' + (l.length ? ' (' + l.length + ')' : '') + '</h2>';
+  l.forEach(function (x) {
+    if (x.tipo === 'lav') {
+      var t = x.t, chiF = t.fatto_da || t.assegnato;
+      h += '<div class="conf">' + av(chiF, 40) + '<div class="grow"><b>' + e(chi(chiF).soprannome) + '</b> ha fatto: ' + e((t.emoji ? t.emoji + ' ' : '') + t.testo) +
+        '<div class="muted">' + (t.punti ? '⭐ ' + t.punti + ' punti se confermi' : 'senza punti') + '</div></div>' +
+        '<button class="mini ok" onclick="call(\'lavagna_conferma\',{id:\'' + t.id + '\'},\'Confermato!\',true)">✅' + (t.punti ? ' +' + t.punti : '') + '</button>' +
+        '<button class="mini sec" title="Non ancora" onclick="call(\'lavagna_conferma\',{id:\'' + t.id + '\',esito:\'no\'},\'Rimessa da fare\')">↩️</button></div>';
+    } else {
+      var m = x.m;
+      h += '<div class="conf">' + icoMov(m, 40) + '<div class="grow"><b>' + e(chi(m.da).soprannome) + '</b> propone <b style="color:' + (m.punti > 0 ? 'var(--verde)' : 'var(--rosso)') + '">' + sgn(m.punti) + '</b> per ' + nomeChiH(m.persona) +
+        '<div class="muted">' + e(m.motivo) + '</div></div>' +
+        '<button class="mini ok" onclick="call(\'approva\',{id:\'' + m.id + '\',esito:\'si\'},\'Confermato\')">✅</button>' +
+        '<button class="mini neg" onclick="call(\'approva\',{id:\'' + m.id + '\',esito:\'no\'},\'Rifiutato\')">✖️</button></div>';
+    }
+  });
+  if (ric) h += '<div class="conf"><span style="font-size:28px">💌</span><div class="grow">' + ric + (ric > 1 ? ' richieste' : ' richiesta') + ' “Vorrei…” delle bimbe</div><button class="mini sec" onclick="go(\'gettoni\')">Vedi ›</button></div>';
+  return h + '</div>';
 }
 
 /* ---- Lavagna ---- */
 function viewLavagna(d) {
-  var me = d.me, gen = me.ruolo === 'genitore';
-  var stati = ['Da fare', 'In corso', 'Fatto'], icone = { 'Da fare': '📝', 'In corso': '⏳', 'Fatto': '✅' };
-  var h = '<div class="card"><h2>➕ Nuova cosa da fare</h2><div class="stack">' +
-    '<input id="l_testo" maxlength="140" placeholder="Es. Portare fuori Lilly">' +
-    '<div class="row"><select id="l_ass" class="grow"><option value="tutti">🏠 Tutti</option><option value="lilly">🐶 Per Lilly</option>';
-  for (var i = 0; i < d.famiglia.length; i++) h += '<option value="' + e(d.famiglia[i].id) + '">' + e(d.famiglia[i].emoji + ' ' + d.famiglia[i].soprannome) + '</option>';
-  h += '</select>' + (gen ? '<input id="l_punti" type="number" min="0" max="500" placeholder="⭐ punti" style="width:110px">' : '') +
-    '<input id="l_scad" type="date" style="width:160px"></div>' +
-    '<button onclick="addTask()">Aggiungi alla lavagna</button></div></div><div class="cols">';
-  for (var s = 0; s < stati.length; s++) {
-    var lista = d.lavagna.filter(function (t) { return t.stato === stati[s]; });
-    if (stati[s] === 'Fatto') lista = lista.filter(function (t) { return !t.confermato; }).concat(lista.filter(function (t) { return t.confermato; }).slice(-10));
-    h += '<div class="col"><h3>' + icone[stati[s]] + ' ' + stati[s] + ' (' + lista.length + ')</h3>';
-    if (!lista.length) h += '<div class="muted" style="padding:6px">Niente qui</div>';
-    for (var k = 0; k < lista.length; k++) h += taskCard(lista[k], d);
+  var me = d.me, gen = me.ruolo === 'genitore', lav = d.lavagna || [];
+  var aperte = lav.filter(function (t) { return !t.confermato; });
+  var mie = aperte.filter(function (t) { return t.assegnato === me.id && t.stato !== 'Fatto'; });
+  var perTutti = aperte.filter(function (t) { return (t.assegnato === 'tutti' || t.assegnato === 'lilly') && t.stato !== 'Fatto'; });
+  var attesa = aperte.filter(function (t) { return t.stato === 'Fatto' && (gen || t.fatto_da === me.id || t.assegnato === me.id); });
+  var altri = aperte.filter(function (t) { return t.stato !== 'Fatto' && t.assegnato !== me.id && t.assegnato !== 'tutti' && t.assegnato !== 'lilly'; });
+  var ws = new Date(d.settimana.inizio);
+  var fatteSett = lav.filter(function (t) { return t.confermato && (t.fatto_da || t.assegnato) === me.id && new Date(t.creato_il || 0) >= new Date(ws.getTime() - 7 * 864e5); }).length;
+
+  var h = '<div class="card"><div class="row"><h2 class="grow" style="margin:0">📋 La lavagna</h2>' +
+    (fatteSett ? '<span class="pill pos">🏅 ' + fatteSett + ' fatte e confermate</span>' : '') + '</div>' +
+    '<div class="muted" style="margin-top:4px">' + (gen ? 'Prendi o assegna una cosa dall\'elenco qui sotto. Quando le bimbe toccano “Fatto!” vi arriva l\'avviso: confermate e prendono i punti.'
+      : 'Prenditi una cosa da fare dall\'elenco qui sotto. Quando l\'hai finita tocca <b>✅ Fatto!</b>: mamma e papà controllano e ti danno i punti ⭐') + '</div></div>';
+
+  // le mie cose da fare
+  h += '<div class="card"><h2>🙋 ' + (gen ? 'Le mie cose da fare' : 'Le tue cose da fare') + '</h2>';
+  if (!mie.length) h += '<div class="muted">Niente per ora: prendine una dall\'elenco 👇</div>';
+  mie.forEach(function (t) { h += todoRow(t, d); });
+  h += '</div>';
+
+  // fatte, aspettano l'ok
+  if (attesa.length) {
+    h += '<div class="card"><h2>⏳ ' + (gen ? 'Fatte, da confermare' : 'Fatte! Aspettano l\'ok di mamma e papà') + '</h2>';
+    attesa.forEach(function (t) { h += todoRow(t, d); });
     h += '</div>';
   }
+
+  // per tutti: chi la fa prende i punti
+  if (perTutti.length) {
+    h += '<div class="card"><h2>🎯 Per chi le vuole</h2><div class="muted">Chi la fa prende i punti.</div>';
+    perTutti.forEach(function (t) { h += todoRow(t, d); });
+    h += '</div>';
+  }
+
+  // elenco incarichi
+  var inc = d.incarichi || [];
+  if (inc.length) {
+    if (gen && !S.perInc) S.perInc = me.id;
+    h += '<div class="card"><h2>📌 ' + (gen ? 'Elenco incarichi' : 'Prendine una!') + '</h2>';
+    if (gen) {
+      h += '<div class="muted">Per chi?</div><div class="chips">' + d.famiglia.concat([{ id: 'tutti', soprannome: 'Chi vuole' }]).map(function (p) {
+        return '<button class="chip' + (S.perInc === p.id ? ' on' : '') + '" onclick="S.perInc=\'' + p.id + '\';render()">' + (p.id === 'tutti' ? '<span class="av-e" style="font-size:28px">🙋</span>' : av(p.id, 34)) + '<span>' + e(p.id === me.id ? 'Io' : p.soprannome) + '</span></button>';
+      }).join('') + '</div>';
+    }
+    h += '<div class="rgrid">' + inc.map(function (x) {
+      return '<button class="rtile" onclick="prendi(\'' + x.id + '\')"><span style="font-size:34px">' + e(x.emoji) + '</span><span class="d">' + e(x.testo) + '</span>' +
+        '<span class="pt" style="color:var(--verde)">⭐ ' + x.punti + '</span></button>';
+    }).join('') + '</div></div>';
+  }
+
+  // cose degli altri
+  if (altri.length) {
+    h += '<div class="card"><h2>👨‍👩‍👧‍👧 Le cose degli altri</h2>';
+    altri.forEach(function (t) { h += todoRow(t, d, true); });
+    h += '</div>';
+  }
+
+  // altro da fare (testo libero)
+  h += '<div class="card"><details><summary><b>➕ Un\'altra cosa da fare</b></summary><div class="stack" style="margin-top:10px">' +
+    '<input id="l_testo" maxlength="140" placeholder="Es. Preparare lo zaino per la gita">' +
+    '<div class="row"><select id="l_ass" class="grow">';
+  if (gen) {
+    h += '<option value="tutti">🙋 Chi vuole</option><option value="lilly">🐶 Per Lilly</option>';
+    for (var i = 0; i < d.famiglia.length; i++) h += '<option value="' + e(d.famiglia[i].id) + '">' + e(d.famiglia[i].emoji + ' ' + d.famiglia[i].soprannome) + '</option>';
+  } else h += '<option value="' + e(me.id) + '">🙋 Per me</option><option value="tutti">🙋 Chi vuole</option><option value="lilly">🐶 Per Lilly</option>';
+  h += '</select>' + (gen ? '<input id="l_punti" type="number" min="0" max="500" placeholder="⭐ punti" style="width:110px">' : '') + '</div>' +
+    '<input id="l_scad" type="date">' + (gen ? '' : '<div class="muted">I punti per le cose nuove li decidono mamma e papà.</div>') +
+    '<button onclick="addTask()">Aggiungi alla lavagna</button></div></details></div>';
+
+  // fatte di recente
+  var chiuse = lav.filter(function (t) { return t.confermato; }).slice(-12).reverse();
+  if (chiuse.length) {
+    h += '<div class="card"><details><summary><b>✔ Fatte di recente (' + chiuse.length + ')</b></summary>';
+    chiuse.forEach(function (t) { h += todoRow(t, d, true); });
+    h += '</details></div>';
+  }
+  return h;
+}
+/** Una riga grande della lavagna: emoji, testo, punti e il pulsante giusto. */
+function todoRow(t, d, compatta) {
+  var me = d.me, gen = me.ruolo === 'genitore';
+  var puoMuovere = !t.confermato && (gen || t.assegnato === me.id || t.assegnato === 'tutti' || t.assegnato === 'lilly' || t.creato_da === me.id);
+  var puoEliminare = gen || (t.creato_da === me.id && !t.confermato);
+  var chiF = t.fatto_da || t.assegnato;
+  var h = '<div class="todo' + (t.stato === 'Fatto' && !t.confermato ? ' attesa' : '') + '"' + (t.confermato ? ' style="opacity:.6"' : '') + '>' +
+    '<span class="em">' + e(t.emoji || (t.assegnato === 'lilly' ? '🐶' : '📌')) + '</span><div class="tx">' + e(t.testo) +
+    '<div class="muted">' + (t.assegnato !== me.id || t.stato === 'Fatto' ? nomeChiH(t.stato === 'Fatto' ? chiF : t.assegnato) + ' · ' : '') +
+    (t.punti ? '⭐ ' + t.punti : 'senza punti') + (t.scadenza ? ' · entro ' + fdate(t.scadenza) : '') + (t.confermato ? ' · ✔ confermata' : '') + '</div></div>';
+  if (t.stato !== 'Fatto' && puoMuovere && !compatta) h += '<button class="fatto ok" onclick="moveTask(\'' + t.id + '\',\'Fatto\')">✅ Fatto!</button>';
+  else if (t.stato !== 'Fatto' && puoMuovere && gen) h += '<button class="mini ok" onclick="moveTask(\'' + t.id + '\',\'Fatto\')">✅</button>';
+  if (t.stato === 'Fatto' && !t.confermato) {
+    if (gen) h += '<button class="mini ok" onclick="call(\'lavagna_conferma\',{id:\'' + t.id + '\'},\'Confermato!\',true)">✅' + (t.punti ? ' +' + t.punti : '') + '</button>' +
+      '<button class="mini sec" title="Non ancora" onclick="call(\'lavagna_conferma\',{id:\'' + t.id + '\',esito:\'no\'},\'Rimessa da fare\')">↩️</button>';
+    else if (t.fatto_da === me.id) h += '<button class="mini sec" title="Non l\'ho ancora finita" onclick="moveTask(\'' + t.id + '\',\'Da fare\')">↩️</button>';
+  }
+  if (puoEliminare && !(t.stato === 'Fatto' && !t.confermato && gen)) h += '<button class="mini neg" onclick="delTask(\'' + t.id + '\')">🗑</button>';
   return h + '</div>';
+}
+function prendi(id) {
+  var g = S.d.me.ruolo === 'genitore';
+  call('lavagna_prendi', { incarico: id, per: g ? (S.perInc || S.d.me.id) : S.d.me.id }, g && S.perInc && S.perInc !== S.d.me.id ? 'Assegnata 📋' : 'È tua! Quando hai finito tocca Fatto ✅');
 }
 function taskCard(t, d) {
   var me = d.me, gen = me.ruolo === 'genitore';
@@ -992,7 +1118,10 @@ function taskCard(t, d) {
 function addTask() {
   call('lavagna_add', { testo: val('l_testo'), assegnato: val('l_ass'), punti: val('l_punti'), scadenza: val('l_scad') }, 'Aggiunta alla lavagna 📋');
 }
-function moveTask(id, stato) { call('lavagna_stato', { id: id, stato: stato }, stato === 'Fatto' ? 'Brava/o! ✅' : null, stato === 'Fatto'); }
+function moveTask(id, stato) {
+  var gen = S.d.me.ruolo === 'genitore';
+  call('lavagna_stato', { id: id, stato: stato }, stato === 'Fatto' ? (gen ? 'Fatto ✅' : 'Brava! ✅ Ora mamma e papà confermano') : null, stato === 'Fatto');
+}
 function delTask(id) {
   if (delTask._pending !== id) { delTask._pending = id; toast('Tocca di nuovo 🗑 per eliminare'); setTimeout(function () { delTask._pending = null; }, 3000); return; }
   delTask._pending = null;
@@ -1001,7 +1130,7 @@ function delTask(id) {
 
 /* ---- Bimbe: punti a mamma e papà ---- */
 function viewDona(d) {
-  var h = '<div class="card"><h2>💛 Punti a mamma e papà</h2><div class="muted">Ogni settimana puoi regalare e togliere un po\' di punti. Per toglierli devi scrivere il motivo.</div></div>';
+  var h = blocLillyBimbe(d) + '<div class="card"><h2>💛 Punti a mamma e papà</h2><div class="muted">Ogni settimana puoi regalare e togliere un po\' di punti. Per toglierli devi scrivere il motivo.</div></div>';
   for (var i = 0; i < d.quote.length; i++) {
     var q = d.quote[i];
     h += '<div class="card"><div class="row">' + av(q.id, 60) + '<h2 class="grow">' + e(q.nome) + '</h2></div>' +
@@ -1019,6 +1148,44 @@ function viewDona(d) {
     h += '</div>';
   }
   return h;
+}
+/** Bimbe: proporre punti per Lilly (contano quando mamma o papà confermano). */
+function blocLillyBimbe(d) {
+  var rr = (d.regole || []).filter(function (r) { return r.per === 'lilly'; });
+  var pos = rr.filter(function (r) { return r.punti > 0; }), neg = rr.filter(function (r) { return r.punti < 0; });
+  var tiles = function (l) {
+    return '<div class="rgrid">' + l.map(function (r) {
+      return '<button class="rtile' + (r.punti < 0 ? ' n' : '') + '" onclick="S.propLilly=\'' + r.id + '\';render()">' + icoReg(r, 44) + '<span class="d">' + e(r.descrizione) + '</span>' +
+        '<span class="pt" style="color:' + (r.punti > 0 ? 'var(--verde)' : 'var(--rosso)') + '">' + sgn(r.punti) + '</span></button>';
+    }).join('') + '</div>';
+  };
+  var h = '<div class="card"><div class="row">' + av('lilly', 60) + '<div class="grow"><h2 style="margin:0">Punti a Lilly</h2><div class="muted">Cosa ha combinato? Mamma e papà confermano.</div></div></div>';
+  var sel = S.propLilly ? rr.filter(function (r) { return r.id === S.propLilly; })[0] : null;
+  if (sel) {
+    h += '<div class="todo attesa">' + icoReg(sel, 48) + '<div class="tx">' + e(sel.descrizione) + '<div class="muted">' + sgn(sel.punti) + ' punti per Lilly</div></div></div>' +
+      '<div class="row" style="margin-top:10px"><button class="ok grow" onclick="call(\'lilly_proponi\',{regola:\'' + sel.id + '\'},\'Inviato a mamma e papà 🐶\');S.propLilly=null">Invia</button><button class="sec" onclick="S.propLilly=null;render()">Annulla</button></div>';
+  } else {
+    if (pos.length) h += '<div class="sez">Brava Lilly!</div>' + tiles(pos);
+    if (neg.length) h += '<div class="sez">Lilly, no!</div>' + tiles(neg);
+    h += '<details style="margin-top:10px"><summary><b>✏️ Altro</b></summary><div class="stack" style="margin-top:8px">' +
+      '<input id="pl_mot" maxlength="120" placeholder="Cosa ha fatto? (es. ha riportato la pallina)">' +
+      '<div class="row"><input id="pl_pt" type="number" placeholder="Punti, es. 10 o -5" class="grow"><button onclick="proponiAltro()">Invia</button></div>' +
+      '<div class="muted">Al massimo ' + (d.maxLilly || 50) + ' punti, in più o in meno.</div></div></details>';
+  }
+  var pr = d.proposteLilly || [];
+  if (pr.length) {
+    var ST = { attesa: ['⏳', 'aspetta l\'ok', 'warn'], ok: ['✅', 'confermato', 'pos'], rifiutato: ['✖️', 'non confermato', 'neg'], annullato: ['✖️', 'annullato', 'neg'] };
+    h += '<div class="sez">Le tue proposte</div>';
+    pr.slice(0, 6).forEach(function (m) {
+      var s = ST[m.stato] || ST.ok;
+      h += '<div class="mov"><div class="p" style="color:' + (m.punti > 0 ? 'var(--verde)' : 'var(--rosso)') + '">' + sgn(m.punti) + '</div><div class="grow">' + e(m.motivo) +
+        '<div class="muted">' + s[0] + ' <span class="pill ' + s[2] + '">' + s[1] + '</span> · ' + fdate(m.data) + '</div></div></div>';
+    });
+  }
+  return h + '</div>';
+}
+function proponiAltro() {
+  call('lilly_proponi', { motivo: val('pl_mot'), punti: val('pl_pt') }, 'Inviato a mamma e papà 🐶');
 }
 function dona(id, n) { call('dona', { persona: id, punti: n, motivo: val('mot_' + id) }, n > 0 ? 'Punti regalati 💛' : 'Fatto, punti tolti', n > 0); }
 
@@ -1081,9 +1248,10 @@ function viewPunti(d) {
     '<button onclick="interpreta()">Vai</button></div></div>';
 
   // griglia: tocca la persona, poi l'icona
-  var sel = S.sel && (S.sel === 'famiglia' || chi(S.sel).ruolo) && S.sel !== me.id ? S.sel : '';
-  h = '<div class="card"><h2>👆 Tocca e assegna</h2><div class="chips">' + d.famiglia.filter(function (p) { return p.id !== me.id; }).concat([{ id: 'famiglia', soprannome: 'Tutti' }]).map(function (p) {
-    return '<button class="chip' + (sel === p.id ? ' on' : '') + '" onclick="S.sel=\'' + p.id + '\';S.preview=null;render()">' + (p.id === 'famiglia' ? '<span class="av-e" style="font-size:32px">🏠</span>' : av(p.id, 40)) + '<span>' + e(p.soprannome) + '</span></button>';
+  var sel = S.sel && (S.sel === 'famiglia' || chi(S.sel).ruolo) ? S.sel : '';
+  var gente = d.famiglia.filter(function (p) { return p.id !== me.id; }).concat([me, chi('lilly'), { id: 'famiglia', soprannome: 'Tutti' }]);
+  h = '<div class="card"><h2>👆 Tocca e assegna</h2><div class="chips">' + gente.map(function (p) {
+    return '<button class="chip' + (sel === p.id ? ' on' : '') + '" onclick="S.sel=\'' + p.id + '\';S.preview=null;render()">' + (p.id === 'famiglia' ? '<span class="av-e" style="font-size:32px">🏠</span>' : av(p.id, 40)) + '<span>' + e(p.id === me.id ? 'Io' : p.soprannome) + '</span></button>';
   }).join('') + '</div>';
   if (!sel) h += '<div class="muted" style="margin-top:8px">Scegli prima a chi dare (o togliere) i punti.</div>';
   else {
@@ -1094,15 +1262,17 @@ function viewPunti(d) {
         return '<button class="rtile' + (r.punti < 0 ? ' n' : '') + '" onclick="pick(\'' + r.id + '\')">' + icoReg(r, 44) + '<span class="d">' + e(r.descrizione) + '</span><span class="pt" style="color:' + (r.punti > 0 ? 'var(--verde)' : 'var(--rosso)') + '">' + sgn(r.punti) + '</span></button>';
       }).join('') + '</div>';
     };
+    if (sel === me.id) h += '<div class="muted" style="margin-top:8px">Punti a te stesso: valgono subito, senza conferme (utile per recuperare dai disastri 😅).</div>';
     if (pos.length) h += '<div class="sez">Fanno guadagnare</div>' + griglia(pos);
     if (neg.length) h += '<div class="sez">Fanno perdere</div>' + griglia(neg);
+    h += '<div class="rgrid"><button class="rtile" onclick="S.preview={persona:S.sel,punti:0,motivo:\'\',altro:true};render()"><span class="ico c-x" style="width:44px;height:44px;font-size:25px;border-radius:13px">✏️</span><span class="d">Altro…</span><span class="pt">± ?</span></button></div>';
   }
   h += '</div>' + comando;
 
   // assegnazione manuale
   h += '<div class="card"><h2>⭐ Assegna punti</h2><div class="stack"><select id="a_per" onchange="aggiornaRegole()"><option value="">Chi?</option>';
-  for (var i = 0; i < d.famiglia.length; i++) if (d.famiglia[i].id !== me.id) h += '<option value="' + e(d.famiglia[i].id) + '">' + e(d.famiglia[i].emoji + ' ' + d.famiglia[i].soprannome) + '</option>';
-  h += '<option value="famiglia">🏠 Tutta la famiglia</option></select>' +
+  for (var i = 0; i < d.famiglia.length; i++) h += '<option value="' + e(d.famiglia[i].id) + '">' + e(d.famiglia[i].emoji + ' ' + (d.famiglia[i].id === me.id ? 'Io' : d.famiglia[i].soprannome)) + '</option>';
+  h += '<option value="lilly">🐶 Lilly</option><option value="famiglia">🏠 Tutta la famiglia</option></select>' +
     '<select id="a_reg" onchange="sceltaRegola()"><option value="">— scegli prima la persona —</option></select>' +
     '<select id="a_cat"><option value="">Categoria (facoltativa)</option>' + (d.categorie || []).map(function (c) { return '<option value="' + c + '">' + c.charAt(0).toUpperCase() + c.slice(1) + '</option>'; }).join('') + '</select>' +
     '<div class="row"><input id="a_punti" type="number" placeholder="Punti (es. 10 o -15)" style="width:170px"><input id="a_mot" class="grow" maxlength="120" placeholder="Motivo"></div>' +
@@ -1132,13 +1302,13 @@ function viewPunti(d) {
   return h + '</div>';
 }
 function movRow(m) {
-  var st = m.stato === 'annullato' ? ' <span class="pill">annullato</span>' : m.stato === 'contestato' ? ' <span class="pill warn">contestato</span>' : m.stato === 'confermato' ? ' <span class="pill pos">confermato</span>' : '';
+  var st = m.stato === 'attesa' ? ' <span class="pill warn">da confermare</span>' : m.stato === 'rifiutato' ? ' <span class="pill">rifiutato</span>' : m.stato === 'annullato' ? ' <span class="pill">annullato</span>' : m.stato === 'contestato' ? ' <span class="pill warn">contestato</span>' : m.stato === 'confermato' ? ' <span class="pill pos">confermato</span>' : '';
   return '<div class="mov" style="' + (m.stato === 'annullato' ? 'opacity:.5' : '') + '">' + icoMov(m, 36) + '<div class="p" style="color:' + (m.punti > 0 ? 'var(--verde)' : 'var(--rosso)') + '">' + sgn(m.punti) + '</div>' +
     '<div class="grow"><b>' + nomeChiH(m.persona) + '</b> · ' + motivoH(m.motivo) + st + '<div class="muted">' + fdate(m.data, true) + ' · da ' + e(chi(m.da).soprannome) + '</div></div></div>';
 }
 /* ---- icone delle regole ---- */
 var CAT_ICO = { casa: '🏠', scuola: '📚', sport: '🏐', famiglia: '💞', comportamento: '🙂' };
-var SPEC_ICO = { COSTO: '⏳', BIMBE: '💛', LAVAGNA: '📋', EXTRA: '🪙' };
+var SPEC_ICO = { COSTO: '⏳', BIMBE: '💛', LAVAGNA: '📋', EXTRA: '🪙', LILLY: '🐶' };
 function regolaById(id) {
   var rr = (S.d && S.d.regole) || [];
   for (var i = 0; i < rr.length; i++) if (rr[i].id === id) return rr[i];
@@ -1163,6 +1333,12 @@ function pick(id) {
 }
 function previewSheet() {
   var p = S.preview;
+  if (p.altro) SEGNO_ALTRO = 1;
+  if (p.altro) return '<div class="sheet"><div class="row">' + (p.persona === 'famiglia' ? '<span style="font-size:32px">🏠</span>' : av(p.persona, 44)) + '<b class="grow">' + e(p.persona === S.d.me.id ? 'A me' : chi(p.persona).soprannome) + ': altro</b></div>' +
+    '<div class="stack" style="margin-top:8px"><input id="pv_mot" maxlength="120" placeholder="Cosa è successo?"><div class="row">' +
+    '<button class="sec" onclick="segnoAltro(-1)" id="pv_meno">−</button><input id="pv_pt" type="number" min="1" placeholder="Punti" class="grow"><button class="ok" onclick="segnoAltro(1)" id="pv_piu">+</button></div>' +
+    '<div class="muted" id="pv_segno"><b style="color:var(--verde)">Guadagna</b> i punti (tocca − se li perde)</div></div>' +
+    '<div class="row" style="margin-top:10px"><button class="ok grow" onclick="confermaAltro()">Registra</button><button class="sec" onclick="S.preview=null;render()">Annulla</button></div></div>';
   return '<div class="sheet"><div class="row">' + icoMov(p, 48) + '<div class="big" style="font-size:32px;color:' + (p.punti > 0 ? 'var(--verde)' : 'var(--rosso)') + '">' + sgn(p.punti) + '</div>' +
     '<div class="grow"><b>' + nomeChiH(p.persona) + '</b><div class="muted">' + motivoH(p.motivo) + (p.categoria ? ' · <span class="pill">' + e(p.categoria) + '</span>' : '') + '</div></div></div>' +
     '<div class="row" style="margin-top:10px"><button class="ok grow" onclick="confermaPreview()">Conferma</button><button class="sec" onclick="S.preview=null;render()">Annulla</button></div></div>';
@@ -1197,6 +1373,7 @@ function viewRegole(d) {
 
 function regoleFor(personaId) {
   var d = S.d, ruolo = personaId === 'famiglia' ? 'famiglia' : chi(personaId).ruolo;
+  if (personaId === 'lilly') return (d.regole || []).filter(function (r) { return r.per === 'lilly'; });
   return (d.regole || []).filter(function (r) {
     return r.per === 'tutti' || (r.per === 'figlie' && ruolo === 'figlia') || (r.per === 'genitori' && ruolo === 'genitore');
   });
@@ -1242,13 +1419,14 @@ function parseCmd(text, famiglia, regole, meId) {
   var words = t.split(' ');
   var segno = 0, num = 0, persona = '', used = {};
   // persona
-  var alias = { famiglia: 'famiglia', tutti: 'famiglia', tutta: 'famiglia' };
+  var alias = { famiglia: 'famiglia', tutti: 'famiglia', tutta: 'famiglia', lilly: 'lilly', cane: 'lilly', cagnolina: 'lilly' };
+  if (meId) { alias.me = meId; alias.io = meId; }
   famiglia.forEach(function (p) {
     alias[norm(p.nome)] = p.id; alias[norm(p.soprannome)] = p.id; alias[norm(p.id)] = p.id;
   });
   for (var i = 0; i < words.length; i++) {
     var w = words[i];
-    if (!persona && alias[w] && alias[w] !== meId) { persona = alias[w]; used[i] = 1; continue; }
+    if (!persona && alias[w]) { persona = alias[w]; used[i] = 1; continue; }
     if (/^[+-]?\d+$/.test(w) && !num) {
       num = Math.abs(parseInt(w, 10));
       if (w.charAt(0) === '-') segno = -1; else if (w.charAt(0) === '+') segno = 1;
@@ -1261,7 +1439,6 @@ function parseCmd(text, famiglia, regole, meId) {
     if (/^(meno|togli|togliere|toglie|levare|leva|malus)$/.test(w) && !segno) { segno = -1; used[i] = 1; continue; }
   }
   if (!persona) {
-    for (var q = 0; q < words.length; q++) if (alias[words[q]] && alias[words[q]] === meId) return { errore: 'Non puoi darti punti da solo 😉' };
     return { errore: 'Non ho capito a chi: usa un nome o un soprannome' };
   }
   // motivo: le parole dopo "per", altrimenti quelle rimaste
@@ -1276,7 +1453,7 @@ function parseCmd(text, famiglia, regole, meId) {
   var best = null, bestScore = 0;
   var mw = resto.filter(function (w) { return w.length >= 4 && !STOP[w]; }).map(stem);
   (regole || []).forEach(function (r) {
-    if (!(r.per === 'tutti' || (r.per === 'figlie' && ruolo === 'figlia') || (r.per === 'genitori' && ruolo === 'genitore'))) return;
+    if (persona === 'lilly' ? r.per !== 'lilly' : !(r.per === 'tutti' || (r.per === 'figlie' && ruolo === 'figlia') || (r.per === 'genitori' && ruolo === 'genitore'))) return;
     var rw = norm(r.descrizione).split(' ').filter(function (w) { return w.length >= 4; }).map(stem);
     var score = 0;
     mw.forEach(function (w) { if (rw.indexOf(w) >= 0) score++; });
@@ -1311,6 +1488,20 @@ function interpreta() {
   var cmd = val('cmd');
   render();
   document.getElementById('cmd').value = cmd;
+}
+var SEGNO_ALTRO = 1;
+function segnoAltro(s) {
+  SEGNO_ALTRO = s;
+  document.getElementById('pv_segno').innerHTML = s > 0 ? '<b style="color:var(--verde)">Guadagna</b> i punti' : '<b style="color:var(--rosso)">Perde</b> i punti';
+  document.getElementById('pv_piu').className = s > 0 ? 'ok' : 'sec';
+  document.getElementById('pv_meno').className = s < 0 ? 'neg' : 'sec';
+}
+function confermaAltro() {
+  var n = Math.abs(parseInt(val('pv_pt'), 10) || 0), mot = val('pv_mot'), per = S.preview.persona;
+  if (!n) return toast('Quanti punti?', true);
+  if (!mot) return toast('Scrivi cosa è successo', true);
+  var punti = n * SEGNO_ALTRO; SEGNO_ALTRO = 1;
+  call('assegna', { persona: per, punti: punti, motivo: mot }, 'Registrato ' + sgn(punti) + ' a ' + (per === S.d.me.id ? 'te' : chi(per).soprannome), punti > 0);
 }
 function confermaPreview() {
   var p = S.preview;
