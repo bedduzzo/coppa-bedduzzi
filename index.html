@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- COPPA BEDDUZZI – app – index.html – versione 2.21 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
+<!-- COPPA BEDDUZZI – app – index.html – versione 2.22 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -297,7 +297,7 @@
 
 <script>
 var BOOT = { token: '', tv: /[?&]tv=1/.test(location.search) };
-var VERSIONE_PAGINA = '2.21';
+var VERSIONE_PAGINA = '2.22';
 var IMG = {};
 var S = { d: null, tab: 'casa', busy: false, tvIdx: 0, preview: null, filtro: '' };
 
@@ -1058,10 +1058,13 @@ function riduci(file, max, q, cb) {
 function miniQuadrata(file, cb) {
   var url = URL.createObjectURL(file), img = new Image();
   img.onload = function () {
-    var lato = Math.min(img.width, img.height), cv = document.createElement('canvas'); cv.width = 300; cv.height = 300;
-    cv.getContext('2d').drawImage(img, (img.width - lato) / 2, (img.height - lato) / 2, lato, lato, 0, 0, 300, 300);
+    var lato = Math.min(img.width, img.height), cv = document.createElement('canvas'); cv.width = 240; cv.height = 240;
+    cv.getContext('2d').drawImage(img, (img.width - lato) / 2, (img.height - lato) / 2, lato, lato, 0, 0, 240, 240);
     URL.revokeObjectURL(url);
-    cb(cv.toDataURL('image/jpeg', 0.7));
+    // la miniatura deve stare in una cella del foglio: abbassa la qualità finché non è abbastanza piccola
+    var q = 0.7, s = cv.toDataURL('image/jpeg', q);
+    while (s.length > 38000 && q > 0.25) { q -= 0.1; s = cv.toDataURL('image/jpeg', q); }
+    cb(s);
   };
   img.onerror = function () { URL.revokeObjectURL(url); cb(null); };
   img.src = url;
@@ -1077,7 +1080,7 @@ function caricaFoto(inp) {
     toast('Carico la foto ' + (fatte + 1) + ' di ' + n + '…');
     riduci(f, 1600, 0.82, function (grande) {
       miniQuadrata(f, function (mini) {
-        if (!grande || !mini) { toast('Questa foto non si riesce a leggere', true); uno(); return; }
+        if (!grande || !mini) { toast('Questa foto non si riesce a leggere (formato HEIC? prova a sceglierla dalla galleria)', true); uno(); return; }
         apiCall('foto_carica', { img: grande, mini: mini, didascalia: did, quante: n }, function (x) {
           fatte++; S.albumDati = x; S.albumMese = x.mese; if (S.tab === 'album') render(); uno();
         }, function (msg) { toast(msg, true); uno(); });
