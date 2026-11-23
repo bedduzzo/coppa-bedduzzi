@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- COPPA BEDDUZZI – app – index.html – versione 2.22 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
+<!-- COPPA BEDDUZZI – app – index.html – versione 2.23 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -297,7 +297,7 @@
 
 <script>
 var BOOT = { token: '', tv: /[?&]tv=1/.test(location.search) };
-var VERSIONE_PAGINA = '2.22';
+var VERSIONE_PAGINA = '2.23';
 var IMG = {};
 var S = { d: null, tab: 'casa', busy: false, tvIdx: 0, preview: null, filtro: '' };
 
@@ -454,7 +454,7 @@ function numVer(v) { var p = String(v || '0').split('.'); return [parseInt(p[0],
 /** Avvisa se l'archivio è più nuovo dell'app, o se cambia la versione principale (2.x → 3.x). */
 function versioniDiverse(arch, app) {
   var a = numVer(arch), b = numVer(app);
-  return a[0] !== b[0] || a[1] > b[1];
+  return a[0] !== b[0] || a[1] !== b[1];
 }
 function go(t) { S.tab = t; render(); window.scrollTo(0, 0); }
 
@@ -1023,6 +1023,8 @@ function viewAlbum(d) {
     '<label><span>📸</span>Scatta una foto<input type="file" accept="image/*" capture="environment" onchange="caricaFoto(this)"></label>' +
     '<label class="sec"><span>🖼️</span>Scegli dalla galleria<input type="file" accept="image/*" multiple onchange="caricaFoto(this)"></label></div>' +
     '<input id="fotoDid" maxlength="140" placeholder="Didascalia (facoltativa), es. Pizza a casa dei nonni" style="margin-top:8px">';
+  if (S.erroreFoto) h += '<div class="todo attesa" style="margin-top:10px"><span class="em">⚠️</span><div class="tx">' + e(S.erroreFoto) +
+    '<div class="muted">Versione app ' + VERSIONE_PAGINA + ' · archivio ' + e((S.d && S.d.versione) || '?') + '</div></div><button class="mini sec" onclick="S.erroreFoto=null;render()">✖</button></div>';
   h += '</div>';
   if (!A) return h + '<div class="card muted">Carico l\'album…</div>';
   if (A.mesi.length > 1) h += '<div class="chips" style="margin-bottom:10px">' + A.mesi.map(function (m) {
@@ -1040,7 +1042,7 @@ function caricaAlbum(mese) {
   if (S.albumCarica) return;
   S.albumCarica = true;
   apiCall('foto_album', { mese: mese || '' }, function (x) { S.albumCarica = false; S.albumDati = x; S.albumMese = x.mese; if (S.tab === 'album' || S.foto) render(); },
-    function (msg) { S.albumCarica = false; toast(msg, true); });
+    function (msg) { S.albumCarica = false; S.albumDati = { mesi: [], mese: '', foto: [] }; erroreFoto('L\'album non si apre: ' + msg); });
 }
 /** Riduce la foto sul telefono (lato lungo 1600 px) e prepara la miniatura: si carica in pochi secondi anche col 4G. */
 function riduci(file, max, q, cb) {
@@ -1073,21 +1075,30 @@ function caricaFoto(inp) {
   var files = Array.prototype.slice.call(inp.files || []).filter(function (f) { return /^image\//.test(f.type); }).slice(0, 20);
   inp.value = '';
   if (!files.length) return;
-  var did = val('fotoDid'), n = files.length, fatte = 0;
+  var did = val('fotoDid'), n = files.length, fatte = 0, errore = '';
   var uno = function () {
     var f = files.shift();
-    if (!f) { toast(fatte === n ? (n > 1 ? n + ' foto aggiunte all\'album 📷' : 'Foto aggiunta all\'album 📷') : 'Caricate ' + fatte + ' foto su ' + n, fatte !== n); var el = document.getElementById('fotoDid'); if (el) el.value = ''; return; }
+    if (!f) {
+      if (fatte === n) toast(n > 1 ? n + ' foto aggiunte all\'album 📷' : 'Foto aggiunta all\'album 📷');
+      else erroreFoto((fatte ? 'Caricate ' + fatte + ' foto su ' + n + '. ' : 'Foto non caricata. ') + errore);
+      var el = document.getElementById('fotoDid'); if (el) el.value = ''; return;
+    }
     toast('Carico la foto ' + (fatte + 1) + ' di ' + n + '…');
     riduci(f, 1600, 0.82, function (grande) {
       miniQuadrata(f, function (mini) {
-        if (!grande || !mini) { toast('Questa foto non si riesce a leggere (formato HEIC? prova a sceglierla dalla galleria)', true); uno(); return; }
+        if (!grande || !mini) { errore = 'Questa foto non si riesce a leggere (formato HEIC? prova a sceglierla dalla galleria).'; uno(); return; }
         apiCall('foto_carica', { img: grande, mini: mini, didascalia: did, quante: n }, function (x) {
           fatte++; S.albumDati = x; S.albumMese = x.mese; if (S.tab === 'album') render(); uno();
-        }, function (msg) { toast(msg, true); uno(); });
+        }, function (msg) { errore = msg; uno(); });
       });
     });
   };
   uno();
+}
+/** L'errore delle foto resta in vista (non sparisce dopo pochi secondi), così si può leggere con calma. */
+function erroreFoto(msg) {
+  S.erroreFoto = msg;
+  if (S.tab === 'album') render(); else toast(msg, true);
 }
 var FOTO_CACHE = {};
 function apriFoto(id) {
