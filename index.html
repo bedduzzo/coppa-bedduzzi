@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- COPPA BEDDUZZI – app – index.html – versione 2.26 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
+<!-- COPPA BEDDUZZI – app – index.html – versione 2.27 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -301,7 +301,7 @@
 
 <script>
 var BOOT = { token: '', tv: /[?&]tv=1/.test(location.search) };
-var VERSIONE_PAGINA = '2.26';
+var VERSIONE_PAGINA = '2.27';
 var IMG = {};
 var S = { d: null, tab: 'casa', busy: false, tvIdx: 0, preview: null, filtro: '' };
 
@@ -1109,6 +1109,7 @@ function firmaGioco(g) {
   if (g.tipo === 'ncc' && g.stato !== 'gioco') f += '|' + JSON.stringify(g.voti) + JSON.stringify(g.risposte);
   if (g.tipo === 'quiz') { var q = g.domande[g.n] || {}; f += '|' + g.n + '|' + q.svelata + '|' + JSON.stringify(q.risposte || {}) + (q.quanti || 0); }
   if (g.tipo === 'impiccato') f += '|' + g.mostra + g.errori + (g.storia || []).length;
+  f += '|' + JSON.stringify(g.fairplay || {}) + JSON.stringify(g.punti || {}) + (g.azzerata ? 'z' : '');
   return f;
 }
 /** Ridisegna la partita solo se è cambiato qualcosa (così il testo che stai scrivendo non si perde). */
@@ -1134,19 +1135,60 @@ function caricaClassificaGiochi() {
 function classificaGiochiHtml() {
   var c = S.classGiochi, per = S.classPer || 'oggi';
   var h = '<div class="row"><h2 class="grow" style="margin:0">🏆 Classifica dei giochi</h2></div><div class="row" style="gap:6px;margin:8px 0">' +
-    [['oggi', 'Stasera'], ['mese', 'Questo mese'], ['sempre', 'Sempre']].map(function (x) {
+    [['oggi', 'Stasera'], ['mese', 'Questo mese'], ['sempre', '🏆 Campionato']].map(function (x) {
       return '<button class="mini ' + (per === x[0] ? 'ok' : 'sec') + '" onclick="S.classPer=\'' + x[0] + '\';document.getElementById(\'giocoClass\').innerHTML=classificaGiochiHtml()">' + x[1] + '</button>';
     }).join('') + '</div>';
   var l = c ? c[per] : null;
   if (!l) return h + '<div class="muted">Carico…</div>';
-  if (!l.length) return h + '<div class="muted">Ancora nessuna partita' + (per === 'oggi' ? ' stasera' : '') + '.</div>';
-  return h + l.map(function (x, i) { return '<div class="mov"><div style="font-size:22px;width:34px">' + (['🥇', '🥈', '🥉'][i] || (i + 1) + '.') + '</div>' + av(x.id, 34) + '<div class="grow"><b>' + e(chi(x.id).soprannome || x.id) + '</b></div><b>' + x.punti + '</b></div>'; }).join('');
+  if (per === 'sempre' && c.campionato) h += campionatoInfo(c.campionato);
+  if (!l.length) return h + '<div class="muted">Ancora nessuna partita' + (per === 'oggi' ? ' stasera' : '') + '.</div>' + (per === 'sempre' ? campionatoComandi(c.campionato) : '');
+  return h + l.map(function (x, i) { return '<div class="mov"><div style="font-size:22px;width:34px">' + (['🥇', '🥈', '🥉'][i] || (i + 1) + '.') + '</div>' + av(x.id, 34) + '<div class="grow"><b>' + e(chi(x.id).soprannome || x.id) + '</b></div><b>' + x.punti + '</b></div>'; }).join('') +
+    (per === 'sempre' ? campionatoComandi(c.campionato) : '');
+}
+function campionatoInfo(cp) {
+  var t = [];
+  if (cp.inizio) t.push('dal ' + fdate(cp.inizio));
+  if (cp.fine) t.push((cp.finito ? 'finito il ' : 'fino al ') + fdate(cp.fine));
+  return '<div class="muted" style="margin-bottom:6px">' + (cp.finito ? '🏁 Campionato finito' : cp.fermo ? '⏸️ Campionato fermo: le partite di adesso non contano' : '▶️ Campionato in corso') + (t.length ? ' · ' + t.join(' ') : '') + '</div>';
+}
+function campionatoComandi(cp) {
+  if (!S.d || S.d.me.ruolo !== 'genitore' || !cp) return '';
+  return '<details style="margin-top:10px"><summary><b>⚙️ Gestisci il campionato</b></summary><div class="stack" style="margin-top:8px">' +
+    '<div class="row"><span class="muted">Fine</span><input id="gc_fine" type="date" class="grow" value="' + e(cp.fine || '') + '"><button class="mini sec" onclick="campionato(\'fine\',val(\'gc_fine\'))">Salva</button>' +
+    (cp.fine ? '<button class="mini sec" onclick="campionato(\'fine\',\'\')">Togli</button>' : '') + '</div>' +
+    (cp.fermo ? '<button class="ok" onclick="campionato(\'riprendi\')">▶️ Riprendi il campionato</button>' : '<button class="sec" onclick="campionato(\'ferma\')">⏸️ Ferma il campionato</button>') +
+    '<button class="neg" onclick="if(confirm(\'Nuovo campionato: la classifica riparte da zero. Va bene?\'))campionato(\'reset\')">🔄 Azzera: nuovo campionato</button>' +
+    '<div class="muted">Le classifiche “Stasera” e “Questo mese” non cambiano.</div></div></details>';
+}
+function campionato(op, data) {
+  apiCall('gioco_campionato', { op: op, data: data || '' }, function (c) {
+    S.classGiochi = c; S.classCaricata = Date.now(); var el = document.getElementById('giocoClass'); if (el) el.innerHTML = classificaGiochiHtml();
+    toast({ reset: 'Nuovo campionato 🏆', fine: data ? 'Data di fine salvata' : 'Data di fine tolta', ferma: 'Campionato fermo ⏸️', riprendi: 'Campionato ripartito ▶️' }[op]);
+  }, function (msg) { toast(msg, true); });
+}
+/** 🤝 Fair play: l'unico modo in cui i giochi danno punti della Coppa (genitori lo danno, le bimbe lo propongono). */
+function fairplayHtml(g, me) {
+  if (me.ruolo === 'tv') return '';
+  var ids = {};
+  Object.keys(g.punti || {}).concat(Object.keys(g.risposte || {}), g.giocatori || [], g.perChi ? [g.perChi] : [], g.host ? [g.host] : [], g.setter ? [g.setter] : [], (g.storia || []).map(function (x) { return x.chi; }))
+    .forEach(function (id) { if (id && id !== me.id && chi(id).ruolo) ids[id] = 1; });
+  var l = Object.keys(ids);
+  if (!l.length) return '';
+  var gen = me.ruolo === 'genitore', fp = g.fairplay || {};
+  return '<div class="card"><h2>🤝 Fair play</h2><div class="muted">' + (gen ? 'Chi ha giocato bene e con correttezza? Dà punti della Coppa.' : 'Chi è stato corretto e gentile? Proponilo: mamma e papà confermano.') + '</div>' +
+    l.map(function (id) {
+      var dato = (fp[id] || []).indexOf(me.id) >= 0;
+      return '<div class="mov">' + av(id, 32) + '<div class="grow"><b>' + e(chi(id).soprannome) + '</b></div>' +
+        (dato ? '<span class="pill pos">✔ ' + (gen ? 'dato' : 'proposto') + '</span>' : '<button class="mini ok" onclick="mossa(\'fairplay\',{chi:\'' + id + '\'})">🤝 ' + (gen ? 'Fair play' : 'Proponi') + '</button>') + '</div>';
+    }).join('') + '</div>';
 }
 function testaPartita(g) {
   var me = S.d.me, puo = g.host === me.id || me.ruolo === 'genitore';
   return '<div class="card"><div class="row"><h2 class="grow" style="margin:0">' + e(g.nome) + '</h2>' +
     '<button class="mini sec" onclick="S.giocoLobby=true;aggiornaGioco(true)">‹ Giochi</button>' +
-    (puo && g.stato !== 'finita' ? '<button class="mini neg" onclick="if(confirm(\'Chiudo la partita?\'))mossa(\'chiudi\')">Chiudi</button>' : '') + '</div></div>';
+    (puo && Object.keys(g.punti || {}).length + Object.keys(g.puntiCalcolati || {}).length ? '<button class="mini sec" title="Azzera i punti di questa partita" onclick="if(confirm(\'Azzero i punti di questa partita? (anche nella classifica dei giochi)\'))mossa(\'azzera\')">🔄 Azzera</button>' : '') +
+    (puo && g.stato !== 'finita' ? '<button class="mini neg" onclick="if(confirm(\'Chiudo la partita?\'))mossa(\'chiudi\')">Chiudi</button>' : '') + '</div>' +
+    (g.azzerata ? '<div class="muted" style="margin-top:4px">🔄 Punti azzerati' + (g.tipo === 'ncc' ? ': questa partita non conta' : '') + '</div>' : '') + '</div>';
 }
 function punteggiHtml(pt, titolo) {
   var ids = Object.keys(pt || {}).sort(function (a, b) { return pt[b] - pt[a]; });
@@ -1162,11 +1204,9 @@ function fineHtml(g) {
 }
 function partitaHtml(g, d) {
   var me = d.me, h = testaPartita(g);
-  if (g.tipo === 'ncc') return h + nccHtml(g, me);
-  if (g.tipo === 'quiz') return h + quizHtml(g, me);
-  if (g.tipo === 'impiccato') return h + impiccatoHtml(g, me);
-  if (g.tipo === 'chisono') return h + chisonoHtml(g, me);
-  return h;
+  var corpo = g.tipo === 'ncc' ? nccHtml(g, me) : g.tipo === 'quiz' ? quizHtml(g, me) : g.tipo === 'impiccato' ? impiccatoHtml(g, me) : g.tipo === 'chisono' ? chisonoHtml(g, me) : '';
+  // il fair play si dà quando la partita è finita (o durante il voto di Nomi Cose Città)
+  return h + corpo + (g.stato !== 'gioco' ? fairplayHtml(g, me) : '');
 }
 /* Nomi Cose Città */
 function nccProgressi(g) {
@@ -1248,7 +1288,7 @@ function impiccatoHtml(g, me) {
     '<div><div class="muted">Errori</div><div style="font-size:30px;font-weight:900">' + g.errori + ' / ' + g.maxErrori + '</div></div></div>' +
     (g.indizio ? '<div class="muted">Indizio: <b>' + e(g.indizio) + '</b></div>' : '') +
     '<div style="font-size:34px;font-weight:900;letter-spacing:6px;margin:10px 0;word-break:break-all">' + e(String(parola || '').toUpperCase()) + '</div>';
-  if (fin) h += '<div style="font-size:20px;font-weight:800">' + (g.esito === 'indovinata' ? '🎉 Indovinata' + (g.vinta ? ' da ' + e(chi(g.vinta).soprannome) : '') + '!' : '🪢 Impiccato! Era “' + e(g.parola) + '”') + '</div>';
+  if (fin) h += '<div style="font-size:20px;font-weight:800">' + (g.esito === 'indovinata' ? '🎉 Indovinata' + (g.vinta ? ' da ' + e(chi(g.vinta).soprannome) : '') + '!' : g.errori >= g.maxErrori ? '🪢 Impiccato! Era “' + e(g.parola) + '”' : 'Partita chiusa: era “' + e(g.parola) + '”') + '</div>';
   else if (setter) h += '<div class="muted">La parola l\'hai scelta tu: guarda come se la cavano 😏</div>';
   h += '</div>';
   if (!fin && !setter) {
