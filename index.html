@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- COPPA BEDDUZZI – app – index.html – versione 2.19 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
+<!-- COPPA BEDDUZZI – app – index.html – versione 2.26 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -95,6 +95,49 @@
   .todo.attesa { background: #fffbeb; border-color: #fcd34d; }
   .badge { display: inline-block; min-width: 18px; height: 18px; line-height: 18px; padding: 0 5px; border-radius: 9px; background: var(--rosso); color: #fff; font-size: 11px; font-weight: 800; position: absolute; top: 0; right: 18%; }
   .tabs button { position: relative; }
+  .chatlist { display: flex; flex-direction: column; gap: 10px; padding-bottom: 150px; }
+  .bolla { display: flex; gap: 8px; align-items: flex-end; max-width: 88%; }
+  .bolla.mia { align-self: flex-end; flex-direction: row-reverse; }
+  .bolla .b { background: #fff; border: 1px solid var(--bordo); border-radius: 18px 18px 18px 4px; padding: 8px 12px; box-shadow: 0 1px 2px rgba(0,0,0,.05); }
+  .bolla.mia .b { background: #dcfce7; border-color: #bbf7d0; border-radius: 18px 18px 4px 18px; }
+  .bolla .chi { font-size: 12px; font-weight: 800; color: var(--mare-scuro); }
+  .bolla .tx { white-space: pre-wrap; word-wrap: break-word; font-size: 16px; line-height: 1.35; }
+  .bolla .ora { font-size: 11px; color: var(--grigio); text-align: right; margin-top: 2px; }
+  .bolla .tx.solo-emoji { font-size: 40px; line-height: 1.1; }
+  .reaz { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .reaz button { background: #f1f5f9; color: var(--testo); padding: 2px 8px; font-size: 14px; border-radius: 12px; border: 1px solid var(--bordo); }
+  .reaz button.mia { background: #dbeafe; border-color: #93c5fd; }
+  .picker { display: flex; gap: 4px; background: #fff; border: 1px solid var(--bordo); border-radius: 22px; padding: 4px 6px; margin-top: 4px; box-shadow: 0 4px 12px rgba(0,0,0,.12); }
+  .picker button { background: transparent; font-size: 24px; padding: 2px 4px; }
+  .auto { align-self: center; background: #fef3c7; border: 1px solid #fde68a; color: #78350f; border-radius: 14px; padding: 6px 12px; font-size: 14px; font-weight: 700; text-align: center; max-width: 92%; }
+  .auto .ora { font-size: 11px; font-weight: 600; color: #a16207; }
+  .chatbar { position: fixed; left: 0; right: 0; bottom: calc(64px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid var(--bordo); padding: 6px 10px; z-index: 6; }
+  .chatbar .inner { max-width: 760px; margin: 0 auto; }
+  .chatbar .emo { display: flex; gap: 2px; overflow-x: auto; padding-bottom: 4px; }
+  .chatbar .emo button { background: transparent; font-size: 22px; padding: 2px 5px; }
+  .chatbar textarea { flex: 1; font-family: inherit; font-size: 16px; padding: 9px 12px; border: 2px solid var(--bordo); border-radius: 20px; resize: none; max-height: 120px; min-height: 42px; }
+  .chatbar .mic { background: #f1f5f9; color: var(--testo); font-size: 22px; padding: 6px 10px; border-radius: 50%; }
+  .chatbar .mic.on { background: var(--rosso); color: #fff; animation: pulsa 1.2s infinite; }
+  .giorno { align-self: center; font-size: 12px; font-weight: 800; color: var(--grigio); background: #fff; border-radius: 10px; padding: 2px 10px; }
+  .tvchat .bolla { max-width: 100%; } .tvchat .bolla .tx { font-size: 2.1vw; } .tvchat .bolla .chi { font-size: 1.3vw; }
+  .tvchat .auto { font-size: 1.8vw; }
+  .galleria { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+  .galleria button { padding: 0; border-radius: 8px; overflow: hidden; aspect-ratio: 1; background: #e2e8f0 center / cover no-repeat; }
+  .galleria.mini4 { grid-template-columns: repeat(4, 1fr); }
+  .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; }
+  .lightbox img { max-width: 100vw; max-height: 74vh; object-fit: contain; }
+  .lightbox .lbbar { display: flex; gap: 8px; align-items: center; padding: 10px; flex-wrap: wrap; justify-content: center; }
+  .lightbox .lbbar button, .lightbox .lbbar a { background: rgba(255,255,255,.15); color: #fff; padding: 10px 14px; border-radius: 12px; text-decoration: none; font-weight: 800; }
+  .lightbox .info { text-align: center; padding: 0 16px; font-size: 15px; }
+  .carica { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .carica label { display: flex; flex-direction: column; align-items: center; gap: 4px; background: var(--mare); color: #fff; border-radius: 14px; padding: 14px 8px; font-weight: 800; cursor: pointer; }
+  .carica label.sec { background: #e0f2fe; color: var(--mare-scuro); }
+  .carica label span { font-size: 30px; }
+  .carica input { display: none; }
+  .tvgioco h2 { font-size: 3vw; margin: 0 0 2vh; }
+  .tvtab { width: 100%; border-collapse: collapse; font-size: 2.2vw; }
+  .tvtab th, .tvtab td { border-bottom: 2px solid #e2e8f0; padding: 1vh 1vw; text-align: center; }
+  .tvtab td:first-child { text-align: left; }
   .avviso { border: 3px solid #f59e0b; background: #fffbeb; }
   .conf { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid #fde68a; }
   .conf:first-of-type { border-top: 0; }
@@ -258,7 +301,7 @@
 
 <script>
 var BOOT = { token: '', tv: /[?&]tv=1/.test(location.search) };
-var VERSIONE_PAGINA = '2.19';
+var VERSIONE_PAGINA = '2.26';
 var IMG = {};
 var S = { d: null, tab: 'casa', busy: false, tvIdx: 0, preview: null, filtro: '' };
 
@@ -379,17 +422,17 @@ function render() {
   if (BOOT.tv) return renderTV();
   var r = d.me.ruolo;
   var tabs = r === 'genitore'
-    ? [['casa', '🏖️', 'Casa'], ['lavagna', '📋', 'Lavagna'], ['punti', '⭐', 'Punti'], ['storico', '📊', 'Storico'], ['gettoni', '🪙', 'Gettoni']]
-    : [['casa', '🏖️', 'Casa'], ['lavagna', '📋', 'Lavagna'], ['dona', '💛', 'Dai punti'], ['salvadanaio', '🐷', 'Salvadanaio'], ['regole', '📜', 'Regole']];
+    ? [['casa', '🏖️', 'Casa'], ['chat', '💬', 'Chat'], ['lavagna', '📋', 'Lavagna'], ['punti', '⭐', 'Punti'], ['storico', '📊', 'Storico'], ['gettoni', '🪙', 'Gettoni']]
+    : [['casa', '🏖️', 'Casa'], ['chat', '💬', 'Chat'], ['lavagna', '📋', 'Lavagna'], ['dona', '💛', 'Dai punti'], ['salvadanaio', '🐷', 'Salvadanaio'], ['regole', '📜', 'Regole']];
   var ok = false;
   for (var i = 0; i < tabs.length; i++) if (tabs[i][0] === S.tab) ok = true;
-  if (S.tab === 'mappa' || S.tab === 'partite') ok = true;
+  if (S.tab === 'mappa' || S.tab === 'partite' || S.tab === 'album' || S.tab === 'giochi') ok = true;
   if (!ok) S.tab = 'casa';
 
   var h = '<div class="top"><div class="inner"><div class="avatar">' + av(d.me.id, 58) + '</div>' +
     '<div><h1>Ciao ' + e(d.me.soprannome) + '!</h1><div class="sub">Coppa Bedduzzi · ' + oggiLungo() + '</div></div>' +
     '<div class="sun">☀️</div></div></div><div class="wrap">';
-  var v = { casa: viewCasa, lavagna: viewLavagna, punti: viewPunti, storico: viewStorico, gettoni: viewGettoni, dona: viewDona, salvadanaio: viewSalvadanaio, regole: viewRegole, mappa: viewMappa, partite: viewPartite }[S.tab];
+  var v = { casa: viewCasa, lavagna: viewLavagna, punti: viewPunti, storico: viewStorico, gettoni: viewGettoni, dona: viewDona, salvadanaio: viewSalvadanaio, regole: viewRegole, mappa: viewMappa, partite: viewPartite, chat: viewChat, album: viewAlbum, giochi: viewGiochi }[S.tab];
   v = (function (orig) { return function (dd) {
     return orig(dd) + (r === 'genitore' && versioniDiverse(d.versione, VERSIONE_PAGINA)
       ? '<div class="card" style="border:2px solid var(--corallo)"><b>⚠️ Versioni diverse</b><div class="muted">L\'archivio (Code.gs in Apps Script) è alla versione ' + e(d.versione || '?') + ', l\'app alla ' + VERSIONE_PAGINA + '. Aggiorna la parte rimasta indietro.</div></div>'
@@ -399,10 +442,14 @@ function render() {
   h += v(d) + '</div>' + (r === 'genitore' && S.preview ? previewSheet() : '') + '<div class="tabs">';
   for (var j = 0; j < tabs.length; j++) {
     var nb = tabs[j][0] === 'casa' && r === 'genitore' ? daConfermare(d).length : 0;
-    h += '<button class="' + (tabs[j][0] === S.tab ? 'on' : '') + '" onclick="go(\'' + tabs[j][0] + '\')"><span class="i">' + tabs[j][1] + '</span>' + tabs[j][2] + (nb ? '<span class="badge">' + nb + '</span>' : '') + '</button>';
+    if (tabs[j][0] === 'chat') nb = S.tab === 'chat' ? 0 : ((d.chat && d.chat.nonLetti) || 0);
+    h += '<button class="' + (tabs[j][0] === S.tab ? 'on' : '') + '" onclick="go(\'' + tabs[j][0] + '\')"><span class="i">' + tabs[j][1] + '</span>' + tabs[j][2] +
+      (tabs[j][0] === 'chat' ? '<span class="badge" id="badgeChat"' + (nb ? '' : ' style="display:none"') + '>' + nb + '</span>' : (nb ? '<span class="badge">' + nb + '</span>' : '')) + '</button>';
   }
-  h += '</div>';
+  h += '</div>' + (S.tab === 'chat' ? barraChat() : '') + (S.foto ? lightboxHtml() : '');
   document.getElementById('app').innerHTML = h;
+  if (S.tab === 'chat') dopoChat();
+  if (S.tab === 'giochi') { S.giocoFirma = firmaGioco(S.gioco); var gg = S.gioco; if (gg && gg.tipo === 'ncc' && gg.stato === 'gioco') nccRipristina(gg); if (!gg || S.giocoLobby) caricaClassificaGiochi(); if (!S.giocoVisto) { S.giocoVisto = 1; controllaGioco(); } }
   // numerino sull'icona dell'app (Android, app installata): quante cose aspettano l'ok
   try { if (r === 'genitore' && navigator.setAppBadge) { var nn = daConfermare(d).length; if (nn) navigator.setAppBadge(nn); else navigator.clearAppBadge(); } } catch (x) { /* non supportato */ }
   setTimeout(mostraFeste, 400);
@@ -412,7 +459,7 @@ function numVer(v) { var p = String(v || '0').split('.'); return [parseInt(p[0],
 /** Avvisa se l'archivio è più nuovo dell'app, o se cambia la versione principale (2.x → 3.x). */
 function versioniDiverse(arch, app) {
   var a = numVer(arch), b = numVer(app);
-  return a[0] !== b[0] || a[1] > b[1];
+  return a[0] !== b[0] || a[1] !== b[1];
 }
 function go(t) { S.tab = t; render(); window.scrollTo(0, 0); }
 
@@ -959,9 +1006,577 @@ function bannerTraguardi(d) {
 }
 
 /* ---- Casa ---- */
-function viewCasa(d) {
-  return bannerFesta(d) + blocDaConfermare(d) + blocDoveSiamo(d) + blocPartite(d) + blocSettimana(d) + blocObiettivi(d) + blocViareggio(d) + blocMedaglie(d, true) + blocFeste(d, 4) + blocCalendario(d, 8);
+function blocAlbum(d) {
+  var a = d.album || { n: 0, ultime: [] };
+  var h = '<div class="card"><div class="row"><h2 class="grow" style="margin:0">📷 Album di ' + e(a.nome || '') + '</h2><button class="mini sec" onclick="go(\'album\')">' + (a.n ? 'Vedi ' + a.n + ' ›' : 'Apri ›') + '</button></div>';
+  if (a.ultime && a.ultime.length) h += '<div class="galleria mini4" style="margin-top:10px">' + a.ultime.map(function (f) {
+    return '<button style="background-image:url(' + f.mini + ')" onclick="S.albumMese=\'' + f.mese + '\';apriFoto(\'' + f.id + '\')"></button>';
+  }).join('') + '</div>';
+  else h += '<div class="muted" style="margin-top:6px">Ancora nessuna foto questo mese: scatta la prima! 📸</div>';
+  return h + '</div>';
 }
+function blocGiochi(d) {
+  var g = (d.chat || {}).gioco, inCorso = g && g.stato !== 'finita';
+  return '<div class="card' + (inCorso ? ' avviso' : '') + '"><div class="row"><span style="font-size:34px">🎲</span><div class="grow"><b style="font-size:18px">' + (inCorso ? 'Partita in corso: ' + e(g.nome) : 'Giochi di famiglia') + '</b>' +
+    '<div class="muted">' + (inCorso ? 'Entra e gioca anche tu!' : 'Nomi Cose Città, Quiz, Impiccato, Chi sono?') + '</div></div><button onclick="S.giocoLobby=' + (inCorso ? 'false' : 'true') + ';go(\'giochi\')">' + (inCorso ? 'Entra ›' : 'Gioca ›') + '</button></div></div>';
+}
+function viewCasa(d) {
+  return bannerFesta(d) + blocDaConfermare(d) + blocGiochi(d) + blocDoveSiamo(d) + blocPartite(d) + blocSettimana(d) + blocAlbum(d) + blocObiettivi(d) + blocViareggio(d) + blocMedaglie(d, true) + blocFeste(d, 4) + blocCalendario(d, 8);
+}
+
+/* ---- Giochi ---- */
+var NCC_TUTTE = ['Nome', 'Cosa', 'Città', 'Animale', 'Frutta e verdura', 'Mestiere', 'Colore', 'Cantante', 'Film o cartone', 'Marca', 'Sport', 'Nazione'];
+var GIOCHI_INFO = [
+  ['ncc', '🔤', 'Nomi Cose Città', 'Esce una lettera: scrivi una parola per ogni categoria prima degli altri. STOP!'],
+  ['quiz', '❓', 'Quiz di famiglia', 'Domande per tutti: “Chi l\'ha scritto in chat?”, “In che anno…?” e curiosità. Vince il più veloce!'],
+  ['impiccato', '🪢', 'Impiccato', 'Indovinate la parola lettera per lettera, prima che sia troppo tardi.'],
+  ['chisono', '🎭', 'Chi sono?', 'Tutti vedono il personaggio tranne uno: fa domande a voce (sì/no) e deve indovinare.']
+];
+function giocoAttivo() { var g = S.gioco; return g && (g.stato !== 'finita' || Date.now() - (g.fineVista || Date.now()) < 0) ? g : null; }
+function oraServer() { return Date.now() + (S.giocoOffset || 0); }
+function tempoHtml(fine) { return '<span class="tempo" data-fine="' + fine + '">' + fmtTempo(fine) + '</span>'; }
+function fmtTempo(fine) { var s = Math.max(0, Math.ceil((fine - oraServer()) / 1000)); return Math.floor(s / 60) + ':' + pad(s % 60); }
+setInterval(function () {
+  var l = document.querySelectorAll('.tempo');
+  for (var i = 0; i < l.length; i++) { var f = Number(l[i].getAttribute('data-fine')); l[i].textContent = fmtTempo(f); if (f - oraServer() < 10000) l[i].style.color = 'var(--rosso)'; }
+}, 500);
+
+function viewGiochi(d) { return '<div id="gioco">' + giocoHtml(d) + '</div>'; }
+function giocoHtml(d) {
+  var g = S.gioco;
+  if (g && !S.giocoLobby) return partitaHtml(g, d);
+  var h = '';
+  if (g && g.stato !== 'finita') h += '<div class="card avviso"><div class="row"><span style="font-size:30px">🎲</span><div class="grow"><b>Partita in corso: ' + e(g.nome) + '</b><div class="muted">iniziata da ' + e(chi(g.host).soprannome || g.host) + '</div></div><button onclick="S.giocoLobby=false;aggiornaGioco(true)">Entra ›</button></div></div>';
+  h += '<div class="card"><h2>🎲 Giochi di famiglia</h2><div class="muted">Ognuno gioca dal suo telefono, la TV fa da tabellone.</div></div>';
+  GIOCHI_INFO.forEach(function (x) {
+    h += '<div class="card"><div class="row"><span style="font-size:40px">' + x[1] + '</span><div class="grow"><b style="font-size:18px">' + x[2] + '</b><div class="muted">' + x[3] + '</div></div></div>' +
+      (S.giocoSetup === x[0] ? setupHtml(x[0], d) : '<button style="margin-top:10px;width:100%" onclick="S.giocoSetup=\'' + x[0] + '\';aggiornaGioco(true)">Inizia una partita</button>') + '</div>';
+  });
+  h += '<div class="card" id="giocoClass">' + classificaGiochiHtml() + '</div>';
+  return h;
+}
+function setupHtml(tipo, d) {
+  var h = '<div class="stack" style="margin-top:10px">';
+  if (tipo === 'ncc') {
+    if (!S.nccCat) S.nccCat = NCC_TUTTE.slice(0, 6);
+    h += '<div class="muted">Categorie (tocca per scegliere):</div><div class="row" style="flex-wrap:wrap;gap:6px">' + NCC_TUTTE.map(function (c) {
+      var on = S.nccCat.indexOf(c) >= 0;
+      return '<button class="mini ' + (on ? 'ok' : 'sec') + '" onclick="toggleCat(\'' + c.replace(/'/g, '') + '\')">' + e(c) + '</button>';
+    }).join('') + '</div><div class="row"><span class="muted">Tempo</span><select id="g_dur"><option value="60">1 minuto</option><option value="120" selected>2 minuti</option><option value="180">3 minuti</option><option value="300">5 minuti</option></select></div>';
+  } else if (tipo === 'quiz') {
+    h += '<div class="row"><span class="muted">Domande</span><select id="g_quante"><option>5</option><option selected>8</option><option>10</option><option>15</option></select>' +
+      '<span class="muted">Secondi</span><select id="g_sec"><option>15</option><option selected>20</option><option>30</option></select></div>' +
+      '<div class="muted">Le domande vostre si aggiungono nella scheda Quiz del foglio.</div>';
+  } else if (tipo === 'impiccato') {
+    h += '<input id="g_parola" maxlength="30" placeholder="Scegli tu la parola (gli altri non la vedono)" autocomplete="off">' +
+      '<input id="g_indizio" maxlength="60" placeholder="Indizio facoltativo, es. un animale">' +
+      '<div class="muted">Lascia vuoto per una parola a sorpresa: così giochi anche tu.</div>';
+  } else if (tipo === 'chisono') {
+    var fam = d.famiglia.filter(function (p) { return p.ruolo === 'genitore' || p.ruolo === 'figlia'; });
+    if (!S.chiSono) S.chiSono = (fam.filter(function (p) { return p.id !== d.me.id; })[0] || {}).id;
+    h += '<div class="muted">Chi deve indovinare?</div><div class="chips">' + fam.map(function (p) {
+      return '<button class="chip' + (S.chiSono === p.id ? ' on' : '') + '" onclick="S.chiSono=\'' + p.id + '\';aggiornaGioco(true)">' + av(p.id, 36) + '<span>' + e(p.id === d.me.id ? 'Io' : p.soprannome) + '</span></button>';
+    }).join('') + '</div>' + (S.chiSono !== d.me.id ? '<input id="g_pers" maxlength="60" placeholder="Personaggio (es. Pinocchio) – vuoto: a sorpresa">' : '<div class="muted">Il personaggio sarà a sorpresa: tu non lo vedrai 🙈</div>') +
+      '<div class="row"><span class="muted">Tempo</span><select id="g_dur"><option value="120">2 minuti</option><option value="180" selected>3 minuti</option><option value="300">5 minuti</option></select></div>';
+  }
+  return h + '<div class="row"><button class="ok grow" onclick="nuovoGioco(\'' + tipo + '\')">▶️ Via!</button><button class="sec" onclick="S.giocoSetup=null;aggiornaGioco(true)">Annulla</button></div></div>';
+}
+function toggleCat(c) {
+  var c2 = NCC_TUTTE.filter(function (x) { return x.replace(/'/g, '') === c; })[0], i = S.nccCat.indexOf(c2);
+  if (i >= 0) { if (S.nccCat.length > 2) S.nccCat.splice(i, 1); } else if (S.nccCat.length < 10) S.nccCat.push(c2);
+  aggiornaGioco(true);
+}
+function nuovoGioco(tipo) {
+  var p = { tipo: tipo };
+  if (tipo === 'ncc') { p.categorie = S.nccCat; p.durata = val('g_dur'); }
+  if (tipo === 'quiz') { p.quante = val('g_quante'); p.secondi = val('g_sec'); }
+  if (tipo === 'impiccato') { p.parola = val('g_parola'); p.indizio = val('g_indizio'); }
+  if (tipo === 'chisono') { p.perChi = S.chiSono; p.personaggio = val('g_pers') || ''; p.durata = val('g_dur'); }
+  giocoMossa('gioco_nuovo', p, function () { S.giocoSetup = null; S.giocoLobby = false; S.nccMie = null; });
+}
+function giocoMossa(azione, p, dopo) {
+  apiCall(azione, p, function (g) { prendiGioco(g); if (dopo) dopo(); aggiornaGioco(true); }, function (msg) { toast(msg, true); });
+}
+function mossa(m, extra) { var p = extra || {}; p.mossa = m; giocoMossa('gioco_azione', p); }
+function prendiGioco(g) {
+  if (g) { S.giocoOffset = g.ora - Date.now(); if (g.stato === 'finita' && !g.fineVista) g.fineVista = Date.now() + 3 * 60e3; }
+  if (g && S.gioco && S.gioco.id === g.id && S.gioco.fineVista) g.fineVista = S.gioco.fineVista;
+  S.gioco = g;
+}
+function firmaGioco(g) {
+  if (!g || S.giocoLobby) return 'lobby|' + (S.giocoSetup || '') + '|' + (g ? g.id + g.stato : '');
+  var f = g.id + '|' + g.stato;
+  if (g.tipo === 'ncc' && g.stato !== 'gioco') f += '|' + JSON.stringify(g.voti) + JSON.stringify(g.risposte);
+  if (g.tipo === 'quiz') { var q = g.domande[g.n] || {}; f += '|' + g.n + '|' + q.svelata + '|' + JSON.stringify(q.risposte || {}) + (q.quanti || 0); }
+  if (g.tipo === 'impiccato') f += '|' + g.mostra + g.errori + (g.storia || []).length;
+  return f;
+}
+/** Ridisegna la partita solo se è cambiato qualcosa (così il testo che stai scrivendo non si perde). */
+function aggiornaGioco(forza) {
+  if (BOOT.tv) { renderTV(); return; }
+  if (S.tab !== 'giochi') return;
+  var el = document.getElementById('gioco'); if (!el) return;
+  var g = S.gioco, f = firmaGioco(g);
+  if (g && g.tipo === 'ncc' && g.stato === 'gioco' && !S.giocoLobby && S.giocoFirma === f && !forza) {
+    var dyn = document.getElementById('gDyn'); if (dyn) dyn.innerHTML = nccProgressi(g); return;
+  }
+  if (!forza && S.giocoFirma === f) return;
+  S.giocoFirma = f;
+  el.innerHTML = giocoHtml(S.d);
+  if (g && g.tipo === 'ncc' && g.stato === 'gioco') nccRipristina(g);
+  if (!g || S.giocoLobby) caricaClassificaGiochi();
+}
+function caricaClassificaGiochi() {
+  if (S.classCaricata && Date.now() - S.classCaricata < 20000) return;
+  S.classCaricata = Date.now();
+  apiCall('gioco_classifica', {}, function (c) { S.classGiochi = c; var el = document.getElementById('giocoClass'); if (el) el.innerHTML = classificaGiochiHtml(); }, function () {});
+}
+function classificaGiochiHtml() {
+  var c = S.classGiochi, per = S.classPer || 'oggi';
+  var h = '<div class="row"><h2 class="grow" style="margin:0">🏆 Classifica dei giochi</h2></div><div class="row" style="gap:6px;margin:8px 0">' +
+    [['oggi', 'Stasera'], ['mese', 'Questo mese'], ['sempre', 'Sempre']].map(function (x) {
+      return '<button class="mini ' + (per === x[0] ? 'ok' : 'sec') + '" onclick="S.classPer=\'' + x[0] + '\';document.getElementById(\'giocoClass\').innerHTML=classificaGiochiHtml()">' + x[1] + '</button>';
+    }).join('') + '</div>';
+  var l = c ? c[per] : null;
+  if (!l) return h + '<div class="muted">Carico…</div>';
+  if (!l.length) return h + '<div class="muted">Ancora nessuna partita' + (per === 'oggi' ? ' stasera' : '') + '.</div>';
+  return h + l.map(function (x, i) { return '<div class="mov"><div style="font-size:22px;width:34px">' + (['🥇', '🥈', '🥉'][i] || (i + 1) + '.') + '</div>' + av(x.id, 34) + '<div class="grow"><b>' + e(chi(x.id).soprannome || x.id) + '</b></div><b>' + x.punti + '</b></div>'; }).join('');
+}
+function testaPartita(g) {
+  var me = S.d.me, puo = g.host === me.id || me.ruolo === 'genitore';
+  return '<div class="card"><div class="row"><h2 class="grow" style="margin:0">' + e(g.nome) + '</h2>' +
+    '<button class="mini sec" onclick="S.giocoLobby=true;aggiornaGioco(true)">‹ Giochi</button>' +
+    (puo && g.stato !== 'finita' ? '<button class="mini neg" onclick="if(confirm(\'Chiudo la partita?\'))mossa(\'chiudi\')">Chiudi</button>' : '') + '</div></div>';
+}
+function punteggiHtml(pt, titolo) {
+  var ids = Object.keys(pt || {}).sort(function (a, b) { return pt[b] - pt[a]; });
+  if (!ids.length) return '';
+  return '<div class="card"><h2>' + (titolo || '⭐ Punti') + '</h2>' + ids.map(function (id, i) {
+    return '<div class="mov">' + av(id, 34) + '<div class="grow"><b>' + e(chi(id).soprannome || id) + '</b></div>' + (i === 0 && pt[id] > 0 ? '🏆 ' : '') + '<b>' + pt[id] + '</b></div>';
+  }).join('') + '</div>';
+}
+function fineHtml(g) {
+  var v = g.vincitori || [];
+  return '<div class="card" style="text-align:center"><div style="font-size:54px">🏆</div><h2>' + (v.length ? (v.length > 1 ? 'Pareggio: ' : 'Ha vinto ') + v.map(function (id) { return e(chi(id).soprannome || id); }).join(' e ') + '!' : 'Partita finita') + '</h2>' +
+    '<button onclick="S.giocoLobby=true;aggiornaGioco(true)">🎲 Un\'altra partita</button></div>';
+}
+function partitaHtml(g, d) {
+  var me = d.me, h = testaPartita(g);
+  if (g.tipo === 'ncc') return h + nccHtml(g, me);
+  if (g.tipo === 'quiz') return h + quizHtml(g, me);
+  if (g.tipo === 'impiccato') return h + impiccatoHtml(g, me);
+  if (g.tipo === 'chisono') return h + chisonoHtml(g, me);
+  return h;
+}
+/* Nomi Cose Città */
+function nccProgressi(g) {
+  return '<div class="row" style="flex-wrap:wrap;gap:10px;justify-content:center">' + (g.pronti || []).map(function (x) {
+    return '<span class="row" style="gap:4px">' + av(x.id, 28) + '<b>' + x.n + '/' + g.categorie.length + '</b></span>';
+  }).join('') + '</div>';
+}
+function nccHtml(g, me) {
+  if (g.stato === 'gioco') {
+    if (!S.nccMie || S.nccMie.id !== g.id) S.nccMie = { id: g.id, v: (g.risposte && g.risposte[me.id]) || [] };
+    var h = '<div class="card" style="text-align:center"><div class="muted">La lettera è</div><div style="font-size:90px;font-weight:900;line-height:1;color:var(--mare-scuro)">' + e(g.lettera) + '</div>' +
+      '<div style="font-size:30px;font-weight:900">⏱️ ' + tempoHtml(g.fine) + '</div><div id="gDyn" style="margin-top:8px">' + nccProgressi(g) + '</div></div><div class="card"><div class="stack">';
+    g.categorie.forEach(function (c, i) {
+      h += '<label style="font-weight:800">' + e(c) + '<input id="ncc_' + i + '" maxlength="40" autocomplete="off" autocapitalize="sentences" placeholder="' + e(g.lettera) + '…" oninput="nccScrivi()" style="margin-top:4px"></label>';
+    });
+    return h + '<button class="neg" style="font-size:22px;padding:14px" onclick="nccStop()">✋ STOP!</button></div></div>';
+  }
+  // voto e risultati
+  var ids = Object.keys(g.risposte || {}), pt = g.puntiCalcolati || {};
+  var h2 = '<div class="card"><div class="row"><div style="font-size:50px;font-weight:900;color:var(--mare-scuro)">' + e(g.lettera) + '</div><div class="grow">' +
+    (g.stato === 'voto' ? '<b>' + (g.stopDa ? '✋ STOP di ' + e(chi(g.stopDa).soprannome) : '⏱️ Tempo scaduto') + '</b><div class="muted">Controllate le risposte: 👎 se una non vale. Poi chi ha iniziato (o mamma e papà) tocca “Conta i punti”.</div>' : '<b>Risultati</b>') + '</div></div></div>';
+  if (!ids.length) return h2 + '<div class="card muted">Nessuno ha risposto 🤷</div>' + (g.stato === 'finita' ? fineHtml(g) : '');
+  g.categorie.forEach(function (c, ci) {
+    h2 += '<div class="card"><h3 style="margin:0 0 6px">' + e(c) + '</h3>';
+    ids.forEach(function (id) {
+      var v = String((g.risposte[id] || [])[ci] || '').trim(), k = id + '|' + ci, voti = (g.voti || {})[k] || {};
+      var si = Object.keys(voti).filter(function (x) { return voti[x]; }).length, no = Object.keys(voti).length - si;
+      var auto = v && norm(v).charAt(0) === g.lettera.toLowerCase();
+      var mio = voti[me.id];
+      h2 += '<div class="mov">' + av(id, 30) + '<div class="grow"><b style="' + (!v || (!auto && !si) || no > si ? 'text-decoration:line-through;color:var(--grigio)' : '') + '">' + (v ? e(v) : '—') + '</b>' +
+        (si || no ? '<span class="muted"> · 👍' + si + ' 👎' + no + '</span>' : '') + '</div>' +
+        (g.stato === 'voto' && v ? '<button class="mini ' + (mio === true ? 'ok' : 'sec') + '" onclick="mossa(\'voto\',{chi:\'' + id + '\',cat:' + ci + ',valido:true})">👍</button><button class="mini ' + (mio === false ? 'neg' : 'sec') + '" onclick="mossa(\'voto\',{chi:\'' + id + '\',cat:' + ci + ',valido:false})">👎</button>' : '') + '</div>';
+    });
+    h2 += '</div>';
+  });
+  h2 += punteggiHtml(g.stato === 'finita' ? g.punti : pt, g.stato === 'finita' ? '⭐ Punti' : '⭐ Punti (se resta così)');
+  if (g.stato === 'voto' && (g.host === me.id || me.ruolo === 'genitore')) h2 += '<button class="ok" style="width:100%;font-size:18px" onclick="mossa(\'chiudi\')">✅ Conta i punti</button>';
+  if (g.stato === 'finita') h2 += fineHtml(g);
+  return h2;
+}
+function nccValori() { var g = S.gioco, v = []; for (var i = 0; i < g.categorie.length; i++) { var el = document.getElementById('ncc_' + i); v.push(el ? el.value : ''); } return v; }
+function nccRipristina(g) { var v = (S.nccMie && S.nccMie.v) || []; for (var i = 0; i < g.categorie.length; i++) { var el = document.getElementById('ncc_' + i); if (el && v[i]) el.value = v[i]; } }
+var nccTimer = null;
+function nccScrivi() {
+  S.nccMie = { id: S.gioco.id, v: nccValori() };
+  clearTimeout(nccTimer);
+  nccTimer = setTimeout(function () { if (S.gioco && S.gioco.stato === 'gioco') apiCall('gioco_azione', { mossa: 'risposte', risposte: S.nccMie.v }, function (g) { prendiGioco(g); aggiornaGioco(); }, function () {}); }, 1500);
+}
+function nccStop() { clearTimeout(nccTimer); mossa('stop', { risposte: nccValori() }); }
+/* Quiz */
+function quizHtml(g, me) {
+  if (g.stato === 'finita') return punteggiHtml(g.punti, '⭐ Classifica del quiz') + fineHtml(g);
+  var q = g.domande[g.n] || {}, h = '<div class="card"><div class="row"><b class="grow">Domanda ' + (g.n + 1) + ' di ' + g.domande.length + '</b>' + (q.svelata ? '' : '<b style="font-size:24px">⏱️ ' + tempoHtml(q.fine) + '</b>') + '</div>' +
+    '<div style="font-size:21px;font-weight:800;margin:10px 0;white-space:pre-wrap">' + e(q.testo) + '</div>';
+  if (oraServer() < q.inizio) h += '<div class="muted">Pronti…</div>';
+  var mia = (q.risposte || {})[me.id];
+  (q.opzioni || []).forEach(function (o) {
+    var chiL = q.svelata ? Object.keys(q.risposte || {}).filter(function (id) { return q.risposte[id].scelta === o; }) : [];
+    var stile = q.svelata ? (o === q.giusta ? 'background:var(--verde);color:#fff' : (mia && mia.scelta === o ? 'background:var(--rosso);color:#fff' : 'background:#f1f5f9;color:var(--testo)')) : (mia && mia.scelta === o ? 'background:var(--mare-scuro);color:#fff' : 'background:#e0f2fe;color:var(--testo)');
+    h += '<button style="display:flex;align-items:center;gap:8px;width:100%;text-align:left;margin-top:8px;font-size:18px;padding:14px;opacity:1;' + stile + '"' + (mia || q.svelata ? ' disabled' : ' onclick="mossa(\'risposta\',{scelta:' + JSON.stringify(o).replace(/"/g, '&quot;') + '})"') + '><span class="grow">' + e(o) + '</span>' + chiL.map(function (id) { return av(id, 26); }).join('') + '</button>';
+  });
+  if (mia && !q.svelata) h += '<div class="muted" style="margin-top:8px">Risposta inviata ✔ Aspettiamo gli altri' + (q.quanti ? ' (' + q.quanti + ' hanno risposto)' : '') + '…</div>';
+  if (q.svelata && mia) h += '<div style="margin-top:8px;font-weight:800">' + (mia.pt ? '🎉 Giusto! +' + mia.pt : '😅 Sbagliato') + '</div>';
+  var host = g.host === me.id || me.ruolo === 'genitore';
+  if (host) h += '<button class="ok" style="width:100%;margin-top:12px" onclick="mossa(\'avanti\')">' + (!q.svelata ? '👀 Svela la risposta' : (g.n + 1 < g.domande.length ? 'Prossima domanda ›' : '🏁 Fine del quiz')) + '</button>';
+  return h + '</div>' + punteggiHtml(g.punti);
+}
+/* Impiccato */
+function forcaSvg(err, max) {
+  var parti = ['<line x1="10" y1="95" x2="70" y2="95"/>', '<line x1="25" y1="95" x2="25" y2="8"/>', '<line x1="25" y1="8" x2="60" y2="8"/>', '<line x1="60" y1="8" x2="60" y2="20"/>',
+    '<circle cx="60" cy="28" r="8"/>', '<line x1="60" y1="36" x2="60" y2="62"/>', '<line x1="60" y1="44" x2="48" y2="54"/><line x1="60" y1="44" x2="72" y2="54"/>', '<line x1="60" y1="62" x2="50" y2="80"/><line x1="60" y1="62" x2="70" y2="80"/>'];
+  var n = Math.round(err * parti.length / (max || 8));
+  return '<svg viewBox="0 0 80 100" style="width:110px;height:136px" fill="none" stroke="#334155" stroke-width="4" stroke-linecap="round">' + parti.slice(0, n).join('') + '</svg>';
+}
+function impiccatoHtml(g, me) {
+  var setter = g.setter === me.id, fin = g.stato === 'finita';
+  var parola = fin || setter ? g.parola : g.mostra;
+  var h = '<div class="card" style="text-align:center"><div class="row" style="justify-content:center">' + forcaSvg(g.errori, g.maxErrori) +
+    '<div><div class="muted">Errori</div><div style="font-size:30px;font-weight:900">' + g.errori + ' / ' + g.maxErrori + '</div></div></div>' +
+    (g.indizio ? '<div class="muted">Indizio: <b>' + e(g.indizio) + '</b></div>' : '') +
+    '<div style="font-size:34px;font-weight:900;letter-spacing:6px;margin:10px 0;word-break:break-all">' + e(String(parola || '').toUpperCase()) + '</div>';
+  if (fin) h += '<div style="font-size:20px;font-weight:800">' + (g.esito === 'indovinata' ? '🎉 Indovinata' + (g.vinta ? ' da ' + e(chi(g.vinta).soprannome) : '') + '!' : '🪢 Impiccato! Era “' + e(g.parola) + '”') + '</div>';
+  else if (setter) h += '<div class="muted">La parola l\'hai scelta tu: guarda come se la cavano 😏</div>';
+  h += '</div>';
+  if (!fin && !setter) {
+    var usate = g.lettere || [];
+    h += '<div class="card"><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px">' + 'abcdefghijklmnopqrstuvwxyz'.split('').map(function (l) {
+      var u = usate.indexOf(l) >= 0, ok = u && norm(g.mostra).indexOf(l) >= 0;
+      return '<button style="padding:10px 0;font-size:18px;' + (u ? (ok ? 'background:var(--verde);color:#fff' : 'background:#e2e8f0;color:#94a3b8') : '') + '"' + (u ? ' disabled' : ' onclick="mossa(\'lettera\',{lettera:\'' + l + '\'})"') + '>' + l.toUpperCase() + '</button>';
+    }).join('') + '</div><div class="row" style="margin-top:10px"><input id="imp_parola" class="grow" maxlength="30" placeholder="La so! È…" autocomplete="off" value="' + e(S.impParola || '') + '" oninput="S.impParola=this.value">' +
+      '<button onclick="var v=val(\'imp_parola\');S.impParola=\'\';if(v)mossa(\'parola\',{parola:v})">Prova</button></div><div class="muted">Parola sbagliata = 2 errori!</div></div>';
+  }
+  return h + punteggiHtml(g.punti) + (fin ? fineHtml(g) : '');
+}
+/* Chi sono? */
+function chisonoHtml(g, me) {
+  var io = g.perChi === me.id, fin = g.stato === 'finita';
+  var h = '<div class="card" style="text-align:center">' + av(g.perChi, 70) + '<div style="font-weight:800;margin-top:4px">' + (io ? 'Tocca a te indovinare!' : 'Deve indovinare ' + e(chi(g.perChi).soprannome)) + '</div>';
+  if (!fin) h += '<div style="font-size:30px;font-weight:900;margin:6px 0">⏱️ ' + tempoHtml(g.fine) + '</div>';
+  if (fin) h += '<div style="font-size:16px" class="muted">Era…</div><div style="font-size:34px;font-weight:900;margin:6px 0">' + e(g.personaggio || '') + '</div><div style="font-size:20px;font-weight:800">' +
+    (g.esito === 'indovinato' ? '🎉 Indovinato!' : g.esito === 'arreso' ? '🏳️ Si è arreso/a' : '⏱️ Tempo scaduto') + '</div>';
+  else if (io) h += '<div style="font-size:70px">❓</div><div class="muted">Fai domande a voce agli altri: rispondono solo <b>sì</b> o <b>no</b>. Es. “Sono un animale?”, “Sono di un film?”</div>' +
+    '<button class="sec" style="margin-top:10px" onclick="if(confirm(\'Ti arrendi?\'))mossa(\'arrendo\')">🏳️ Mi arrendo</button>';
+  else h += '<div class="muted">Il personaggio è</div><div style="font-size:36px;font-weight:900;margin:6px 0;color:var(--mare-scuro)">' + e(g.personaggio || '') + '</div>' +
+    '<div class="muted">Non dirlo! Rispondi solo sì o no. 🤫 Se lo dice giusto:</div><button class="ok" style="margin-top:10px;font-size:20px;padding:14px 20px" onclick="mossa(\'indovinato\')">✅ Ha indovinato!</button>';
+  return h + '</div>' + punteggiHtml(g.punti) + (fin ? fineHtml(g) : '');
+}
+/** Sulla TV, durante una partita, il gioco prende tutto lo schermo. */
+function giocoTV(g) {
+  var h = '<div class="tvgioco"><h2>🎲 ' + e(g.nome) + '</h2>';
+  if (g.tipo === 'ncc') {
+    if (g.stato === 'gioco') h += '<div class="two"><div style="text-align:center"><div style="font-size:22vw;font-weight:900;line-height:1;color:var(--mare-scuro)">' + e(g.lettera) + '</div><div style="font-size:5vw;font-weight:900">⏱️ ' + tempoHtml(g.fine) + '</div></div>' +
+      '<div><div style="font-size:2.4vw;font-weight:800">' + g.categorie.map(e).join(' · ') + '</div><div style="margin-top:3vh;font-size:2.5vw">' + nccProgressi(g).replace(/av\(/g, '') + '</div></div></div>';
+    else {
+      var ids = Object.keys(g.risposte || {}), pt = g.stato === 'finita' ? g.punti : (g.puntiCalcolati || {});
+      h += '<table class="tvtab"><tr><th>' + e(g.lettera) + '</th>' + ids.map(function (id) { return '<th>' + av(id, 50) + '</th>'; }).join('') + '</tr>' +
+        g.categorie.map(function (c, ci) { return '<tr><td><b>' + e(c) + '</b></td>' + ids.map(function (id) { return '<td>' + e(String((g.risposte[id] || [])[ci] || '—')) + '</td>'; }).join('') + '</tr>'; }).join('') +
+        '<tr><td><b>⭐ Punti</b></td>' + ids.map(function (id) { return '<td><b style="font-size:3vw">' + (pt[id] || 0) + '</b></td>'; }).join('') + '</tr></table>';
+    }
+  } else if (g.tipo === 'quiz') {
+    if (g.stato === 'finita') h += punteggiHtml(g.punti, '🏆 Classifica del quiz').replace('class="card"', 'style="font-size:2.4vw"');
+    else {
+      var q = g.domande[g.n] || {};
+      h += '<div class="row"><b style="font-size:2.2vw" class="grow">Domanda ' + (g.n + 1) + ' di ' + g.domande.length + '</b>' + (q.svelata ? '' : '<b style="font-size:4vw">⏱️ ' + tempoHtml(q.fine) + '</b>') + '</div>' +
+        '<div style="font-size:3.4vw;font-weight:800;margin:2vh 0;white-space:pre-wrap">' + e(q.testo) + '</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5vw">' +
+        (q.opzioni || []).map(function (o) {
+          var chiL = q.svelata ? Object.keys(q.risposte || {}).filter(function (id) { return q.risposte[id].scelta === o; }) : [];
+          return '<div style="font-size:2.8vw;font-weight:800;padding:2vh 2vw;border-radius:2vw;' + (q.svelata && o === q.giusta ? 'background:var(--verde);color:#fff' : 'background:#e0f2fe') + '">' + e(o) + ' ' + chiL.map(function (id) { return av(id, 44); }).join('') + '</div>';
+        }).join('') + '</div>' + (q.svelata ? '' : '<div class="muted" style="font-size:2vw;margin-top:2vh">Hanno risposto: ' + (q.quanti || 0) + '</div>');
+    }
+  } else if (g.tipo === 'impiccato') {
+    h += '<div class="two"><div style="text-align:center">' + forcaSvg(g.errori, g.maxErrori).replace('width:110px;height:136px', 'width:22vw;height:27vw') + '</div><div>' +
+      (g.indizio ? '<div style="font-size:2.4vw">Indizio: <b>' + e(g.indizio) + '</b></div>' : '') +
+      '<div style="font-size:6vw;font-weight:900;letter-spacing:1vw;margin:3vh 0">' + e(String(g.stato === 'finita' ? g.parola : g.mostra).toUpperCase()) + '</div>' +
+      '<div style="font-size:2.4vw">Lettere dette: <b>' + (g.lettere || []).join(' ').toUpperCase() + '</b> · Errori ' + g.errori + '/' + g.maxErrori + '</div></div></div>';
+  } else if (g.tipo === 'chisono') {
+    h += '<div style="text-align:center">' + av(g.perChi, 160) + '<div style="font-size:3vw;font-weight:800">Deve indovinare ' + e(chi(g.perChi).soprannome) + '</div>' +
+      (g.stato === 'finita' ? '<div style="font-size:5vw;font-weight:900;margin-top:2vh">Era: ' + e(g.personaggio || '') + ' ' + (g.esito === 'indovinato' ? '🎉' : '') + '</div>'
+        : '<div style="font-size:10vw">❓</div><div style="font-size:5vw;font-weight:900">⏱️ ' + tempoHtml(g.fine) + '</div>') + '</div>';
+  }
+  if (g.stato === 'finita' && g.vincitori && g.vincitori.length) h += '<div style="text-align:center;font-size:4vw;font-weight:900;margin-top:2vh">🏆 ' + g.vincitori.map(function (id) { return e(chi(id).soprannome || id); }).join(' e ') + '!</div>';
+  return h + '</div>';
+}
+/** Controlla la partita: ogni 2 s nella pagina Giochi (e sulla TV quando c'è una partita), altrimenti ci pensa la chat. */
+var ultimoGioco = 0;
+function controllaGioco() {
+  if (!S.d || document.hidden) return;
+  var attiva = S.gioco && S.gioco.stato !== 'finita';
+  var serve = (S.tab === 'giochi') || (BOOT.tv && (attiva || ((S.d.chat || {}).gioco)));
+  if (!serve) { if (BOOT.tv && Date.now() - ultimoGioco < 5000) return; if (!BOOT.tv) return; }
+  ultimoGioco = Date.now();
+  apiCall('gioco_stato', {}, function (g) {
+    var prima = JSON.stringify(S.gioco || null);
+    prendiGioco(g);
+    if (JSON.stringify(S.gioco || null) !== prima) aggiornaGioco();
+  }, function () {});
+}
+setInterval(controllaGioco, 2000);
+
+/* ---- Album foto ---- */
+function viewAlbum(d) {
+  var A = S.albumDati;
+  if (!A || (S.albumMese && A.mese !== S.albumMese)) { caricaAlbum(S.albumMese); }
+  var h = '<div class="card"><div class="row"><h2 class="grow" style="margin:0">📷 Album di famiglia</h2></div>';
+  if (d.me.ruolo !== 'tv') h += '<div class="carica" style="margin-top:12px">' +
+    '<label><span>📸</span>Scatta una foto<input type="file" accept="image/*" capture="environment" onchange="caricaFoto(this)"></label>' +
+    '<label class="sec"><span>🖼️</span>Scegli dalla galleria<input type="file" accept="image/*" multiple onchange="caricaFoto(this)"></label></div>' +
+    '<input id="fotoDid" maxlength="140" placeholder="Didascalia (facoltativa), es. Pizza a casa dei nonni" style="margin-top:8px">';
+  if (S.erroreFoto) h += '<div class="todo attesa" style="margin-top:10px"><span class="em">⚠️</span><div class="tx">' + e(S.erroreFoto) +
+    '<div class="muted">Versione app ' + VERSIONE_PAGINA + ' · archivio ' + e((S.d && S.d.versione) || '?') + '</div></div><button class="mini sec" onclick="S.erroreFoto=null;render()">✖</button></div>';
+  h += '</div>';
+  if (!A) return h + '<div class="card muted">Carico l\'album…</div>';
+  if (A.mesi.length > 1) h += '<div class="chips" style="margin-bottom:10px">' + A.mesi.map(function (m) {
+    return '<button class="chip' + (m.mese === A.mese ? ' on' : '') + '" onclick="S.albumMese=\'' + m.mese + '\';S.albumDati=null;render()"><span style="font-size:22px">🗓️</span><span>' + e(m.nome) + ' (' + m.n + ')</span></button>';
+  }).join('') + '</div>';
+  var nome = (A.mesi.filter(function (m) { return m.mese === A.mese; })[0] || {}).nome || '';
+  h += '<div class="card"><h2>' + (nome ? e(nome) : 'Questo mese') + '</h2>';
+  if (!A.foto.length) h += '<div class="muted">Ancora nessuna foto: scatta la prima! 📸</div>';
+  else h += '<div class="galleria" style="margin-top:8px">' + A.foto.map(function (f) {
+    return '<button style="background-image:url(' + f.mini + ')" onclick="apriFoto(\'' + f.id + '\')"></button>';
+  }).join('') + '</div>';
+  return h + '</div>';
+}
+function caricaAlbum(mese) {
+  if (S.albumCarica) return;
+  S.albumCarica = true;
+  apiCall('foto_album', { mese: mese || '' }, function (x) { S.albumCarica = false; S.albumDati = x; S.albumMese = x.mese; if (S.tab === 'album' || S.foto) render(); },
+    function (msg) { S.albumCarica = false; S.albumDati = { mesi: [], mese: '', foto: [] }; erroreFoto('L\'album non si apre: ' + msg); });
+}
+/** Riduce la foto sul telefono (lato lungo 1600 px) e prepara la miniatura: si carica in pochi secondi anche col 4G. */
+function riduci(file, max, q, cb) {
+  var url = URL.createObjectURL(file), img = new Image();
+  img.onload = function () {
+    var s = Math.min(1, max / Math.max(img.width, img.height)), w = Math.round(img.width * s), hh = Math.round(img.height * s);
+    var cv = document.createElement('canvas'); cv.width = w; cv.height = hh;
+    cv.getContext('2d').drawImage(img, 0, 0, w, hh);
+    URL.revokeObjectURL(url);
+    cb(cv.toDataURL('image/jpeg', q));
+  };
+  img.onerror = function () { URL.revokeObjectURL(url); cb(null); };
+  img.src = url;
+}
+function miniQuadrata(file, cb) {
+  var url = URL.createObjectURL(file), img = new Image();
+  img.onload = function () {
+    var lato = Math.min(img.width, img.height), cv = document.createElement('canvas'); cv.width = 240; cv.height = 240;
+    cv.getContext('2d').drawImage(img, (img.width - lato) / 2, (img.height - lato) / 2, lato, lato, 0, 0, 240, 240);
+    URL.revokeObjectURL(url);
+    // la miniatura deve stare in una cella del foglio: abbassa la qualità finché non è abbastanza piccola
+    var q = 0.7, s = cv.toDataURL('image/jpeg', q);
+    while (s.length > 38000 && q > 0.25) { q -= 0.1; s = cv.toDataURL('image/jpeg', q); }
+    cb(s);
+  };
+  img.onerror = function () { URL.revokeObjectURL(url); cb(null); };
+  img.src = url;
+}
+function caricaFoto(inp) {
+  var files = Array.prototype.slice.call(inp.files || []).filter(function (f) { return /^image\//.test(f.type); }).slice(0, 20);
+  inp.value = '';
+  if (!files.length) return;
+  var did = val('fotoDid'), n = files.length, fatte = 0, errore = '';
+  var uno = function () {
+    var f = files.shift();
+    if (!f) {
+      if (fatte === n) toast(n > 1 ? n + ' foto aggiunte all\'album 📷' : 'Foto aggiunta all\'album 📷');
+      else erroreFoto((fatte ? 'Caricate ' + fatte + ' foto su ' + n + '. ' : 'Foto non caricata. ') + errore);
+      var el = document.getElementById('fotoDid'); if (el) el.value = ''; return;
+    }
+    toast('Carico la foto ' + (fatte + 1) + ' di ' + n + '…');
+    riduci(f, 1600, 0.82, function (grande) {
+      miniQuadrata(f, function (mini) {
+        if (!grande || !mini) { errore = 'Questa foto non si riesce a leggere (formato HEIC? prova a sceglierla dalla galleria).'; uno(); return; }
+        apiCall('foto_carica', { img: grande, mini: mini, didascalia: did, quante: n }, function (x) {
+          fatte++; S.albumDati = x; S.albumMese = x.mese; if (S.tab === 'album') render(); uno();
+        }, function (msg) { errore = msg; uno(); });
+      });
+    });
+  };
+  uno();
+}
+/** L'errore delle foto resta in vista (non sparisce dopo pochi secondi), così si può leggere con calma. */
+function erroreFoto(msg) {
+  S.erroreFoto = msg;
+  if (S.tab === 'album') render(); else toast(msg, true);
+}
+var FOTO_CACHE = {};
+function apriFoto(id) {
+  S.foto = id;
+  if (!S.albumDati || !S.albumDati.foto.some(function (f) { return f.id === id; })) caricaAlbum(S.albumMese);
+  render();
+  if (!FOTO_CACHE[id]) apiCall('foto_vedi', { id: id }, function (x) { FOTO_CACHE[x.id] = x.img; if (S.foto === x.id) render(); }, function (msg) { toast(msg, true); });
+}
+function lightboxHtml() {
+  var A = S.albumDati, l = A ? A.foto : [], i = -1;
+  for (var k = 0; k < l.length; k++) if (l[k].id === S.foto) i = k;
+  var f = i >= 0 ? l[i] : null, img = FOTO_CACHE[S.foto];
+  var me = S.d.me, puo = f && (me.ruolo === 'genitore' || f.da === me.id) && me.ruolo !== 'tv';
+  var h = '<div class="lightbox" onclick="if(event.target===this)chiudiFoto()">' +
+    (img ? '<img src="' + img + '">' : (f ? '<img src="' + f.mini + '" style="filter:blur(2px);width:80vw">' : '') + '<div class="info">Carico la foto…</div>');
+  if (f) h += '<div class="info">' + av(f.da, 26) + ' <b>' + e(chi(f.da).soprannome || f.da) + '</b> · ' + fdate(f.data, true) + (f.didascalia ? '<br>' + e(f.didascalia) : '') + '</div>';
+  h += '<div class="lbbar">' + (i > 0 ? '<button onclick="apriFoto(\'' + l[i - 1].id + '\')">‹</button>' : '') +
+    (img ? '<a href="' + img + '" download="coppa-bedduzzi-' + (f ? f.data.slice(0, 10) : 'foto') + '.jpg">⬇️ Salva</a>' : '') +
+    (puo ? '<button onclick="cancellaFoto(\'' + S.foto + '\')">🗑️</button>' : '') +
+    '<button onclick="chiudiFoto()">✖ Chiudi</button>' + (i >= 0 && i < l.length - 1 ? '<button onclick="apriFoto(\'' + l[i + 1].id + '\')">›</button>' : '') + '</div></div>';
+  return h;
+}
+function chiudiFoto() { S.foto = null; render(); }
+function cancellaFoto(id) {
+  if (!confirm('Tolgo questa foto dall\'album? (resta 30 giorni nel cestino di Google Drive)')) return;
+  apiCall('foto_cancella', { id: id }, function (x) { S.foto = null; S.albumDati = x; toast('Foto tolta'); render(); }, function (msg) { toast(msg, true); });
+}
+
+/* ---- Chat di famiglia ---- */
+var CHAT_EMO = ['😀', '😂', '😍', '❤️', '👍', '🙏', '🎉', '💪', '😘', '🤔', '😴', '🍕', '🏐', '🐶', '🏠', '🚗', '⏰', '✅'];
+function viewChat(d) {
+  return '<div class="card" style="padding:12px 14px"><div class="row"><h2 class="grow" style="margin:0">💬 Chat di famiglia</h2>' +
+    '<button class="mini sec" onclick="go(\'album\')">📷 Album</button><button class="mini sec" onclick="go(\'giochi\')">🎲 Giochi</button></div></div><div class="chatlist" id="chatList">' + chatListHtml(d) + '</div>';
+}
+function soloEmoji(t) {
+  var s = String(t).replace(/\s/g, '');
+  return s.length > 0 && s.length <= 12 && !/[A-Za-z0-9À-ÿ.,;:!?'"()\-]/.test(s);
+}
+function chatListHtml(d) {
+  var ch = d.chat || { messaggi: [] }, me = d.me, h = '', ultimoGiorno = '';
+  if (!ch.messaggi.length) return '<div class="muted" style="text-align:center;padding:30px">Ancora nessun messaggio: scrivi tu il primo! 👋</div>';
+  ch.messaggi.forEach(function (m) {
+    var dt = new Date(m.data), g = dt.toDateString();
+    if (g !== ultimoGiorno) {
+      ultimoGiorno = g;
+      var oggi = new Date().toDateString(), ieri = new Date(Date.now() - 864e5).toDateString();
+      h += '<div class="giorno">' + (g === oggi ? 'Oggi' : g === ieri ? 'Ieri' : fdate(m.data)) + '</div>';
+    }
+    var ora = pad(dt.getHours()) + ':' + pad(dt.getMinutes());
+    if (m.tipo === 'auto') {
+      h += '<div class="auto" onclick="if(event.target===this)selMsg(\'' + m.id + '\')">' + e(m.testo) + ' <span class="ora">' + ora + '</span>' + reazHtml(m, me) +
+        (S.chatSel === m.id ? pickerHtml(m, { id: me.id, ruolo: me.ruolo === 'genitore' ? 'genitore' : 'x' }) : '') + '</div>';
+      return;
+    }
+    var mia = m.da === me.id, p = chi(m.da);
+    h += '<div class="bolla' + (mia ? ' mia' : '') + '">' + (mia ? '' : av(m.da, 32)) + '<div><div class="b" onclick="selMsg(\'' + m.id + '\')">' +
+      (mia ? '' : '<div class="chi">' + e(p.soprannome || p.nome || m.da) + '</div>') +
+      '<div class="tx' + (soloEmoji(m.testo) ? ' solo-emoji' : '') + '">' + e(m.testo) + '</div><div class="ora">' + ora + '</div></div>' +
+      reazHtml(m, me) + (S.chatSel === m.id ? pickerHtml(m, me) : '') + '</div></div>';
+  });
+  return h;
+}
+function reazHtml(m, me) {
+  var k = Object.keys(m.reazioni || {});
+  if (!k.length) return '';
+  return '<div class="reaz">' + k.map(function (em) {
+    var l = m.reazioni[em] || [], mia = l.indexOf(me.id) >= 0;
+    var nomi = l.map(function (id) { return chi(id).soprannome || id; }).join(', ');
+    return '<button class="' + (mia ? 'mia' : '') + '" title="' + e(nomi) + '" onclick="reagisci(\'' + m.id + '\',\'' + em + '\')">' + em + (l.length > 1 ? ' ' + l.length : '') + '</button>';
+  }).join('') + '</div>';
+}
+function pickerHtml(m, me) {
+  var rr = (S.d.chat && S.d.chat.reazioni) || ['❤️', '😂', '👍', '😮', '😢', '🎉'];
+  var canc = me.ruolo === 'genitore' || m.da === me.id;
+  return '<div class="picker">' + rr.map(function (em) { return '<button onclick="reagisci(\'' + m.id + '\',\'' + em + '\')">' + em + '</button>'; }).join('') +
+    (canc ? '<button title="Cancella" onclick="cancellaMsg(\'' + m.id + '\')" style="font-size:20px">🗑️</button>' : '') + '</div>';
+}
+function selMsg(id) { S.chatSel = S.chatSel === id ? null : id; aggiornaChat(false); }
+var SR_OK = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+function barraChat() {
+  if (!S.d || S.d.me.ruolo === 'tv') return '';
+  return '<div class="chatbar"><div class="inner"><div class="emo">' + CHAT_EMO.map(function (em) { return '<button onclick="metti(\'' + em + '\')">' + em + '</button>'; }).join('') + '</div>' +
+    '<div class="row" style="gap:6px;align-items:flex-end">' + (SR_OK ? '<button class="mic" id="micBtn" title="Parla: scrivo io" onclick="detta()">🎤</button>' : '') +
+    '<textarea id="chatTxt" rows="1" maxlength="600" placeholder="' + (SR_OK ? 'Scrivi o tocca 🎤 e parla…' : 'Scrivi un messaggio…') + '" oninput="S.chatDraft=this.value;cresci(this)"></textarea>' +
+    '<button onclick="inviaChat()" style="border-radius:50%;padding:10px 13px;font-size:18px">➤</button></div></div></div>';
+}
+function cresci(t) { t.style.height = 'auto'; t.style.height = Math.min(120, t.scrollHeight) + 'px'; }
+function metti(em) {
+  var t = document.getElementById('chatTxt'); if (!t) return;
+  t.value += em; S.chatDraft = t.value; t.focus();
+}
+function dopoChat() {
+  var t = document.getElementById('chatTxt');
+  if (t && S.chatDraft) { t.value = S.chatDraft; cresci(t); }
+  scorriGiu();
+  segnaLetto();
+}
+function scorriGiu() { setTimeout(function () { window.scrollTo(0, document.body.scrollHeight); }, 30); }
+function segnaLetto() {
+  var ch = S.d && S.d.chat;
+  if (!ch || !ch.nonLetti) return;
+  ch.nonLetti = 0;
+  var b = document.getElementById('badgeChat'); if (b) b.style.display = 'none';
+  apiCall('chat_letto', {}, function (x) { S.d.chat = x; }, function () {});
+}
+/** Aggiorna solo l'elenco dei messaggi (il testo che stai scrivendo non si perde). */
+function aggiornaChat(giu) {
+  var el = document.getElementById('chatList');
+  if (el) el.innerHTML = chatListHtml(S.d);
+  var b = document.getElementById('badgeChat'), n = S.tab === 'chat' ? 0 : ((S.d.chat && S.d.chat.nonLetti) || 0);
+  if (b) { b.textContent = n; b.style.display = n ? '' : 'none'; }
+  if (giu) scorriGiu();
+}
+function inviaChat() {
+  var t = document.getElementById('chatTxt'), testo = t ? t.value.trim() : '';
+  if (!testo) return;
+  t.value = ''; S.chatDraft = ''; cresci(t);
+  apiCall('chat_invia', { testo: testo }, function (x) { S.d.chat = x; aggiornaChat(true); },
+    function (msg) { toast(msg, true); t.value = testo; S.chatDraft = testo; });
+}
+function reagisci(id, em) {
+  S.chatSel = null;
+  apiCall('chat_reazione', { id: id, emoji: em }, function (x) { S.d.chat = x; aggiornaChat(false); }, function (msg) { toast(msg, true); });
+}
+function cancellaMsg(id) {
+  if (!confirm('Cancello questo messaggio per tutti?')) return;
+  S.chatSel = null;
+  apiCall('chat_cancella', { id: id }, function (x) { S.d.chat = x; aggiornaChat(false); }, function (msg) { toast(msg, true); });
+}
+/** Dettatura: parli e l'app scrive (riconoscimento vocale del telefono, in italiano). */
+var REC = null;
+function detta() {
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition, btn = document.getElementById('micBtn'), t = document.getElementById('chatTxt');
+  if (!SR || !t) return toast('Su questo telefono usa il microfono della tastiera 🎤', true);
+  if (REC) { REC.stop(); return; }
+  var base = t.value ? t.value.replace(/\s*$/, ' ') : '';
+  REC = new SR(); REC.lang = 'it-IT'; REC.interimResults = true; REC.continuous = false;
+  REC.onresult = function (ev) {
+    var s = '';
+    for (var i = 0; i < ev.results.length; i++) s += ev.results[i][0].transcript;
+    if (s) s = s.charAt(0).toUpperCase() + s.slice(1);
+    t.value = base + s; S.chatDraft = t.value; cresci(t);
+  };
+  REC.onerror = function (ev) {
+    if (ev.error === 'not-allowed' || ev.error === 'service-not-allowed') toast('Serve il permesso del microfono per dettare', true);
+    else if (ev.error !== 'no-speech' && ev.error !== 'aborted') toast('Non ho capito, riprova 🎤', true);
+  };
+  REC.onend = function () { REC = null; if (btn) btn.className = 'mic'; };
+  try { REC.start(); if (btn) btn.className = 'mic on'; toast('Parla pure… 🎤'); } catch (x) { REC = null; }
+}
+/** Controllo dei messaggi nuovi: ogni 8 secondi nella chat, ogni minuto nelle altre pagine. */
+var chatUltimo = 0;
+function controllaChat() {
+  if (!S.d || BOOT.tv || document.hidden) return;
+  var inChat = S.tab === 'chat';
+  if (!inChat && Date.now() - chatUltimo < 60000) return;
+  chatUltimo = Date.now();
+  apiCall('chat', {}, function (x) {
+    var prima = JSON.stringify((S.d.chat || {}).messaggi || []), dopo = JSON.stringify(x.messaggi || []);
+    var nuovi = (x.messaggi || []).length && prima !== dopo;
+    S.d.chat = x;
+    if (nuovi || !inChat) aggiornaChat(inChat && nuovi);
+    if (inChat && x.nonLetti) segnaLetto();
+  }, function () {});
+}
+setInterval(controllaChat, 8000);
 
 /** Genitori: tutto quello che aspetta un ok (attività fatte dalle bimbe, punti proposti per Lilly). */
 function daConfermare(d) {
@@ -1616,7 +2231,7 @@ function compra(lid, pid) {
 }
 
 /* ============================ MODALITÀ TV ============================ */
-var TV_BASE = ['settimana', 'mappa', 'partite', 'tappe', 'regole_piu', 'viareggio', 'lavagna', 'regole_altre', 'agenda'];
+var TV_BASE = ['settimana', 'chat', 'mappa', 'partite', 'tappe', 'regole_piu', 'viareggio', 'lavagna', 'regole_altre', 'agenda'];
 var TV_PANELS = TV_BASE;
 function renderTV() {
   var d = S.d;
@@ -1624,9 +2239,16 @@ function renderTV() {
   // con un traguardo di famiglia recente, la schermata di festa entra nella rotazione
   // le tappe vanno a 2 per schermata, così si leggono senza scorrere
   var nTappe = Math.max(1, Math.ceil((d.obiettivi || []).length / 2)), base = [];
-  TV_BASE.forEach(function (x) { if (x === 'tappe') { for (var t = 0; t < nTappe; t++) base.push('tappe:' + t); } else base.push(x); });
+  // la chat entra nel giro solo se c'è stato qualche messaggio negli ultimi 3 giorni
+  var chatViva = ((d.chat || {}).messaggi || []).some(function (m) { return Date.now() - new Date(m.data).getTime() < 3 * 864e5; });
+  TV_BASE.forEach(function (x) { if (x === 'chat' && !chatViva) return; if (x === 'tappe') { for (var t = 0; t < nTappe; t++) base.push('tappe:' + t); } else base.push(x); });
   TV_PANELS = (d.festeTV && d.festeTV.length) ? ['traguardi'].concat(base) : base;
   var p = TV_PANELS[S.tvIdx % TV_PANELS.length];
+  var gTV = S.gioco && (S.gioco.stato !== 'finita' || (S.gioco.fineVista && Date.now() < S.gioco.fineVista)) ? S.gioco : null;
+  if (gTV) {
+    document.getElementById('app').innerHTML = '<div class="tvwrap"><div class="tvhead"><span style="font-size:4vw">🎲</span><h1>Giochi di famiglia</h1><div class="clock" id="clock"></div></div><div class="panel on">' + giocoTV(gTV) + '</div></div>';
+    return;
+  }
   var h = '<div class="tvwrap"><div class="tvhead"><span style="font-size:4vw">🏆</span><h1>Coppa Bedduzzi</h1><div class="clock" id="clock"></div></div>';
   h += '<div class="panel on">' + bannerFesta(d).replace(/class="card festa-oggi"/g, 'class="festa-oggi"');
   if (p === 'traguardi') {
@@ -1650,13 +2272,26 @@ function renderTV() {
     h += blocObiettivi(dd).replace('<div class="card">', '<div>').replace('🎯 Le nostre tappe', '🎯 Le nostre tappe' + (nTappe > 1 ? ' <span class="muted">' + (pag + 1) + '/' + nTappe + '</span>' : ''));
   } else if (p === 'settimana') {
     h += blocSettimana(d).replace('<div class="card">', '<div>');
+  } else if (p === 'chat') {
+    var msg = ((d.chat || {}).messaggi || []).slice(-7);
+    h += '<h2>💬 Chat di famiglia</h2><div class="chatlist tvchat" style="padding-bottom:0">';
+    msg.forEach(function (m) {
+      var dt = new Date(m.data), ora = (dt.toDateString() === new Date().toDateString() ? '' : fdate(m.data) + ' ') + pad(dt.getHours()) + ':' + pad(dt.getMinutes());
+      var rz = Object.keys(m.reazioni || {}).map(function (em) { return em + (m.reazioni[em].length > 1 ? m.reazioni[em].length : ''); }).join(' ');
+      if (m.tipo === 'auto') { h += '<div class="auto">' + e(m.testo) + ' <span class="ora">' + ora + '</span>' + (rz ? ' ' + rz : '') + '</div>'; return; }
+      var pp = chi(m.da);
+      h += '<div class="bolla">' + av(m.da, 64) + '<div class="b"><div class="chi">' + e(pp.soprannome || pp.nome) + ' · ' + ora + '</div><div class="tx">' + e(m.testo) + '</div>' +
+        (rz ? '<div style="font-size:1.6vw">' + rz + '</div>' : '') + '</div></div>';
+    });
+    h += '</div>';
   } else if (p === 'lavagna') {
     h += '<h2>📋 La lavagna</h2><div class="cols">';
-    ['Da fare', 'In corso'].forEach(function (st) {
-      var l = d.lavagna.filter(function (t) { return t.stato === st; }).slice(0, 6);
-      h += '<div class="col"><h3>' + (st === 'Da fare' ? '📝 ' : '⏳ ') + st + '</h3>';
-      if (!l.length) h += '<div class="muted" style="padding:1vh">Niente qui 🎉</div>';
-      l.forEach(function (t) { var c = chi(t.assegnato); h += '<div class="task" style="border-left-color:' + e(c.colore) + '"><b>' + e(t.testo) + '</b> <span class="muted">' + av(t.assegnato, 40) + '</span></div>'; });
+    var aperte = d.lavagna.filter(function (t) { return !t.confermato && t.stato !== 'Fatto'; }).slice(0, 6);
+    var fatte = d.lavagna.filter(function (t) { return t.confermato; }).slice(-6).reverse();
+    [['📝 Da fare', aperte, function (t) { return t.assegnato; }], ['🏅 Fatte da poco', fatte, function (t) { return t.fatto_da || t.assegnato; }]].forEach(function (col) {
+      h += '<div class="col"><h3>' + col[0] + '</h3>';
+      if (!col[1].length) h += '<div class="muted" style="padding:1vh">Niente qui 🎉</div>';
+      col[1].forEach(function (t) { var cc = chi(col[2](t)); h += '<div class="task" style="border-left-color:' + e(cc.colore || '#94a3b8') + '"><b>' + e((t.emoji ? t.emoji + ' ' : '') + t.testo) + '</b> <span class="muted">' + av(col[2](t), 40) + '</span></div>'; });
       h += '</div>';
     });
     h += '</div>';
