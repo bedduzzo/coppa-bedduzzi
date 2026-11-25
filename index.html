@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- COPPA BEDDUZZI – app – index.html – versione 2.25 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
+<!-- COPPA BEDDUZZI – app – index.html – versione 2.19 (sito su GitHub Pages; i dati arrivano da Apps Script) -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -95,45 +95,6 @@
   .todo.attesa { background: #fffbeb; border-color: #fcd34d; }
   .badge { display: inline-block; min-width: 18px; height: 18px; line-height: 18px; padding: 0 5px; border-radius: 9px; background: var(--rosso); color: #fff; font-size: 11px; font-weight: 800; position: absolute; top: 0; right: 18%; }
   .tabs button { position: relative; }
-  .chatlist { display: flex; flex-direction: column; gap: 10px; padding-bottom: 150px; }
-  .bolla { display: flex; gap: 8px; align-items: flex-end; max-width: 88%; }
-  .bolla.mia { align-self: flex-end; flex-direction: row-reverse; }
-  .bolla .b { background: #fff; border: 1px solid var(--bordo); border-radius: 18px 18px 18px 4px; padding: 8px 12px; box-shadow: 0 1px 2px rgba(0,0,0,.05); }
-  .bolla.mia .b { background: #dcfce7; border-color: #bbf7d0; border-radius: 18px 18px 4px 18px; }
-  .bolla .chi { font-size: 12px; font-weight: 800; color: var(--mare-scuro); }
-  .bolla .tx { white-space: pre-wrap; word-wrap: break-word; font-size: 16px; line-height: 1.35; }
-  .bolla .ora { font-size: 11px; color: var(--grigio); text-align: right; margin-top: 2px; }
-  .bolla .tx.solo-emoji { font-size: 40px; line-height: 1.1; }
-  .reaz { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
-  .reaz button { background: #f1f5f9; color: var(--testo); padding: 2px 8px; font-size: 14px; border-radius: 12px; border: 1px solid var(--bordo); }
-  .reaz button.mia { background: #dbeafe; border-color: #93c5fd; }
-  .picker { display: flex; gap: 4px; background: #fff; border: 1px solid var(--bordo); border-radius: 22px; padding: 4px 6px; margin-top: 4px; box-shadow: 0 4px 12px rgba(0,0,0,.12); }
-  .picker button { background: transparent; font-size: 24px; padding: 2px 4px; }
-  .auto { align-self: center; background: #fef3c7; border: 1px solid #fde68a; color: #78350f; border-radius: 14px; padding: 6px 12px; font-size: 14px; font-weight: 700; text-align: center; max-width: 92%; }
-  .auto .ora { font-size: 11px; font-weight: 600; color: #a16207; }
-  .chatbar { position: fixed; left: 0; right: 0; bottom: calc(64px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid var(--bordo); padding: 6px 10px; z-index: 6; }
-  .chatbar .inner { max-width: 760px; margin: 0 auto; }
-  .chatbar .emo { display: flex; gap: 2px; overflow-x: auto; padding-bottom: 4px; }
-  .chatbar .emo button { background: transparent; font-size: 22px; padding: 2px 5px; }
-  .chatbar textarea { flex: 1; font-family: inherit; font-size: 16px; padding: 9px 12px; border: 2px solid var(--bordo); border-radius: 20px; resize: none; max-height: 120px; min-height: 42px; }
-  .chatbar .mic { background: #f1f5f9; color: var(--testo); font-size: 22px; padding: 6px 10px; border-radius: 50%; }
-  .chatbar .mic.on { background: var(--rosso); color: #fff; animation: pulsa 1.2s infinite; }
-  .giorno { align-self: center; font-size: 12px; font-weight: 800; color: var(--grigio); background: #fff; border-radius: 10px; padding: 2px 10px; }
-  .tvchat .bolla { max-width: 100%; } .tvchat .bolla .tx { font-size: 2.1vw; } .tvchat .bolla .chi { font-size: 1.3vw; }
-  .tvchat .auto { font-size: 1.8vw; }
-  .galleria { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
-  .galleria button { padding: 0; border-radius: 8px; overflow: hidden; aspect-ratio: 1; background: #e2e8f0 center / cover no-repeat; }
-  .galleria.mini4 { grid-template-columns: repeat(4, 1fr); }
-  .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; }
-  .lightbox img { max-width: 100vw; max-height: 74vh; object-fit: contain; }
-  .lightbox .lbbar { display: flex; gap: 8px; align-items: center; padding: 10px; flex-wrap: wrap; justify-content: center; }
-  .lightbox .lbbar button, .lightbox .lbbar a { background: rgba(255,255,255,.15); color: #fff; padding: 10px 14px; border-radius: 12px; text-decoration: none; font-weight: 800; }
-  .lightbox .info { text-align: center; padding: 0 16px; font-size: 15px; }
-  .carica { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .carica label { display: flex; flex-direction: column; align-items: center; gap: 4px; background: var(--mare); color: #fff; border-radius: 14px; padding: 14px 8px; font-weight: 800; cursor: pointer; }
-  .carica label.sec { background: #e0f2fe; color: var(--mare-scuro); }
-  .carica label span { font-size: 30px; }
-  .carica input { display: none; }
   .avviso { border: 3px solid #f59e0b; background: #fffbeb; }
   .conf { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid #fde68a; }
   .conf:first-of-type { border-top: 0; }
@@ -297,7 +258,7 @@
 
 <script>
 var BOOT = { token: '', tv: /[?&]tv=1/.test(location.search) };
-var VERSIONE_PAGINA = '2.25';
+var VERSIONE_PAGINA = '2.19';
 var IMG = {};
 var S = { d: null, tab: 'casa', busy: false, tvIdx: 0, preview: null, filtro: '' };
 
@@ -418,17 +379,17 @@ function render() {
   if (BOOT.tv) return renderTV();
   var r = d.me.ruolo;
   var tabs = r === 'genitore'
-    ? [['casa', '🏖️', 'Casa'], ['chat', '💬', 'Chat'], ['lavagna', '📋', 'Lavagna'], ['punti', '⭐', 'Punti'], ['storico', '📊', 'Storico'], ['gettoni', '🪙', 'Gettoni']]
-    : [['casa', '🏖️', 'Casa'], ['chat', '💬', 'Chat'], ['lavagna', '📋', 'Lavagna'], ['dona', '💛', 'Dai punti'], ['salvadanaio', '🐷', 'Salvadanaio'], ['regole', '📜', 'Regole']];
+    ? [['casa', '🏖️', 'Casa'], ['lavagna', '📋', 'Lavagna'], ['punti', '⭐', 'Punti'], ['storico', '📊', 'Storico'], ['gettoni', '🪙', 'Gettoni']]
+    : [['casa', '🏖️', 'Casa'], ['lavagna', '📋', 'Lavagna'], ['dona', '💛', 'Dai punti'], ['salvadanaio', '🐷', 'Salvadanaio'], ['regole', '📜', 'Regole']];
   var ok = false;
   for (var i = 0; i < tabs.length; i++) if (tabs[i][0] === S.tab) ok = true;
-  if (S.tab === 'mappa' || S.tab === 'partite' || S.tab === 'album') ok = true;
+  if (S.tab === 'mappa' || S.tab === 'partite') ok = true;
   if (!ok) S.tab = 'casa';
 
   var h = '<div class="top"><div class="inner"><div class="avatar">' + av(d.me.id, 58) + '</div>' +
     '<div><h1>Ciao ' + e(d.me.soprannome) + '!</h1><div class="sub">Coppa Bedduzzi · ' + oggiLungo() + '</div></div>' +
     '<div class="sun">☀️</div></div></div><div class="wrap">';
-  var v = { casa: viewCasa, lavagna: viewLavagna, punti: viewPunti, storico: viewStorico, gettoni: viewGettoni, dona: viewDona, salvadanaio: viewSalvadanaio, regole: viewRegole, mappa: viewMappa, partite: viewPartite, chat: viewChat, album: viewAlbum }[S.tab];
+  var v = { casa: viewCasa, lavagna: viewLavagna, punti: viewPunti, storico: viewStorico, gettoni: viewGettoni, dona: viewDona, salvadanaio: viewSalvadanaio, regole: viewRegole, mappa: viewMappa, partite: viewPartite }[S.tab];
   v = (function (orig) { return function (dd) {
     return orig(dd) + (r === 'genitore' && versioniDiverse(d.versione, VERSIONE_PAGINA)
       ? '<div class="card" style="border:2px solid var(--corallo)"><b>⚠️ Versioni diverse</b><div class="muted">L\'archivio (Code.gs in Apps Script) è alla versione ' + e(d.versione || '?') + ', l\'app alla ' + VERSIONE_PAGINA + '. Aggiorna la parte rimasta indietro.</div></div>'
@@ -438,13 +399,10 @@ function render() {
   h += v(d) + '</div>' + (r === 'genitore' && S.preview ? previewSheet() : '') + '<div class="tabs">';
   for (var j = 0; j < tabs.length; j++) {
     var nb = tabs[j][0] === 'casa' && r === 'genitore' ? daConfermare(d).length : 0;
-    if (tabs[j][0] === 'chat') nb = S.tab === 'chat' ? 0 : ((d.chat && d.chat.nonLetti) || 0);
-    h += '<button class="' + (tabs[j][0] === S.tab ? 'on' : '') + '" onclick="go(\'' + tabs[j][0] + '\')"><span class="i">' + tabs[j][1] + '</span>' + tabs[j][2] +
-      (tabs[j][0] === 'chat' ? '<span class="badge" id="badgeChat"' + (nb ? '' : ' style="display:none"') + '>' + nb + '</span>' : (nb ? '<span class="badge">' + nb + '</span>' : '')) + '</button>';
+    h += '<button class="' + (tabs[j][0] === S.tab ? 'on' : '') + '" onclick="go(\'' + tabs[j][0] + '\')"><span class="i">' + tabs[j][1] + '</span>' + tabs[j][2] + (nb ? '<span class="badge">' + nb + '</span>' : '') + '</button>';
   }
-  h += '</div>' + (S.tab === 'chat' ? barraChat() : '') + (S.foto ? lightboxHtml() : '');
+  h += '</div>';
   document.getElementById('app').innerHTML = h;
-  if (S.tab === 'chat') dopoChat();
   // numerino sull'icona dell'app (Android, app installata): quante cose aspettano l'ok
   try { if (r === 'genitore' && navigator.setAppBadge) { var nn = daConfermare(d).length; if (nn) navigator.setAppBadge(nn); else navigator.clearAppBadge(); } } catch (x) { /* non supportato */ }
   setTimeout(mostraFeste, 400);
@@ -454,7 +412,7 @@ function numVer(v) { var p = String(v || '0').split('.'); return [parseInt(p[0],
 /** Avvisa se l'archivio è più nuovo dell'app, o se cambia la versione principale (2.x → 3.x). */
 function versioniDiverse(arch, app) {
   var a = numVer(arch), b = numVer(app);
-  return a[0] !== b[0] || a[1] !== b[1];
+  return a[0] !== b[0] || a[1] > b[1];
 }
 function go(t) { S.tab = t; render(); window.scrollTo(0, 0); }
 
@@ -1001,270 +959,9 @@ function bannerTraguardi(d) {
 }
 
 /* ---- Casa ---- */
-function blocAlbum(d) {
-  var a = d.album || { n: 0, ultime: [] };
-  var h = '<div class="card"><div class="row"><h2 class="grow" style="margin:0">📷 Album di ' + e(a.nome || '') + '</h2><button class="mini sec" onclick="go(\'album\')">' + (a.n ? 'Vedi ' + a.n + ' ›' : 'Apri ›') + '</button></div>';
-  if (a.ultime && a.ultime.length) h += '<div class="galleria mini4" style="margin-top:10px">' + a.ultime.map(function (f) {
-    return '<button style="background-image:url(' + f.mini + ')" onclick="S.albumMese=\'' + f.mese + '\';apriFoto(\'' + f.id + '\')"></button>';
-  }).join('') + '</div>';
-  else h += '<div class="muted" style="margin-top:6px">Ancora nessuna foto questo mese: scatta la prima! 📸</div>';
-  return h + '</div>';
-}
 function viewCasa(d) {
-  return bannerFesta(d) + blocDaConfermare(d) + blocDoveSiamo(d) + blocPartite(d) + blocSettimana(d) + blocAlbum(d) + blocObiettivi(d) + blocViareggio(d) + blocMedaglie(d, true) + blocFeste(d, 4) + blocCalendario(d, 8);
+  return bannerFesta(d) + blocDaConfermare(d) + blocDoveSiamo(d) + blocPartite(d) + blocSettimana(d) + blocObiettivi(d) + blocViareggio(d) + blocMedaglie(d, true) + blocFeste(d, 4) + blocCalendario(d, 8);
 }
-
-/* ---- Album foto ---- */
-function viewAlbum(d) {
-  var A = S.albumDati;
-  if (!A || (S.albumMese && A.mese !== S.albumMese)) { caricaAlbum(S.albumMese); }
-  var h = '<div class="card"><div class="row"><h2 class="grow" style="margin:0">📷 Album di famiglia</h2></div>';
-  if (d.me.ruolo !== 'tv') h += '<div class="carica" style="margin-top:12px">' +
-    '<label><span>📸</span>Scatta una foto<input type="file" accept="image/*" capture="environment" onchange="caricaFoto(this)"></label>' +
-    '<label class="sec"><span>🖼️</span>Scegli dalla galleria<input type="file" accept="image/*" multiple onchange="caricaFoto(this)"></label></div>' +
-    '<input id="fotoDid" maxlength="140" placeholder="Didascalia (facoltativa), es. Pizza a casa dei nonni" style="margin-top:8px">';
-  if (S.erroreFoto) h += '<div class="todo attesa" style="margin-top:10px"><span class="em">⚠️</span><div class="tx">' + e(S.erroreFoto) +
-    '<div class="muted">Versione app ' + VERSIONE_PAGINA + ' · archivio ' + e((S.d && S.d.versione) || '?') + '</div></div><button class="mini sec" onclick="S.erroreFoto=null;render()">✖</button></div>';
-  h += '</div>';
-  if (!A) return h + '<div class="card muted">Carico l\'album…</div>';
-  if (A.mesi.length > 1) h += '<div class="chips" style="margin-bottom:10px">' + A.mesi.map(function (m) {
-    return '<button class="chip' + (m.mese === A.mese ? ' on' : '') + '" onclick="S.albumMese=\'' + m.mese + '\';S.albumDati=null;render()"><span style="font-size:22px">🗓️</span><span>' + e(m.nome) + ' (' + m.n + ')</span></button>';
-  }).join('') + '</div>';
-  var nome = (A.mesi.filter(function (m) { return m.mese === A.mese; })[0] || {}).nome || '';
-  h += '<div class="card"><h2>' + (nome ? e(nome) : 'Questo mese') + '</h2>';
-  if (!A.foto.length) h += '<div class="muted">Ancora nessuna foto: scatta la prima! 📸</div>';
-  else h += '<div class="galleria" style="margin-top:8px">' + A.foto.map(function (f) {
-    return '<button style="background-image:url(' + f.mini + ')" onclick="apriFoto(\'' + f.id + '\')"></button>';
-  }).join('') + '</div>';
-  return h + '</div>';
-}
-function caricaAlbum(mese) {
-  if (S.albumCarica) return;
-  S.albumCarica = true;
-  apiCall('foto_album', { mese: mese || '' }, function (x) { S.albumCarica = false; S.albumDati = x; S.albumMese = x.mese; if (S.tab === 'album' || S.foto) render(); },
-    function (msg) { S.albumCarica = false; S.albumDati = { mesi: [], mese: '', foto: [] }; erroreFoto('L\'album non si apre: ' + msg); });
-}
-/** Riduce la foto sul telefono (lato lungo 1600 px) e prepara la miniatura: si carica in pochi secondi anche col 4G. */
-function riduci(file, max, q, cb) {
-  var url = URL.createObjectURL(file), img = new Image();
-  img.onload = function () {
-    var s = Math.min(1, max / Math.max(img.width, img.height)), w = Math.round(img.width * s), hh = Math.round(img.height * s);
-    var cv = document.createElement('canvas'); cv.width = w; cv.height = hh;
-    cv.getContext('2d').drawImage(img, 0, 0, w, hh);
-    URL.revokeObjectURL(url);
-    cb(cv.toDataURL('image/jpeg', q));
-  };
-  img.onerror = function () { URL.revokeObjectURL(url); cb(null); };
-  img.src = url;
-}
-function miniQuadrata(file, cb) {
-  var url = URL.createObjectURL(file), img = new Image();
-  img.onload = function () {
-    var lato = Math.min(img.width, img.height), cv = document.createElement('canvas'); cv.width = 240; cv.height = 240;
-    cv.getContext('2d').drawImage(img, (img.width - lato) / 2, (img.height - lato) / 2, lato, lato, 0, 0, 240, 240);
-    URL.revokeObjectURL(url);
-    // la miniatura deve stare in una cella del foglio: abbassa la qualità finché non è abbastanza piccola
-    var q = 0.7, s = cv.toDataURL('image/jpeg', q);
-    while (s.length > 38000 && q > 0.25) { q -= 0.1; s = cv.toDataURL('image/jpeg', q); }
-    cb(s);
-  };
-  img.onerror = function () { URL.revokeObjectURL(url); cb(null); };
-  img.src = url;
-}
-function caricaFoto(inp) {
-  var files = Array.prototype.slice.call(inp.files || []).filter(function (f) { return /^image\//.test(f.type); }).slice(0, 20);
-  inp.value = '';
-  if (!files.length) return;
-  var did = val('fotoDid'), n = files.length, fatte = 0, errore = '';
-  var uno = function () {
-    var f = files.shift();
-    if (!f) {
-      if (fatte === n) toast(n > 1 ? n + ' foto aggiunte all\'album 📷' : 'Foto aggiunta all\'album 📷');
-      else erroreFoto((fatte ? 'Caricate ' + fatte + ' foto su ' + n + '. ' : 'Foto non caricata. ') + errore);
-      var el = document.getElementById('fotoDid'); if (el) el.value = ''; return;
-    }
-    toast('Carico la foto ' + (fatte + 1) + ' di ' + n + '…');
-    riduci(f, 1600, 0.82, function (grande) {
-      miniQuadrata(f, function (mini) {
-        if (!grande || !mini) { errore = 'Questa foto non si riesce a leggere (formato HEIC? prova a sceglierla dalla galleria).'; uno(); return; }
-        apiCall('foto_carica', { img: grande, mini: mini, didascalia: did, quante: n }, function (x) {
-          fatte++; S.albumDati = x; S.albumMese = x.mese; if (S.tab === 'album') render(); uno();
-        }, function (msg) { errore = msg; uno(); });
-      });
-    });
-  };
-  uno();
-}
-/** L'errore delle foto resta in vista (non sparisce dopo pochi secondi), così si può leggere con calma. */
-function erroreFoto(msg) {
-  S.erroreFoto = msg;
-  if (S.tab === 'album') render(); else toast(msg, true);
-}
-var FOTO_CACHE = {};
-function apriFoto(id) {
-  S.foto = id;
-  if (!S.albumDati || !S.albumDati.foto.some(function (f) { return f.id === id; })) caricaAlbum(S.albumMese);
-  render();
-  if (!FOTO_CACHE[id]) apiCall('foto_vedi', { id: id }, function (x) { FOTO_CACHE[x.id] = x.img; if (S.foto === x.id) render(); }, function (msg) { toast(msg, true); });
-}
-function lightboxHtml() {
-  var A = S.albumDati, l = A ? A.foto : [], i = -1;
-  for (var k = 0; k < l.length; k++) if (l[k].id === S.foto) i = k;
-  var f = i >= 0 ? l[i] : null, img = FOTO_CACHE[S.foto];
-  var me = S.d.me, puo = f && (me.ruolo === 'genitore' || f.da === me.id) && me.ruolo !== 'tv';
-  var h = '<div class="lightbox" onclick="if(event.target===this)chiudiFoto()">' +
-    (img ? '<img src="' + img + '">' : (f ? '<img src="' + f.mini + '" style="filter:blur(2px);width:80vw">' : '') + '<div class="info">Carico la foto…</div>');
-  if (f) h += '<div class="info">' + av(f.da, 26) + ' <b>' + e(chi(f.da).soprannome || f.da) + '</b> · ' + fdate(f.data, true) + (f.didascalia ? '<br>' + e(f.didascalia) : '') + '</div>';
-  h += '<div class="lbbar">' + (i > 0 ? '<button onclick="apriFoto(\'' + l[i - 1].id + '\')">‹</button>' : '') +
-    (img ? '<a href="' + img + '" download="coppa-bedduzzi-' + (f ? f.data.slice(0, 10) : 'foto') + '.jpg">⬇️ Salva</a>' : '') +
-    (puo ? '<button onclick="cancellaFoto(\'' + S.foto + '\')">🗑️</button>' : '') +
-    '<button onclick="chiudiFoto()">✖ Chiudi</button>' + (i >= 0 && i < l.length - 1 ? '<button onclick="apriFoto(\'' + l[i + 1].id + '\')">›</button>' : '') + '</div></div>';
-  return h;
-}
-function chiudiFoto() { S.foto = null; render(); }
-function cancellaFoto(id) {
-  if (!confirm('Tolgo questa foto dall\'album? (resta 30 giorni nel cestino di Google Drive)')) return;
-  apiCall('foto_cancella', { id: id }, function (x) { S.foto = null; S.albumDati = x; toast('Foto tolta'); render(); }, function (msg) { toast(msg, true); });
-}
-
-/* ---- Chat di famiglia ---- */
-var CHAT_EMO = ['😀', '😂', '😍', '❤️', '👍', '🙏', '🎉', '💪', '😘', '🤔', '😴', '🍕', '🏐', '🐶', '🏠', '🚗', '⏰', '✅'];
-function viewChat(d) {
-  return '<div class="card" style="padding:12px 14px"><div class="row"><h2 class="grow" style="margin:0">💬 Chat di famiglia</h2>' +
-    '<button class="mini sec" onclick="go(\'album\')">📷 Album</button></div></div><div class="chatlist" id="chatList">' + chatListHtml(d) + '</div>';
-}
-function soloEmoji(t) {
-  var s = String(t).replace(/\s/g, '');
-  return s.length > 0 && s.length <= 12 && !/[A-Za-z0-9À-ÿ.,;:!?'"()\-]/.test(s);
-}
-function chatListHtml(d) {
-  var ch = d.chat || { messaggi: [] }, me = d.me, h = '', ultimoGiorno = '';
-  if (!ch.messaggi.length) return '<div class="muted" style="text-align:center;padding:30px">Ancora nessun messaggio: scrivi tu il primo! 👋</div>';
-  ch.messaggi.forEach(function (m) {
-    var dt = new Date(m.data), g = dt.toDateString();
-    if (g !== ultimoGiorno) {
-      ultimoGiorno = g;
-      var oggi = new Date().toDateString(), ieri = new Date(Date.now() - 864e5).toDateString();
-      h += '<div class="giorno">' + (g === oggi ? 'Oggi' : g === ieri ? 'Ieri' : fdate(m.data)) + '</div>';
-    }
-    var ora = pad(dt.getHours()) + ':' + pad(dt.getMinutes());
-    if (m.tipo === 'auto') {
-      h += '<div class="auto" onclick="if(event.target===this)selMsg(\'' + m.id + '\')">' + e(m.testo) + ' <span class="ora">' + ora + '</span>' + reazHtml(m, me) +
-        (S.chatSel === m.id ? pickerHtml(m, { id: me.id, ruolo: me.ruolo === 'genitore' ? 'genitore' : 'x' }) : '') + '</div>';
-      return;
-    }
-    var mia = m.da === me.id, p = chi(m.da);
-    h += '<div class="bolla' + (mia ? ' mia' : '') + '">' + (mia ? '' : av(m.da, 32)) + '<div><div class="b" onclick="selMsg(\'' + m.id + '\')">' +
-      (mia ? '' : '<div class="chi">' + e(p.soprannome || p.nome || m.da) + '</div>') +
-      '<div class="tx' + (soloEmoji(m.testo) ? ' solo-emoji' : '') + '">' + e(m.testo) + '</div><div class="ora">' + ora + '</div></div>' +
-      reazHtml(m, me) + (S.chatSel === m.id ? pickerHtml(m, me) : '') + '</div></div>';
-  });
-  return h;
-}
-function reazHtml(m, me) {
-  var k = Object.keys(m.reazioni || {});
-  if (!k.length) return '';
-  return '<div class="reaz">' + k.map(function (em) {
-    var l = m.reazioni[em] || [], mia = l.indexOf(me.id) >= 0;
-    var nomi = l.map(function (id) { return chi(id).soprannome || id; }).join(', ');
-    return '<button class="' + (mia ? 'mia' : '') + '" title="' + e(nomi) + '" onclick="reagisci(\'' + m.id + '\',\'' + em + '\')">' + em + (l.length > 1 ? ' ' + l.length : '') + '</button>';
-  }).join('') + '</div>';
-}
-function pickerHtml(m, me) {
-  var rr = (S.d.chat && S.d.chat.reazioni) || ['❤️', '😂', '👍', '😮', '😢', '🎉'];
-  var canc = me.ruolo === 'genitore' || m.da === me.id;
-  return '<div class="picker">' + rr.map(function (em) { return '<button onclick="reagisci(\'' + m.id + '\',\'' + em + '\')">' + em + '</button>'; }).join('') +
-    (canc ? '<button title="Cancella" onclick="cancellaMsg(\'' + m.id + '\')" style="font-size:20px">🗑️</button>' : '') + '</div>';
-}
-function selMsg(id) { S.chatSel = S.chatSel === id ? null : id; aggiornaChat(false); }
-var SR_OK = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
-function barraChat() {
-  if (!S.d || S.d.me.ruolo === 'tv') return '';
-  return '<div class="chatbar"><div class="inner"><div class="emo">' + CHAT_EMO.map(function (em) { return '<button onclick="metti(\'' + em + '\')">' + em + '</button>'; }).join('') + '</div>' +
-    '<div class="row" style="gap:6px;align-items:flex-end">' + (SR_OK ? '<button class="mic" id="micBtn" title="Parla: scrivo io" onclick="detta()">🎤</button>' : '') +
-    '<textarea id="chatTxt" rows="1" maxlength="600" placeholder="' + (SR_OK ? 'Scrivi o tocca 🎤 e parla…' : 'Scrivi un messaggio…') + '" oninput="S.chatDraft=this.value;cresci(this)"></textarea>' +
-    '<button onclick="inviaChat()" style="border-radius:50%;padding:10px 13px;font-size:18px">➤</button></div></div></div>';
-}
-function cresci(t) { t.style.height = 'auto'; t.style.height = Math.min(120, t.scrollHeight) + 'px'; }
-function metti(em) {
-  var t = document.getElementById('chatTxt'); if (!t) return;
-  t.value += em; S.chatDraft = t.value; t.focus();
-}
-function dopoChat() {
-  var t = document.getElementById('chatTxt');
-  if (t && S.chatDraft) { t.value = S.chatDraft; cresci(t); }
-  scorriGiu();
-  segnaLetto();
-}
-function scorriGiu() { setTimeout(function () { window.scrollTo(0, document.body.scrollHeight); }, 30); }
-function segnaLetto() {
-  var ch = S.d && S.d.chat;
-  if (!ch || !ch.nonLetti) return;
-  ch.nonLetti = 0;
-  var b = document.getElementById('badgeChat'); if (b) b.style.display = 'none';
-  apiCall('chat_letto', {}, function (x) { S.d.chat = x; }, function () {});
-}
-/** Aggiorna solo l'elenco dei messaggi (il testo che stai scrivendo non si perde). */
-function aggiornaChat(giu) {
-  var el = document.getElementById('chatList');
-  if (el) el.innerHTML = chatListHtml(S.d);
-  var b = document.getElementById('badgeChat'), n = S.tab === 'chat' ? 0 : ((S.d.chat && S.d.chat.nonLetti) || 0);
-  if (b) { b.textContent = n; b.style.display = n ? '' : 'none'; }
-  if (giu) scorriGiu();
-}
-function inviaChat() {
-  var t = document.getElementById('chatTxt'), testo = t ? t.value.trim() : '';
-  if (!testo) return;
-  t.value = ''; S.chatDraft = ''; cresci(t);
-  apiCall('chat_invia', { testo: testo }, function (x) { S.d.chat = x; aggiornaChat(true); },
-    function (msg) { toast(msg, true); t.value = testo; S.chatDraft = testo; });
-}
-function reagisci(id, em) {
-  S.chatSel = null;
-  apiCall('chat_reazione', { id: id, emoji: em }, function (x) { S.d.chat = x; aggiornaChat(false); }, function (msg) { toast(msg, true); });
-}
-function cancellaMsg(id) {
-  if (!confirm('Cancello questo messaggio per tutti?')) return;
-  S.chatSel = null;
-  apiCall('chat_cancella', { id: id }, function (x) { S.d.chat = x; aggiornaChat(false); }, function (msg) { toast(msg, true); });
-}
-/** Dettatura: parli e l'app scrive (riconoscimento vocale del telefono, in italiano). */
-var REC = null;
-function detta() {
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition, btn = document.getElementById('micBtn'), t = document.getElementById('chatTxt');
-  if (!SR || !t) return toast('Su questo telefono usa il microfono della tastiera 🎤', true);
-  if (REC) { REC.stop(); return; }
-  var base = t.value ? t.value.replace(/\s*$/, ' ') : '';
-  REC = new SR(); REC.lang = 'it-IT'; REC.interimResults = true; REC.continuous = false;
-  REC.onresult = function (ev) {
-    var s = '';
-    for (var i = 0; i < ev.results.length; i++) s += ev.results[i][0].transcript;
-    if (s) s = s.charAt(0).toUpperCase() + s.slice(1);
-    t.value = base + s; S.chatDraft = t.value; cresci(t);
-  };
-  REC.onerror = function (ev) {
-    if (ev.error === 'not-allowed' || ev.error === 'service-not-allowed') toast('Serve il permesso del microfono per dettare', true);
-    else if (ev.error !== 'no-speech' && ev.error !== 'aborted') toast('Non ho capito, riprova 🎤', true);
-  };
-  REC.onend = function () { REC = null; if (btn) btn.className = 'mic'; };
-  try { REC.start(); if (btn) btn.className = 'mic on'; toast('Parla pure… 🎤'); } catch (x) { REC = null; }
-}
-/** Controllo dei messaggi nuovi: ogni 8 secondi nella chat, ogni minuto nelle altre pagine. */
-var chatUltimo = 0;
-function controllaChat() {
-  if (!S.d || BOOT.tv || document.hidden) return;
-  var inChat = S.tab === 'chat';
-  if (!inChat && Date.now() - chatUltimo < 60000) return;
-  chatUltimo = Date.now();
-  apiCall('chat', {}, function (x) {
-    var prima = JSON.stringify((S.d.chat || {}).messaggi || []), dopo = JSON.stringify(x.messaggi || []);
-    var nuovi = (x.messaggi || []).length && prima !== dopo;
-    S.d.chat = x;
-    if (nuovi || !inChat) aggiornaChat(inChat && nuovi);
-    if (inChat && x.nonLetti) segnaLetto();
-  }, function () {});
-}
-setInterval(controllaChat, 8000);
 
 /** Genitori: tutto quello che aspetta un ok (attività fatte dalle bimbe, punti proposti per Lilly). */
 function daConfermare(d) {
@@ -1919,7 +1616,7 @@ function compra(lid, pid) {
 }
 
 /* ============================ MODALITÀ TV ============================ */
-var TV_BASE = ['settimana', 'chat', 'mappa', 'partite', 'tappe', 'regole_piu', 'viareggio', 'lavagna', 'regole_altre', 'agenda'];
+var TV_BASE = ['settimana', 'mappa', 'partite', 'tappe', 'regole_piu', 'viareggio', 'lavagna', 'regole_altre', 'agenda'];
 var TV_PANELS = TV_BASE;
 function renderTV() {
   var d = S.d;
@@ -1927,9 +1624,7 @@ function renderTV() {
   // con un traguardo di famiglia recente, la schermata di festa entra nella rotazione
   // le tappe vanno a 2 per schermata, così si leggono senza scorrere
   var nTappe = Math.max(1, Math.ceil((d.obiettivi || []).length / 2)), base = [];
-  // la chat entra nel giro solo se c'è stato qualche messaggio negli ultimi 3 giorni
-  var chatViva = ((d.chat || {}).messaggi || []).some(function (m) { return Date.now() - new Date(m.data).getTime() < 3 * 864e5; });
-  TV_BASE.forEach(function (x) { if (x === 'chat' && !chatViva) return; if (x === 'tappe') { for (var t = 0; t < nTappe; t++) base.push('tappe:' + t); } else base.push(x); });
+  TV_BASE.forEach(function (x) { if (x === 'tappe') { for (var t = 0; t < nTappe; t++) base.push('tappe:' + t); } else base.push(x); });
   TV_PANELS = (d.festeTV && d.festeTV.length) ? ['traguardi'].concat(base) : base;
   var p = TV_PANELS[S.tvIdx % TV_PANELS.length];
   var h = '<div class="tvwrap"><div class="tvhead"><span style="font-size:4vw">🏆</span><h1>Coppa Bedduzzi</h1><div class="clock" id="clock"></div></div>';
@@ -1955,26 +1650,13 @@ function renderTV() {
     h += blocObiettivi(dd).replace('<div class="card">', '<div>').replace('🎯 Le nostre tappe', '🎯 Le nostre tappe' + (nTappe > 1 ? ' <span class="muted">' + (pag + 1) + '/' + nTappe + '</span>' : ''));
   } else if (p === 'settimana') {
     h += blocSettimana(d).replace('<div class="card">', '<div>');
-  } else if (p === 'chat') {
-    var msg = ((d.chat || {}).messaggi || []).slice(-7);
-    h += '<h2>💬 Chat di famiglia</h2><div class="chatlist tvchat" style="padding-bottom:0">';
-    msg.forEach(function (m) {
-      var dt = new Date(m.data), ora = (dt.toDateString() === new Date().toDateString() ? '' : fdate(m.data) + ' ') + pad(dt.getHours()) + ':' + pad(dt.getMinutes());
-      var rz = Object.keys(m.reazioni || {}).map(function (em) { return em + (m.reazioni[em].length > 1 ? m.reazioni[em].length : ''); }).join(' ');
-      if (m.tipo === 'auto') { h += '<div class="auto">' + e(m.testo) + ' <span class="ora">' + ora + '</span>' + (rz ? ' ' + rz : '') + '</div>'; return; }
-      var pp = chi(m.da);
-      h += '<div class="bolla">' + av(m.da, 64) + '<div class="b"><div class="chi">' + e(pp.soprannome || pp.nome) + ' · ' + ora + '</div><div class="tx">' + e(m.testo) + '</div>' +
-        (rz ? '<div style="font-size:1.6vw">' + rz + '</div>' : '') + '</div></div>';
-    });
-    h += '</div>';
   } else if (p === 'lavagna') {
     h += '<h2>📋 La lavagna</h2><div class="cols">';
-    var aperte = d.lavagna.filter(function (t) { return !t.confermato && t.stato !== 'Fatto'; }).slice(0, 6);
-    var fatte = d.lavagna.filter(function (t) { return t.confermato; }).slice(-6).reverse();
-    [['📝 Da fare', aperte, function (t) { return t.assegnato; }], ['🏅 Fatte da poco', fatte, function (t) { return t.fatto_da || t.assegnato; }]].forEach(function (col) {
-      h += '<div class="col"><h3>' + col[0] + '</h3>';
-      if (!col[1].length) h += '<div class="muted" style="padding:1vh">Niente qui 🎉</div>';
-      col[1].forEach(function (t) { var cc = chi(col[2](t)); h += '<div class="task" style="border-left-color:' + e(cc.colore || '#94a3b8') + '"><b>' + e((t.emoji ? t.emoji + ' ' : '') + t.testo) + '</b> <span class="muted">' + av(col[2](t), 40) + '</span></div>'; });
+    ['Da fare', 'In corso'].forEach(function (st) {
+      var l = d.lavagna.filter(function (t) { return t.stato === st; }).slice(0, 6);
+      h += '<div class="col"><h3>' + (st === 'Da fare' ? '📝 ' : '⏳ ') + st + '</h3>';
+      if (!l.length) h += '<div class="muted" style="padding:1vh">Niente qui 🎉</div>';
+      l.forEach(function (t) { var c = chi(t.assegnato); h += '<div class="task" style="border-left-color:' + e(c.colore) + '"><b>' + e(t.testo) + '</b> <span class="muted">' + av(t.assegnato, 40) + '</span></div>'; });
       h += '</div>';
     });
     h += '</div>';
